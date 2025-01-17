@@ -1,0 +1,10 @@
+# Thư mục node_modules
+node_modules/
+
+# File cấu hình môi trường
+.env
+
+# Log files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
