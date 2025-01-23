@@ -1,10 +1,10 @@
-const User = require("../models/User");
+const userService = require("../services/userService");
 
 const userControllers = {
   //GET ALL USERS
   getAllUsers: async (req, res) => {
     try {
-      const users = await User.find();
+      const users = await userService.getAllUsers();
       res.status(200).json(users);
     } catch (err) {
       res.status(500).json({ message: err.message });
@@ -14,8 +14,8 @@ const userControllers = {
   //DELETE USER
   deleteUser: async (req, res) => {
     try {
-      const user = await User.findById(req.params.id);
-      res.status(200).json("User deleted");
+      const message = await userService.deleteUser(req.params.id);
+      res.status(200).json(message);
     } catch (err) {
       res.status(500).json({ message: err.message });
     }
@@ -24,15 +24,12 @@ const userControllers = {
   // LAY THONG TIN USER
   getUserInfo: async (req, res) => {
     try {
-      const user = await User.findById(req.user.id).select("-password");
-      if (!user) {
-        return res.status(404).json({ message: "User not found" });
-      }
+      const user = await userService.getUserInfo(req.params.id);
       res.status(200).json(user);
     } catch (err) {
       res.status(500).json({ message: err.message });
     }
-  }
+  },
 };
 
 module.exports = userControllers;

@@ -1,19 +1,35 @@
-const express = require('express');
-const bodyParser = require('body-parser');
-const cors = require('cors');
-const productRoutes = require('./src/routes/productRoutes');
+const express = require("express");
+const cors = require("cors");
+const dotenv = require("dotenv");
+const mongoose = require("mongoose");
 
+dotenv.config();
 const app = express();
-const PORT = 5000;
+const swaggerSetup = require("./swagger");
 
-// Middleware
+async function connectDB() {
+  try {
+    await mongoose.connect(process.env.MONGODB_URL);
+    console.log("Connected to MongoDB");
+  } catch (err) {
+    console.error("Failed to connect to MongoDB", err);
+    process.exit(1);
+  }
+}
+
+connectDB();
+
 app.use(cors());
-app.use(bodyParser.json());
+app.use(express.json());
 
-// Routes
-app.use('/api/products', productRoutes);
+//Swagger
+swaggerSetup(app);
 
-// Start server
-app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
+//Routes
+app.use("/api/user", require("./src/routers/user"));
+
+app.listen(8000, () => {
+  console.log("Server is running on port 8000");
+  console.log("Swagger is running on:");
+  console.log("http://localhost:8000/greenveggies-api-docs");
 });
