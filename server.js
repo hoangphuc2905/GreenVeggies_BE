@@ -28,6 +28,7 @@ swaggerSetup(app);
 //Routes
 app.use("/api/user", require("./src/routers/user"));
 app.use("/api/products", require("./src/routers/product"));
+app.use("/api/auth", require("./src/routers/auth"));
 
 
 app.listen(8000, () => {
