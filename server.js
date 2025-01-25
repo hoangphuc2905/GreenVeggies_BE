@@ -27,6 +27,8 @@ swaggerSetup(app);
 
 //Routes
 app.use("/api/user", require("./src/routers/user"));
+app.use("/api/products", require("./src/routers/product"));
+
 
 app.listen(8000, () => {
   console.log("Server is running on port 8000");
