@@ -21,6 +21,11 @@ const userSchema = new mongoose.Schema(
       lowercase: true,
       trim: true,
     },
+    firebaseId: {
+      type: String,
+      required: [true, "Please provide a firebase ID"],
+      unique: true,
+    },
     dateOfBirth: {
       type: Date,
       required: [true, "Please provide a date of birth"],
