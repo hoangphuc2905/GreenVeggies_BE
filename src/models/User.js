@@ -21,11 +21,6 @@ const userSchema = new mongoose.Schema(
       lowercase: true,
       trim: true,
     },
-    firebaseId: {
-      type: String,
-      required: [true, "Please provide a firebase ID"],
-      unique: true,
-    },
     dateOfBirth: {
       type: Date,
       required: [true, "Please provide a date of birth"],
@@ -45,7 +40,7 @@ const userSchema = new mongoose.Schema(
     role: {
       type: String,
       enum: ['admin', 'user', 'guest'],
-      default: 'guest', // default role khi người dùng chưa đăng nhập
+      default: 'guest', 
     },
     accountStatus: {
       type: String,

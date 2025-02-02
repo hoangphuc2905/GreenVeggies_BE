@@ -3,6 +3,7 @@ node_modules/
 
 # File cấu hình môi trường
 .env
+firebase-config.json
 
 # Log files
 npm-debug.log*

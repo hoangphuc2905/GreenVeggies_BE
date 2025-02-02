@@ -29,7 +29,16 @@ const productSchema = new mongoose.Schema(
       required: [true, "Please specify the product category"],
     },
     imageUrl: {
+      type: Array,
+      required: [true, "Please provide at least one image"],
+    },
+    unit: {
       type: String,
+      required: [true, "Please specify the product unit"],
+    },
+    status: {
+      type: String,
+      required: [true, "Please specify the product status"],
     },
   },
   { timestamps: true }

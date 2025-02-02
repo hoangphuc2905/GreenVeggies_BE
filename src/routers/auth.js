@@ -4,9 +4,9 @@ const authControllers = require("../controllers/authControllers");
 
 /**
  * @swagger
- * /api/auth/register:
+ * /api/auth/send-otp:
  *   post:
- *     summary: Đăng ký người dùng mới
+ *     summary: Gửi mã OTP đến email
  *     requestBody:
  *       required: true
  *       content:
@@ -14,11 +14,35 @@ const authControllers = require("../controllers/authControllers");
  *           schema:
  *             type: object
  *             properties:
+ *               email:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Mã OTP đã được gửi
+ *       400:
+ *         description: Yêu cầu không hợp lệ
+ */
+router.post("/send-otp", authControllers.sendOtp);
+
+/**
+ * @swagger
+ * /api/auth/verify-otp:
+ *   post:
+ *     summary: Xác thực OTP và tạo người dùng
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *               otp:
+ *                 type: string
  *               username:
  *                 type: string
  *               phone:
- *                 type: string
- *               email:
  *                 type: string
  *               dateOfBirth:
  *                 type: string
@@ -35,7 +59,7 @@ const authControllers = require("../controllers/authControllers");
  *       400:
  *         description: Yêu cầu không hợp lệ
  */
-router.post("/register", authControllers.register);
+router.post("/verify-otp", authControllers.verifyOtpAndCreateUser);
 
 /**
  * @swagger
@@ -60,5 +84,6 @@ router.post("/register", authControllers.register);
  *         description: Yêu cầu không hợp lệ
  */
 router.post("/login", authControllers.login);
+
 
 module.exports = router;
