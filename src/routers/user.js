@@ -3,9 +3,18 @@ const router = require("express").Router();
 
 /**
  * @swagger
+ * tags:
+ *   - name: User
+ *     description: Lấy thông tin người dùng
+ */
+
+/**
+ * @swagger
  * /api/user:
  *   get:
  *     summary: Lấy danh sách tất cả người dùng
+ *     tags:
+ *       - User
  *     responses:
  *       200:
  *         description: Thành công
@@ -30,6 +39,8 @@ router.get("/", userControllers.getAllUsers);
  * /api/user/{id}:
  *   delete:
  *     summary: Xóa người dùng theo ID
+ *     tags:
+ *       - User
  *     parameters:
  *       - in: path
  *         name: id
@@ -39,7 +50,7 @@ router.get("/", userControllers.getAllUsers);
  *         description: ID của người dùng cần xóa
  *     responses:
  *       200:
- *         description: Thành công
+ *         description: Người dùng đã được xóa thành công
  *       404:
  *         description: Không tìm thấy người dùng
  */
@@ -47,15 +58,24 @@ router.get("/", userControllers.getAllUsers);
 
 /**
  * @swagger
- * /api/user/account-info:
+ * /api/user/{id}:
  *   get:
  *     summary: Lấy thông tin tài khoản người dùng
+ *     tags:
+ *       - User
+ *     parameters:
+ *       - in: query
+ *         name: userId
+ *         required: false
+ *         schema:
+ *           type: string
+ *         description: ID của người dùng cần lấy thông tin (tùy chọn)
  *     responses:
  *       200:
  *         description: Thành công
  *       401:
  *         description: Không được phép
  */
-// router.get("/account-info", middlewareControllers.verifyToken, userControllers.getUserInfo);
+router.get("/:id", userControllers.getUserInfo);
 
-module.exports = router;    
+module.exports = router;

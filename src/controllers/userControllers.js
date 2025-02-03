@@ -1,4 +1,5 @@
 const userService = require("../services/userService");
+const mongoose = require("mongoose");
 
 const userControllers = {
   //GET ALL USERS
@@ -23,9 +24,18 @@ const userControllers = {
 
   // LAY THONG TIN USER
   getUserInfo: async (req, res) => {
+    const userId = req.query.userId || req.params.id;
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({ message: "Invalid user ID" });
+    }
+
     try {
-      const user = await userService.getUserInfo(req.params.id);
-      res.status(200).json(user);
+      const user = await userService.getUserInfo(userId);
+      if (user) {
+        res.status(200).json(user);
+      } else {
+        res.status(404).json({ message: "User not found" });
+      }
     } catch (err) {
       res.status(500).json({ message: err.message });
     }

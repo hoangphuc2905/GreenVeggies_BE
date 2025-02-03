@@ -4,18 +4,25 @@ const authControllers = require("../controllers/authControllers");
 
 /**
  * @swagger
+ * tags:
+ *   - name: Auth
+ *     description: Đăng ký, đăng nhập và xác thực người dùng
+ */
+
+/**
+ * @swagger
  * /api/auth/send-otp:
  *   post:
  *     summary: Gửi mã OTP đến email
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               email:
- *                 type: string
+ *     tags: 
+ *       - Auth
+ *     parameters:
+ *       - in: query
+ *         name: email
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Email của người dùng để nhận OTP
  *     responses:
  *       200:
  *         description: Mã OTP đã được gửi
@@ -29,30 +36,58 @@ router.post("/send-otp", authControllers.sendOtp);
  * /api/auth/verify-otp:
  *   post:
  *     summary: Xác thực OTP và tạo người dùng
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               email:
- *                 type: string
- *               otp:
- *                 type: string
- *               username:
- *                 type: string
- *               phone:
- *                 type: string
- *               dateOfBirth:
- *                 type: string
- *                 format: date
- *               password:
- *                 type: string
- *               avatar:
- *                 type: string
- *               address:
- *                 type: string
+ *     tags: 
+ *       - Auth
+ *     parameters:
+ *       - in: query
+ *         name: email
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Email của người dùng
+ *       - in: query
+ *         name: otp
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Mã OTP đã nhận
+ *       - in: query
+ *         name: username
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Tên người dùng
+ *       - in: query
+ *         name: phone
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Số điện thoại người dùng
+ *       - in: query
+ *         name: dateOfBirth
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: date
+ *         description: Ngày sinh người dùng
+ *       - in: query
+ *         name: password
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Mật khẩu của người dùng
+ *       - in: query
+ *         name: avatar
+ *         required: false
+ *         schema:
+ *           type: string
+ *         description: URL ảnh đại diện người dùng
+ *       - in: query
+ *         name: address
+ *         required: false
+ *         schema:
+ *           type: string
+ *         description: Địa chỉ của người dùng
  *     responses:
  *       201:
  *         description: Người dùng được tạo thành công
@@ -66,17 +101,21 @@ router.post("/verify-otp", authControllers.verifyOtpAndCreateUser);
  * /api/auth/login:
  *   post:
  *     summary: Đăng nhập người dùng
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               email:
- *                 type: string
- *               password:
- *                 type: string
+ *     tags: 
+ *       - Auth
+ *     parameters:
+ *       - in: query
+ *         name: email
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Email của người dùng
+ *       - in: query
+ *         name: password
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Mật khẩu của người dùng
  *     responses:
  *       200:
  *         description: Đăng nhập thành công
@@ -84,6 +123,5 @@ router.post("/verify-otp", authControllers.verifyOtpAndCreateUser);
  *         description: Yêu cầu không hợp lệ
  */
 router.post("/login", authControllers.login);
-
 
 module.exports = router;

@@ -1,12 +1,21 @@
+// routes/productRouter.js
 const express = require("express");
 const router = express.Router();
-const productService = require("../services/productService");
+const productController = require("../controllers/productController");
+
+/**
+ * @swagger
+ * tags:
+ *   - name: Products
+ *     description: Các API liên quan đến sản phẩm
+ */
 
 /**
  * @swagger
  * /api/products:
  *   get:
  *     summary: Lấy danh sách tất cả sản phẩm
+ *     tags: [Products]
  *     responses:
  *       200:
  *         description: Thành công
@@ -32,20 +41,14 @@ const productService = require("../services/productService");
  *                   imageUrl:
  *                     type: string
  */
-router.get("/", async (req, res) => {
-  try {
-    const products = await productService.getAllProducts();
-    res.status(200).json(products);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-});
+router.get("/", productController.getAllProducts);
 
 /**
  * @swagger
  * /api/products/{id}:
  *   get:
  *     summary: Lấy thông tin sản phẩm theo ID
+ *     tags: [Products]
  *     parameters:
  *       - in: path
  *         name: id
@@ -59,24 +62,14 @@ router.get("/", async (req, res) => {
  *       404:
  *         description: Không tìm thấy sản phẩm
  */
-router.get("/:id", async (req, res) => {
-  try {
-    const product = await productService.getProductById(req.params.id);
-    if (product) {
-      res.status(200).json(product);
-    } else {
-      res.status(404).json({ message: "Product not found" });
-    }
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-});
+router.get("/:id", productController.getProductById);
 
 /**
  * @swagger
  * /api/products:
  *   post:
  *     summary: Tạo sản phẩm mới
+ *     tags: [Products]
  *     requestBody:
  *       required: true
  *       content:
@@ -102,20 +95,14 @@ router.get("/:id", async (req, res) => {
  *       400:
  *         description: Yêu cầu không hợp lệ
  */
-router.post("/", async (req, res) => {
-  try {
-    const product = await productService.createProduct(req.body);
-    res.status(201).json(product);
-  } catch (err) {
-    res.status(400).json({ message: err.message });
-  }
-});
+router.post("/", productController.createProduct);
 
 /**
  * @swagger
  * /api/products/{id}:
  *   put:
  *     summary: Cập nhật thông tin sản phẩm theo ID
+ *     tags: [Products]
  *     parameters:
  *       - in: path
  *         name: id
@@ -148,24 +135,14 @@ router.post("/", async (req, res) => {
  *       404:
  *         description: Không tìm thấy sản phẩm
  */
-router.put("/:id", async (req, res) => {
-  try {
-    const product = await productService.updateProduct(req.params.id, req.body);
-    if (product) {
-      res.status(200).json(product);
-    } else {
-      res.status(404).json({ message: "Product not found" });
-    }
-  } catch (err) {
-    res.status(400).json({ message: err.message });
-  }
-});
+router.put("/:id", productController.updateProduct);
 
 /**
  * @swagger
  * /api/products/{id}:
  *   delete:
  *     summary: Xóa sản phẩm theo ID
+ *     tags: [Products]
  *     parameters:
  *       - in: path
  *         name: id
@@ -179,17 +156,6 @@ router.put("/:id", async (req, res) => {
  *       404:
  *         description: Không tìm thấy sản phẩm
  */
-router.delete("/:id", async (req, res) => {
-  try {
-    const product = await productService.deleteProduct(req.params.id);
-    if (product) {
-      res.status(200).json({ message: "Product deleted" });
-    } else {
-      res.status(404).json({ message: "Product not found" });
-    }
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-});
+router.delete("/:id", productController.deleteProduct);
 
 module.exports = router;
