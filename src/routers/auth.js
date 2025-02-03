@@ -14,7 +14,7 @@ const authControllers = require("../controllers/authControllers");
  * /api/auth/send-otp:
  *   post:
  *     summary: Gửi mã OTP đến email
- *     tags: 
+ *     tags:
  *       - Auth
  *     parameters:
  *       - in: query
@@ -36,7 +36,7 @@ router.post("/send-otp", authControllers.sendOtp);
  * /api/auth/verify-otp:
  *   post:
  *     summary: Xác thực OTP và tạo người dùng
- *     tags: 
+ *     tags:
  *       - Auth
  *     parameters:
  *       - in: query
@@ -101,7 +101,7 @@ router.post("/verify-otp", authControllers.verifyOtpAndCreateUser);
  * /api/auth/login:
  *   post:
  *     summary: Đăng nhập người dùng
- *     tags: 
+ *     tags:
  *       - Auth
  *     parameters:
  *       - in: query
@@ -123,5 +123,98 @@ router.post("/verify-otp", authControllers.verifyOtpAndCreateUser);
  *         description: Yêu cầu không hợp lệ
  */
 router.post("/login", authControllers.login);
+
+// quên mật khẩu: gửi OTP
+/**
+ * @swagger
+ * /api/auth/forgot-password:
+ *   post:
+ *     summary: Gửi mã OTP để khôi phục mật khẩu
+ *     tags:
+ *       - Auth
+ *     parameters:
+ *       - in: query
+ *         name: email
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Email của người dùng để nhận OTP
+ *     responses:
+ *       200:
+ *         description: Mã OTP đã được gửi
+ *       400:
+ *         description: Yêu cầu không hợp lệ
+ */
+router.post("/forgot-password", authControllers.forgotPassword);
+
+// quên mật khẩu: xác thực OTP và cập nhật mật khẩu mới
+/**
+ * @swagger
+ * /api/auth/reset-password:
+ *   post:
+ *     summary: Xác thực OTP và cập nhật mật khẩu mới
+ *     tags:
+ *       - Auth
+ *     parameters:
+ *       - in: query
+ *         name: email
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Email của người dùng
+ *       - in: query
+ *         name: otp
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Mã OTP đã nhận
+ *       - in: query
+ *         name: password
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Mật khẩu mới
+ *     responses:
+ *       200:
+ *         description: Mật khẩu đã được cập nhật
+ *       400:
+ *         description: Yêu cầu không hợp lệ
+ */
+router.post("/reset-password", authControllers.verifyOtpAndUpdatePassword);
+
+// đổi mật khẩu
+/**
+ * @swagger
+ * /api/auth/change-password:
+ *   post:
+ *     summary: Đổi mật khẩu
+ *     tags:
+ *       - Auth
+ *     parameters:
+ *       - in: query
+ *         name: email
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Email của người dùng
+ *       - in: query
+ *         name: oldPassword
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Mật khẩu cũ
+ *       - in: query
+ *         name: newPassword
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Mật khẩu mới
+ *     responses:
+ *       200:
+ *         description: Mật khẩu đã được cập nhật
+ *       400:
+ *         description: Yêu cầu không hợp lệ
+ */
+router.post("/change-password", authControllers.changePassword);
 
 module.exports = router;

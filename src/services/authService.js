@@ -24,7 +24,7 @@ const authService = {
       }
 
       const otp = crypto.randomInt(100000, 999999).toString();
-      otpStore[email] = { otp, expiresAt: Date.now() + 5 * 60 * 1000 }; 
+      otpStore[email] = { otp, expiresAt: Date.now() + 5 * 60 * 1000 };
 
       const mailOptions = {
         from: process.env.EMAIL_USER,
@@ -92,7 +92,7 @@ const authService = {
     });
 
     await user.save();
-    delete otpStore[email];  
+    delete otpStore[email];
     return { message: "Tài khoản đã được xác thực và lưu thành công!", user };
   },
 
@@ -117,6 +117,68 @@ const authService = {
       throw new Error("No OTP found for this email.");
     }
     return storedOtp.otp;
+  },
+
+  // Quên mật khẩu: Gửi OTP
+  forgotPassword: async (email) => {
+    const user = await User.findOne({
+      email,
+    });
+    if (!user) {
+      throw new Error("User not found");
+    }
+    const otp = crypto.randomInt(100000, 999999).toString();
+    otpStore[email] = { otp, expiresAt: Date.now() + 5 * 60 * 1000 };
+
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: "Xác thực OTP",
+      text: `Mã OTP của bạn: ${otp}`,
+    };
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.log(error);
+      } else {
+        console.log(`Email sent: ${info.response}`);
+      }
+    });
+
+    return { message: "Vui lòng kiểm tra email để nhận mã xác thực OTP." };
+  },
+
+  // Quên mật khẩu: Xác thực OTP và cập nhật mật khẩu mới
+  verifyOtpAndUpdatePassword: async (email, otp, newPassword) => {
+    const storedOtp = otpStore[email];
+    if (
+      !storedOtp ||
+      storedOtp.otp !== otp ||
+      storedOtp.expiresAt < Date.now()
+    ) {
+      throw new Error("Mã OTP không hợp lệ hoặc đã hết hạn.");
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    await User.findOneAndUpdate({ email }, { password: hashedPassword });
+    delete otpStore[email];
+    return { message: "Mật khẩu đã được cập nhật thành công!" };
+  },
+
+  // Đổi mật khẩu
+  changePassword: async (email, oldPassword, newPassword) => {
+    const user = await User.findOne({
+      email,
+    });
+    if (!user) {
+      throw new Error("User not found");
+    }
+    const isPasswordValid = await bcrypt.compare(oldPassword, user.password);
+    if (!isPasswordValid) {
+      throw new Error("Invalid password");
+    }
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    await User.findOneAndUpdate({ email }, { password: hashedPassword });
+    return { message: "Mật khẩu đã được cập nhật thành công!" };
   },
 };
 
