@@ -1,8 +1,8 @@
-    const mongoose = require("mongoose");
+const mongoose = require("mongoose");
 
 const productSchema = new mongoose.Schema(
   {
-    pID: {
+    productID: {
       type: String,
       required: [true, "Please provide a product ID"],
       unique: true,
@@ -19,14 +19,26 @@ const productSchema = new mongoose.Schema(
       type: Number,
       required: [true, "Please provide a product price"],
     },
+    sold: {
+      type: Number,
+      required: [true, "Please provide a product sold number"],
+    },
     quantity: {
       type: Number,
-      required: [true, "Please provide a product stock quantity"],
-      min: [0, "Stock cannot be negative"],
+      required: [true, "Please provide a product inventory number"],
+    },
+    import: {
+      type: Number,
+      required: [true, "Please provide a product import number"],
     },
     category: {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Category",
       required: [true, "Please specify the product category"],
+    },
+    origin: {
+      type: String,
+      required: [true, "Please specify the product origin"],
     },
     imageUrl: {
       type: Array,
@@ -39,6 +51,11 @@ const productSchema = new mongoose.Schema(
     status: {
       type: String,
       required: [true, "Please specify the product status"],
+    },
+    review: {
+      type: mongoose.Schema.Types.ObjectId, 
+      ref: "Review",
+      required: false,
     },
   },
   { timestamps: true }

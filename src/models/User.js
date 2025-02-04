@@ -23,20 +23,22 @@ const userSchema = new mongoose.Schema(
     },
     dateOfBirth: {
       type: Date,
-      required: [true, "Please provide a date of birth"],
+      required: false,
     },
     password: {
       type: String,
       required: [true, "Please provide a password"],
-      minlength: 6,
+      minlength: 8,
     },
     avatar: {
       type: String,
+      default: "default.jpg",
     },
-    address: {
-      type: String,
-      trim: true,
-    },
+    address: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Address",
+      required: false,
+    }],
     role: {
       type: String,
       enum: ['admin', 'user', 'guest'],

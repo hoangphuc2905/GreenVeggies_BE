@@ -1,4 +1,5 @@
 const User = require("../models/User");
+const Address = require("../models/Address");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const admin = require("../configs/firebaseConfig");
@@ -86,12 +87,20 @@ const authService = {
       password: hashedPassword,
       dateOfBirth: dob,
       avatar: avatar || "",
-      address: address || "",
       role: role || "guest",
       accountStatus: accountStatus || "Active",
     });
 
-    await user.save();
+    await user.save();  
+
+    if (address) {
+      const newAddress = new Address({ userID: user._id, ...address });
+      await newAddress.save();
+    
+      user.address = newAddress._id;
+      await user.save();
+    }
+
     delete otpStore[email];
     return { message: "Tài khoản đã được xác thực và lưu thành công!", user };
   },

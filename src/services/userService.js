@@ -2,7 +2,7 @@ const User = require("../models/User");
 
 const userService = {
   getAllUsers: async () => {
-    return await User.find();
+    return await User.find().populate("address");
   },
 
   deleteUser: async (id) => {
@@ -16,7 +16,7 @@ const userService = {
   },
 
   getUserInfo: async (id) => {
-    const user = await User.findById(id);
+    const user = await User.findById(id).populate("address");
     if (user) {
       return user;
     } else {

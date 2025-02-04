@@ -15,7 +15,7 @@ const paymentSchema = new mongoose.Schema(
     paymentMethod: {
       type: String,
       required: [true, "Please provide a payment method"],
-      enum: ["Credit Card", "PayPal", "Bank Transfer", "Cash"],
+      enum: ["Momo", "Bank Transfer", "Cash"],
     },
     paymentStatus: {
       type: String,
