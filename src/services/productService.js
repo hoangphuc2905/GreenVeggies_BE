@@ -1,25 +1,24 @@
 const Product = require("../models/Product");
 
 const productService = {
+  getLastProduct: async () => {
+    return await Product.findOne().sort({ createdAt: -1 });
+  },
+  
   createProduct: async (productData) => {
-    const product = new Product(productData);
-    return await product.save();
+    return await Product.create(productData);
   },
 
   getAllProducts: async () => {
-    return await Product.find();
+    return await Product.find().populate("category").populate("review");
   },
 
   getProductById: async (id) => {
-    return await Product.findById(id);
+    return await Product.findById(id).populate("category").populate("review");
   },
 
   updateProduct: async (id, productData) => {
     return await Product.findByIdAndUpdate(id, productData, { new: true });
-  },
-
-  deleteProduct: async (id) => {
-    return await Product.findByIdAndDelete(id);
   },
 };
 

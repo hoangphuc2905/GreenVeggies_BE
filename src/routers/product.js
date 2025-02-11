@@ -1,4 +1,3 @@
-// routes/productRouter.js
 const express = require("express");
 const router = express.Router();
 const productController = require("../controllers/productController");
@@ -45,27 +44,6 @@ router.get("/", productController.getAllProducts);
 
 /**
  * @swagger
- * /api/products/{id}:
- *   get:
- *     summary: Lấy thông tin sản phẩm theo ID
- *     tags: [Products]
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *         description: ID của sản phẩm cần lấy thông tin
- *     responses:
- *       200:
- *         description: Thành công
- *       404:
- *         description: Không tìm thấy sản phẩm
- */
-router.get("/:id", productController.getProductById);
-
-/**
- * @swagger
  * /api/products:
  *   post:
  *     summary: Tạo sản phẩm mới
@@ -76,6 +54,17 @@ router.get("/:id", productController.getProductById);
  *         application/json:
  *           schema:
  *             type: object
+ *             required:
+ *               - name
+ *               - description
+ *               - price
+ *               - quantity
+ *               - import
+ *               - category
+ *               - origin
+ *               - imageUrl
+ *               - unit
+ *               - status
  *             properties:
  *               name:
  *                 type: string
@@ -83,12 +72,28 @@ router.get("/:id", productController.getProductById);
  *                 type: string
  *               price:
  *                 type: number
+ *               sold:
+ *                 type: number
+ *                 default: 0
  *               quantity:
+ *                 type: number
+ *               import:
  *                 type: number
  *               category:
  *                 type: string
- *               imageUrl:
+ *               origin:
  *                 type: string
+ *               imageUrl:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *               unit:
+ *                 type: string
+ *                 enum: [piece, kg, gram, liter, ml]
+ *               status:
+ *                 type: string
+ *                 enum: [available, unavailable, out_of_stock]
+ *                 default: available
  *     responses:
  *       201:
  *         description: Sản phẩm được tạo thành công
@@ -109,26 +114,41 @@ router.post("/", productController.createProduct);
  *         required: true
  *         schema:
  *           type: string
- *         description: ID của sản phẩm cần cập nhật
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               name:
- *                 type: string
- *               description:
- *                 type: string
- *               price:
- *                 type: number
- *               quantity:
- *                 type: number
- *               category:
- *                 type: string
- *               imageUrl:
- *                 type: string
+ *       - in: query
+ *         name: name
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: description
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: price
+ *         required: true
+ *         schema:
+ *           type: number
+ *       - in: query
+ *         name: quantity
+ *         required: true
+ *         schema:
+ *           type: number
+ *       - in: query
+ *         name: category
+ *         required: true
+ *         schema:
+ *           type: string
+ *        - in: query
+ *         name: category
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: imageUrl
+ *         required: true
+ *         schema:
+ *           type: string
  *     responses:
  *       200:
  *         description: Sản phẩm được cập nhật thành công
@@ -136,26 +156,5 @@ router.post("/", productController.createProduct);
  *         description: Không tìm thấy sản phẩm
  */
 router.put("/:id", productController.updateProduct);
-
-/**
- * @swagger
- * /api/products/{id}:
- *   delete:
- *     summary: Xóa sản phẩm theo ID
- *     tags: [Products]
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *         description: ID của sản phẩm cần xóa
- *     responses:
- *       200:
- *         description: Sản phẩm được xóa thành công
- *       404:
- *         description: Không tìm thấy sản phẩm
- */
-router.delete("/:id", productController.deleteProduct);
 
 module.exports = router;
