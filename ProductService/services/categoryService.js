@@ -14,9 +14,7 @@ const categoryService = {
   },
 
   updateCategory: async (id, updateData) => {
-    return await Category.findOneAndUpdate({ categoryID: id }, updateData, {
-      new: true,
-    });
+    return await Category.findOneAndUpdate({ categoryID: id }, updateData, { new: true });
   },
 
   deleteCategory: async (id) => {
