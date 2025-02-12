@@ -15,6 +15,45 @@ const productController = require("../controllers/productController");
  *   get:
  *     summary: Lấy danh sách tất cả sản phẩm
  *     tags: [Products]
+ *     parameters:
+ *       - in: query
+ *         name: category
+ *         schema:
+ *           type: string
+ *         required: false
+ *         description: Lọc sản phẩm theo danh mục
+ *       - in: query
+ *         name: minPrice
+ *         schema:
+ *           type: number
+ *         required: false
+ *         description: Giá tối thiểu
+ *       - in: query
+ *         name: maxPrice
+ *         schema:
+ *           type: number
+ *         required: false
+ *         description: Giá tối đa
+ *       - in: query
+ *         name: minQuantity
+ *         schema:
+ *           type: number
+ *         required: false
+ *         description: Số lượng tối thiểu
+ *       - in: query
+ *         name: sortBy
+ *         schema:
+ *           type: string
+ *           enum: [price, quantity, name]
+ *         required: false
+ *         description: Sắp xếp theo giá, số lượng, hoặc tên
+ *       - in: query
+ *         name: order
+ *         schema:
+ *           type: string
+ *           enum: [asc, desc]
+ *         required: false
+ *         description: Thứ tự sắp xếp (tăng dần hoặc giảm dần)
  *     responses:
  *       200:
  *         description: Thành công
@@ -48,52 +87,78 @@ router.get("/", productController.getAllProducts);
  *   post:
  *     summary: Tạo sản phẩm mới
  *     tags: [Products]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - name
- *               - description
- *               - price
- *               - quantity
- *               - import
- *               - category
- *               - origin
- *               - imageUrl
- *               - unit
- *               - status
- *             properties:
- *               name:
- *                 type: string
- *               description:
- *                 type: string
- *               price:
- *                 type: number
- *               sold:
- *                 type: number
- *                 default: 0
- *               quantity:
- *                 type: number
- *               import:
- *                 type: number
- *               category:
- *                 type: string
- *               origin:
- *                 type: string
- *               imageUrl:
- *                 type: array
- *                 items:
- *                   type: string
- *               unit:
- *                 type: string
- *                 enum: [piece, kg, gram, liter, ml]
- *               status:
- *                 type: string
- *                 enum: [available, unavailable, out_of_stock]
- *                 default: available
+ *     parameters:
+ *       - in: query
+ *         name: name
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Tên sản phẩm
+ *       - in: query
+ *         name: description
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Mô tả sản phẩm
+ *       - in: query
+ *         name: price
+ *         schema:
+ *           type: number
+ *         required: true
+ *         description: Giá sản phẩm
+ *       - in: query
+ *         name: sold
+ *         schema:
+ *           type: number
+ *           default: 0
+ *         description: Số lượng đã bán
+ *       - in: query
+ *         name: quantity
+ *         schema:
+ *           type: number
+ *         required: true
+ *         description: Số lượng tồn kho
+ *       - in: query
+ *         name: import
+ *         schema:
+ *           type: number
+ *         required: true
+ *         description: Số lượng nhập vào
+ *       - in: query
+ *         name: category
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Danh mục sản phẩm
+ *       - in: query
+ *         name: origin
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Xuất xứ sản phẩm
+ *       - in: query
+ *         name: imageUrl
+ *         schema:
+ *           type: array
+ *           items:
+ *             type: string
+ *         required: true
+ *         description: Danh sách URL hình ảnh sản phẩm
+ *       - in: query
+ *         name: unit
+ *         schema:
+ *           type: string
+ *           enum: [piece, kg, gram, liter, ml]
+ *         required: true
+ *         description: Đơn vị đo lường
+ *       - in: query
+ *         name: status
+ *         schema:
+ *           type: string
+ *           enum: [available, unavailable, out_of_stock]
+ *           default: available
+ *         required: true
+ *         description: Trạng thái sản phẩm
  *     responses:
  *       201:
  *         description: Sản phẩm được tạo thành công
@@ -107,7 +172,8 @@ router.post("/", productController.createProduct);
  * /api/products/{id}:
  *   put:
  *     summary: Cập nhật thông tin sản phẩm theo ID
- *     tags: [Products]
+ *     tags:
+ *       - Products
  *     parameters:
  *       - in: path
  *         name: id
@@ -116,37 +182,32 @@ router.post("/", productController.createProduct);
  *           type: string
  *       - in: query
  *         name: name
- *         required: true
+ *         required: false
  *         schema:
  *           type: string
  *       - in: query
  *         name: description
- *         required: true
+ *         required: false
  *         schema:
  *           type: string
  *       - in: query
  *         name: price
- *         required: true
+ *         required: false
  *         schema:
  *           type: number
  *       - in: query
  *         name: quantity
- *         required: true
+ *         required: false
  *         schema:
  *           type: number
  *       - in: query
  *         name: category
- *         required: true
- *         schema:
- *           type: string
- *        - in: query
- *         name: category
- *         required: true
+ *         required: false
  *         schema:
  *           type: string
  *       - in: query
  *         name: imageUrl
- *         required: true
+ *         required: false
  *         schema:
  *           type: string
  *     responses:
