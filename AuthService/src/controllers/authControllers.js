@@ -8,7 +8,7 @@ const authControllers = {
       if (!email) {
         return res.status(400).json({ message: "Email là bắt buộc." });
       }
-      
+
       const response = await authService.sendOtp(email);
       res.status(200).json(response);
     } catch (err) {
@@ -19,11 +19,23 @@ const authControllers = {
   // Kiểm tra OTP và tạo tài khoản người dùng
   verifyOtpAndCreateUser: async (req, res) => {
     try {
-      const { email, otp, phone, username, password, dateOfBirth, avatar, address, role, accountStatus } = req.query;
+      const {
+        email,
+        otp,
+        phone,
+        username,
+        password,
+        dateOfBirth,
+        avatar,
+        address,
+        role,
+        accountStatus,
+      } = req.query;
 
       if (!email || !otp || !phone || !username || !password || !dateOfBirth) {
         return res.status(400).json({
-          message: "Vui lòng nhập đầy đủ các trường: email, otp, phone, username, password và dateOfBirth."
+          message:
+            "Vui lòng nhập đầy đủ các trường: email, otp, phone, username, password và dateOfBirth.",
         });
       }
 
@@ -37,7 +49,7 @@ const authControllers = {
         avatar,
         address,
         role,
-        accountStatus
+        accountStatus,
       });
       res.status(200).json(response);
     } catch (err) {
@@ -77,11 +89,15 @@ const authControllers = {
       const { email, otp, password } = req.query;
       if (!email || !otp || !password) {
         return res.status(400).json({
-          message: "Vui lòng nhập đầy đủ các trường: email, otp và password."
+          message: "Vui lòng nhập đầy đủ các trường: email, otp và password.",
         });
       }
 
-      const response = await authService.verifyOtpAndUpdatePassword(email, otp, password);
+      const response = await authService.verifyOtpAndUpdatePassword(
+        email,
+        otp,
+        password
+      );
       res.status(200).json(response);
     } catch (err) {
       res.status(400).json({ message: err.message });
@@ -94,11 +110,16 @@ const authControllers = {
       const { email, oldPassword, newPassword } = req.query;
       if (!email || !oldPassword || !newPassword) {
         return res.status(400).json({
-          message: "Vui lòng nhập đầy đủ các trường: email, oldPassword và newPassword."
+          message:
+            "Vui lòng nhập đầy đủ các trường: email, oldPassword và newPassword.",
         });
       }
 
-      const response = await authService.changePassword(email, oldPassword, newPassword);
+      const response = await authService.changePassword(
+        email,
+        oldPassword,
+        newPassword
+      );
       res.status(200).json(response);
     } catch (err) {
       res.status(400).json({ message: err.message });

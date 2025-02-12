@@ -15,45 +15,6 @@ const productController = require("../controllers/productController");
  *   get:
  *     summary: Lấy danh sách tất cả sản phẩm
  *     tags: [Products]
- *     parameters:
- *       - in: query
- *         name: category
- *         schema:
- *           type: string
- *         required: false
- *         description: Lọc sản phẩm theo danh mục
- *       - in: query
- *         name: minPrice
- *         schema:
- *           type: number
- *         required: false
- *         description: Giá tối thiểu
- *       - in: query
- *         name: maxPrice
- *         schema:
- *           type: number
- *         required: false
- *         description: Giá tối đa
- *       - in: query
- *         name: minQuantity
- *         schema:
- *           type: number
- *         required: false
- *         description: Số lượng tối thiểu
- *       - in: query
- *         name: sortBy
- *         schema:
- *           type: string
- *           enum: [price, quantity, name]
- *         required: false
- *         description: Sắp xếp theo giá, số lượng, hoặc tên
- *       - in: query
- *         name: order
- *         schema:
- *           type: string
- *           enum: [asc, desc]
- *         required: false
- *         description: Thứ tự sắp xếp (tăng dần hoặc giảm dần)
  *     responses:
  *       200:
  *         description: Thành công
