@@ -5,16 +5,6 @@ const userService = {
     return await User.find().populate("address");
   },
 
-  deleteUser: async (id) => {
-    const user = await User.findById(id);
-    if (user) {
-      await user.remove();
-      return "User deleted";
-    } else {
-      throw new Error("User not found");
-    }
-  },
-
   getUserInfo: async (id) => {
     const user = await User.findById(id).populate("address");
     if (user) {
@@ -22,6 +12,18 @@ const userService = {
     } else {
       throw new Error("User not found");
     }
+  },
+
+  // update profile
+  updateProfile: async (id, userData) => {
+    const user = await User.findByIdAndUpdate(id, userData, {
+      new: true,
+    }).populate("address");
+    if (user) {
+      return user;
+    }
+
+    throw new Error("User not found");
   },
 };
 

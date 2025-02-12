@@ -91,12 +91,12 @@ const authService = {
       accountStatus: accountStatus || "Active",
     });
 
-    await user.save();  
+    await user.save();
 
     if (address) {
       const newAddress = new Address({ userID: user._id, ...address });
       await newAddress.save();
-    
+
       user.address = newAddress._id;
       await user.save();
     }

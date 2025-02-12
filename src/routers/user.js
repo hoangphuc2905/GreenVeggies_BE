@@ -37,28 +37,6 @@ router.get("/", userControllers.getAllUsers);
 /**
  * @swagger
  * /api/user/{id}:
- *   delete:
- *     summary: Xóa người dùng theo ID
- *     tags:
- *       - User
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *         description: ID của người dùng cần xóa
- *     responses:
- *       200:
- *         description: Người dùng đã được xóa thành công
- *       404:
- *         description: Không tìm thấy người dùng
- */
-// router.delete("/:id", middlewareControllers.verifyTokenAndAdminAuth, userControllers.deleteUser);
-
-/**
- * @swagger
- * /api/user/{id}:
  *   get:
  *     summary: Lấy thông tin tài khoản người dùng
  *     tags:
@@ -77,5 +55,57 @@ router.get("/", userControllers.getAllUsers);
  *         description: Không được phép
  */
 router.get("/:id", userControllers.getUserInfo);
+
+/**
+ * @swagger
+ * /api/user/{id}:
+ *   put:
+ *     summary: Cập nhật thông tin người dùng
+ *     tags:
+ *       - User
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID của người dùng cần cập nhật
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 description: Tên người dùng
+ *               email:
+ *                 type: string
+ *                 description: Email người dùng
+ *               phone:
+ *                 type: string
+ *                 description: Số điện thoại người dùng
+ *               dateOfBirth:
+ *                 type: string
+ *                 format: date
+ *                 description: Ngày sinh của người dùng
+ *               avatar:
+ *                 type: string
+ *                 description: URL ảnh đại diện người dùng
+ *               address:
+ *                 type: string
+ *                 description: Địa chỉ của người dùng
+ *     responses:
+ *       200:
+ *         description: Cập nhật thành công
+ *       400:
+ *         description: Yêu cầu không hợp lệ
+ *       401:
+ *         description: Không được phép
+ *       404:
+ *         description: Không tìm thấy người dùng
+ */
+router.put("/:id", userControllers.updateProfile);
 
 module.exports = router;
