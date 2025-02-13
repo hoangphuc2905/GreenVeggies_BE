@@ -1,0 +1,56 @@
+version: '3.8'
+services:
+  api-gateway:
+    build: ./APIGateway
+    ports:
+      - "8000:8000"
+    environment:
+      - PORT=8000
+      - AUTH_SERVICE_URL=http://auth-service:5001
+      - USER_SERVICE_URL=http://user-service:5002
+      - PRODUCT_SERVICE_URL=http://product-service:5003
+      - ADDRESS_SERVICE_URL=http://address-service:5004
+      # - ORDER_SERVICE_URL=http://order-service:5005
+      # - PAYMENT_SERVICE_URL=http://payment-service:5006
+      # - REVIEW_SERVICE_URL=http://review-service:5007
+    depends_on:
+      - auth-service
+      - user-service
+      - product-service
+      - address-service
+
+  auth-service:
+    build: ./AuthService
+    ports:
+      - "5001:5001"
+    environment:
+      - PORT=5001
+      - MONGODB_URL=mongodb+srv://mongobasic:hellohm11@cluster0.dbvpcq4.mongodb.net/greenveggies?retryWrites=true&w=majority&appName=Cluster0
+      - MYSECRET=mysecret
+      - MYREFRESHSECRET=my
+      - EMAIL_USER=smileshopptit@gmail.com
+      - EMAIL_PASS=swav fuid psup bcpt
+
+  user-service:
+    build: ./UserService
+    ports:
+      - "5002:5002"
+    environment:
+      - PORT=5002
+      - MONGODB_URL=mongodb+srv://mongobasic:hellohm11@cluster0.dbvpcq4.mongodb.net/greenveggies?retryWrites=true&w=majority&appName=Cluster0
+
+  product-service:
+    build: ./ProductService
+    ports:
+      - "5003:5003"
+    environment:
+      - PORT=5003
+      - MONGODB_URL=mongodb+srv://mongobasic:hellohm11@cluster0.dbvpcq4.mongodb.net/greenveggies?retryWrites=true&w=majority&appName=Cluster0
+
+  address-service:
+    build: ./AddressService
+    ports:
+      - "5004:5004"
+    environment:
+      - PORT=5004
+      - MONGODB_URL=mongodb+srv://mongobasic:hellohm11@cluster0.dbvpcq4.mongodb.net/greenveggies?retryWrites=true&w=majority&appName=Cluster0

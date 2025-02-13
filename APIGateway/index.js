@@ -1,13 +1,66 @@
 const express = require("express");
-const proxy = require("http-proxy-middleware");
+const cors = require("cors");
+const dotenv = require("dotenv");
+const { createProxyMiddleware } = require("http-proxy-middleware");
+
+// Load biến môi trường
+dotenv.config();
 
 const app = express();
+app.use(cors());
+app.use(express.json());
 
-app.use("/api/auth", proxy({ target: "http://localhost:5001", changeOrigin: true }));
-app.use("/api/users", proxy({ target: "http://localhost:5002", changeOrigin: true }));
-app.use("/api/products", proxy({ target: "http://localhost:5003", changeOrigin: true }));
-// app.use("/api/orders", proxy({ target: "http://localhost:5004", changeOrigin: true }));
-// app.use("/api/payments", proxy({ target: "http://localhost:5005", changeOrigin: true }));
-// app.use("/api/reviews", proxy({ target: "http://localhost:5006", changeOrigin: true }));
+// Proxy đến Auth Service
+app.use("/api/auth", createProxyMiddleware({
+  target: process.env.AUTH_SERVICE_URL,
+  changeOrigin: true,
+  pathRewrite: { '^/api/auth': '' } 
+}));
 
-app.listen(5000, () => console.log("API Gateway running on port 5000"));
+// Proxy đến User Service
+app.use("/api/users", createProxyMiddleware({
+  target: process.env.USER_SERVICE_URL,
+  changeOrigin: true,
+  pathRewrite: { '^/api/users': '' }
+}));
+
+// Proxy đến Product Service
+app.use("/api/products", createProxyMiddleware({
+  target: process.env.PRODUCT_SERVICE_URL,
+  changeOrigin: true,
+  pathRewrite: { '^/api/products': '' }
+}));
+
+// Proxy đến Address Service
+app.use("/api/address", createProxyMiddleware({
+  target: process.env.ADDRESS_SERVICE_URL,
+  changeOrigin: true,
+  pathRewrite: { '^/api/address': '' }
+}));
+
+// // Proxy đến Order Service
+// app.use("/api/orders", createProxyMiddleware({
+//   target: process.env.ORDER_SERVICE_URL,
+//   changeOrigin: true,
+//   pathRewrite: { '^/api/orders': '' }
+// }));
+
+// // Proxy đến Payment Service
+// app.use("/api/payments", createProxyMiddleware({
+//   target: process.env.PAYMENT_SERVICE_URL,
+//   changeOrigin: true,
+//   pathRewrite: { '^/api/payments': '' }
+// }));
+
+// // Proxy đến Review Service
+// app.use("/api/reviews", createProxyMiddleware({
+//   target: process.env.REVIEW_SERVICE_URL,
+//   changeOrigin: true,
+//   pathRewrite: { '^/api/reviews': '' }
+// }));
+
+// Khởi chạy server
+const PORT = process.env.PORT || 8000;
+app.listen(PORT, () => {
+  console.log(`API Gateway is running on port ${PORT}`);
+});

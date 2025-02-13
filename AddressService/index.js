@@ -32,10 +32,10 @@ app.use(express.json());
 swaggerSetup(app);
 
 //Routes
-app.use("/api/user", require("./src/routers/user"));
+app.use("/api/address", require("./src/routers/address"));
 
 app.listen(process.env.PORT, () => {
-  console.log("UserService is running on port 8002");
+  console.log("AddressService is running on port 8004");
   console.log("Swagger is running on:");
-  console.log("http://localhost:8001/greenveggies-api-docs");
+  console.log("http://localhost:8004/greenveggies-api-docs");
 });

@@ -36,7 +36,7 @@ app.use("/api/products", require("./src/routers/product"));
 app.use("/api/categories", require("./src/routers/category"));
 
 app.listen(process.env.PORT, () => {
-  console.log("ProductService is running on port 8002");
+  console.log("ProductService is running on port 8003");
   console.log("Swagger is running on:");
-  console.log("http://localhost:8002/greenveggies-api-docs");
+  console.log("http://localhost:8003/greenveggies-api-docs");
 });
