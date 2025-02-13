@@ -131,6 +131,46 @@ router.post("/", productController.createProduct);
 /**
  * @swagger
  * /api/products/{id}:
+ *   get:
+ *     summary: Tìm kiếm sản phẩm theo ID
+ *     tags: [Products]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID của sản phẩm cần tìm kiếm
+ *     responses:
+ *       200:
+ *         description: Tìm kiếm thành công
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 _id:
+ *                   type: string
+ *                 name:
+ *                   type: string
+ *                 description:
+ *                   type: string
+ *                 price:
+ *                   type: number
+ *                 quantity:
+ *                   type: number
+ *                 category:
+ *                   type: string
+ *                 imageUrl:
+ *                   type: string
+ *       404:
+ *         description: Không tìm thấy sản phẩm
+ */
+router.get("/:id", productController.getProductById);
+
+/**
+ * @swagger
+ * /api/products/{id}:
  *   put:
  *     summary: Cập nhật thông tin sản phẩm theo ID
  *     tags:
