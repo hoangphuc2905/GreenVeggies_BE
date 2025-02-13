@@ -2,7 +2,7 @@ const User = require("../models/User");
 const Address = require("../models/Address");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const admin = require("../configs/firebaseConfig");
+const admin = require("../configs/firebase");
 const crypto = require("crypto");
 const nodemailer = require("nodemailer");
 

@@ -1,4 +1,4 @@
-const authService = require("../controllers/authControllers");
+const authService = require("../services/authService");
 
 const authControllers = {
   // Gửi OTP khi người dùng nhập email
