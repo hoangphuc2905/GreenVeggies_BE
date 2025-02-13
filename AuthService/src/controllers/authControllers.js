@@ -1,6 +1,9 @@
 const authService = require("../services/authService");
 
 const verifiedEmails = new Set();
+const otpStore = {};
+const verifiedPasswordResetEmails = new Set();
+
 
 const authControllers = {
   // Gửi OTP khi người dùng nhập email
@@ -114,21 +117,21 @@ const authControllers = {
     }
   },
 
-  // Quên mật khẩu: Đổi mật khẩu
-  verifyOtpAndUpdatePassword: async (req, res) => {
+  verifyOtpForPasswordReset: async (req, res) => {
     try {
-      const { email, otp, password } = req.query;
-      if (!email || !otp || !password) {
-        return res.status(400).json({
-          message: "Vui lòng nhập đầy đủ các trường: email, otp và password.",
-        });
-      }
+      const { email, otp } = req.query;
+      const response = await authService.verifyOtpForPasswordReset(email, otp);
+      res.status(200).json(response);
+    } catch (err) {
+      res.status(400).json({ message: err.message });
+    }
+  },
 
-      const response = await authService.verifyOtpAndUpdatePassword(
-        email,
-        otp,
-        password
-      );
+  // Cập nhật mật khẩu mới
+  updatePassword: async (req, res) => {
+    try {
+      const { email, newPassword } = req.query;
+      const response = await authService.updatePassword(email, newPassword);
       res.status(200).json(response);
     } catch (err) {
       res.status(400).json({ message: err.message });

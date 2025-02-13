@@ -7,7 +7,8 @@ const crypto = require("crypto");
 const nodemailer = require("nodemailer");
 
 const otpStore = {};
-const verifiedEmails = new Set(); 
+const verifiedEmails = new Set();
+const verifiedPasswordResetEmails = new Set();
 
 const transporter = nodemailer.createTransport({
   service: "gmail",
@@ -50,7 +51,11 @@ const authService = {
 
   verifyOtp: async (email, otp) => {
     const storedOtp = otpStore[email];
-    if (!storedOtp || storedOtp.otp !== otp || storedOtp.expiresAt < Date.now()) {
+    if (
+      !storedOtp ||
+      storedOtp.otp !== otp ||
+      storedOtp.expiresAt < Date.now()
+    ) {
       throw new Error("Mã OTP không hợp lệ hoặc đã hết hạn.");
     }
 
@@ -62,13 +67,25 @@ const authService = {
 
   // Đăng ký tài khoản
   createUser: async (userData) => {
-    const { email, phone, username, password, dateOfBirth, avatar, address, role, accountStatus } = userData;
+    const {
+      email,
+      phone,
+      username,
+      password,
+      dateOfBirth,
+      avatar,
+      address,
+      role,
+      accountStatus,
+    } = userData;
 
     if (!verifiedEmails.has(email)) {
       throw new Error("Email chưa được xác thực OTP.");
     }
 
-    const existingUser = await User.findOne({ $or: [{ email }, { phone }, { username }] });
+    const existingUser = await User.findOne({
+      $or: [{ email }, { phone }, { username }],
+    });
     if (existingUser) {
       throw new Error("User đã tồn tại.");
     }
@@ -97,7 +114,7 @@ const authService = {
       await user.save();
     }
 
-    verifiedEmails.delete(email); // Xóa email khỏi danh sách đã xác thực
+    verifiedEmails.delete(email);
     return { message: "Tài khoản đã được tạo thành công!", user };
   },
 
@@ -152,8 +169,7 @@ const authService = {
     return { message: "Vui lòng kiểm tra email để nhận mã xác thực OTP." };
   },
 
-  // Quên mật khẩu: Xác thực OTP và cập nhật mật khẩu mới
-  verifyOtpAndUpdatePassword: async (email, otp, newPassword) => {
+  verifyOtpForPasswordReset: async (email, otp) => {
     const storedOtp = otpStore[email];
     if (
       !storedOtp ||
@@ -163,9 +179,22 @@ const authService = {
       throw new Error("Mã OTP không hợp lệ hoặc đã hết hạn.");
     }
 
+    verifiedEmails.add(email);
+    delete otpStore[email];
+
+    return { message: "Xác thực OTP thành công - tiếp tục đổi mật khẩu!" };
+  },
+
+  // Cập nhật mật khẩu mới sau khi OTP đã được xác thực
+  updatePassword: async (email, newPassword) => {
+    if (!verifiedPasswordResetEmails.has(email)) {
+      throw new Error("Email chưa được xác thực OTP.");
+    }
+
     const hashedPassword = await bcrypt.hash(newPassword, 10);
     await User.findOneAndUpdate({ email }, { password: hashedPassword });
-    delete otpStore[email];
+
+    verifiedPasswordResetEmails.delete(email); // Xóa email khỏi danh sách đã xác thực
     return { message: "Mật khẩu đã được cập nhật thành công!" };
   },
 

@@ -169,12 +169,11 @@ router.post("/login", authControllers.login);
  */
 router.post("/forgot-password", authControllers.forgotPassword);
 
-// quên mật khẩu: xác thực OTP và cập nhật mật khẩu mới
 /**
  * @swagger
- * /api/auth/reset-password:
+ * /api/auth/verify-otp-reset:
  *   post:
- *     summary: Xác thực OTP và cập nhật mật khẩu mới
+ *     summary: Xác thực OTP trước khi đổi mật khẩu
  *     tags:
  *       - Auth
  *     parameters:
@@ -190,19 +189,41 @@ router.post("/forgot-password", authControllers.forgotPassword);
  *         schema:
  *           type: string
  *         description: Mã OTP đã nhận
+ *     responses:
+ *       200:
+ *         description: OTP hợp lệ, tiếp tục đổi mật khẩu
+ *       400:
+ *         description: OTP không hợp lệ hoặc đã hết hạn
+ */
+router.post("/verify-otp-reset", authControllers.verifyOtpForPasswordReset);
+
+/**
+ * @swagger
+ * /api/auth/update-password:
+ *   post:
+ *     summary: Cập nhật mật khẩu mới sau khi xác thực OTP
+ *     tags:
+ *       - Auth
+ *     parameters:
  *       - in: query
- *         name: password
+ *         name: email
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Email của người dùng
+ *       - in: query
+ *         name: newPassword
  *         required: true
  *         schema:
  *           type: string
  *         description: Mật khẩu mới
  *     responses:
  *       200:
- *         description: Mật khẩu đã được cập nhật
+ *         description: Mật khẩu đã được cập nhật thành công
  *       400:
- *         description: Yêu cầu không hợp lệ
+ *         description: Email chưa xác thực OTP hoặc lỗi khác
  */
-router.post("/reset-password", authControllers.verifyOtpAndUpdatePassword);
+router.post("/update-password", authControllers.updatePassword);
 
 // đổi mật khẩu
 /**
