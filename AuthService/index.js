@@ -1,28 +1,41 @@
 const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
-const connectDB = require("./config/db");
-const admin = require("./config/firebase");
-const swaggerSetup = require("./swagger");
+const mongoose = require("mongoose");
+const admin = require("firebase-admin");
+const credentials = require("../firebaseConfig.json");
+
+admin.initializeApp({
+  credential: admin.credential.cert(credentials),
+});
 
 dotenv.config();
-
 const app = express();
+const swaggerSetup = require("./swagger");
+
+async function connectDB() {
+  try {
+    await mongoose.connect(process.env.MONGODB_URL);
+    console.log("Connected to MongoDB");
+  } catch (err) {
+    console.error("Failed to connect to MongoDB", err);
+    process.exit(1);
+  }
+}
+
 connectDB();
 
 app.use(cors());
 app.use(express.json());
 
-// Swagger
+//Swagger
 swaggerSetup(app);
 
-// Routes
-app.use("/api/auth", require("./routers/auth"));
+//Routes
+app.use("/api/auth", require("./src/routes/auth"));
 
-const PORT = process.env.PORT || 8000;
-app.listen(PORT, () => {
-  console.log(`AuthService is running on port ${PORT}`);
-  console.log(
-    `Swagger API Docs: http://localhost:${PORT}/greenveggies-api-docs`
-  );
+app.listen(8009, () => {
+  console.log("Server is running on port 8009");
+  console.log("Swagger is running on:");
+  console.log("http://localhost:8009/greenveggies-api-docs");
 });

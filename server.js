@@ -39,8 +39,6 @@ app.use("/api/address", require("./src/routers/address"));
 app.use("/api/categories", require("./src/routers/category"));
 
 
-
-
 app.listen(8000, () => {
   console.log("Server is running on port 8000");
   console.log("Swagger is running on:");
