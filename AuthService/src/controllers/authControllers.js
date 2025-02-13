@@ -1,5 +1,7 @@
 const authService = require("../services/authService");
 
+const verifiedEmails = new Set();
+
 const authControllers = {
   // Gửi OTP khi người dùng nhập email
   sendOtp: async (req, res) => {
@@ -17,11 +19,30 @@ const authControllers = {
   },
 
   // Kiểm tra OTP và tạo tài khoản người dùng
-  verifyOtpAndCreateUser: async (req, res) => {
+  verifyOtp: async (req, res) => {
+    try {
+      const { email, otp } = req.query;
+      if (!email || !otp) {
+        return res.status(400).json({
+          message: "Vui lòng nhập đầy đủ email và OTP.",
+        });
+      }
+
+      const response = await authService.verifyOtp(email, otp);
+      if (response.success) {
+        verifiedEmails.add(email); 
+      }
+      res.status(200).json(response);
+    } catch (err) {
+      res.status(400).json({ message: err.message });
+    }
+  },
+
+  // **Bước 2: Đăng ký tài khoản**
+  registerUser: async (req, res) => {
     try {
       const {
         email,
-        otp,
         phone,
         username,
         password,
@@ -30,18 +51,24 @@ const authControllers = {
         address,
         role,
         accountStatus,
-      } = req.query;
+      } = req.body;
 
-      if (!email || !otp || !phone || !username || !password || !dateOfBirth) {
+      if (!email || !phone || !username || !password || !dateOfBirth) {
         return res.status(400).json({
           message:
-            "Vui lòng nhập đầy đủ các trường: email, otp, phone, username, password và dateOfBirth.",
+            "Vui lòng nhập đầy đủ các trường: email, phone, username, password, dateOfBirth.",
         });
       }
 
-      const response = await authService.verifyOtpAndCreateUser({
+      // Kiểm tra xem email đã được xác thực OTP chưa
+      if (!verifiedEmails.has(email)) {
+        return res
+          .status(400)
+          .json({ message: "Email chưa được xác thực OTP." });
+      }
+
+      const response = await authService.registerUser({
         email,
-        otp,
         phone,
         username,
         password,
@@ -51,7 +78,11 @@ const authControllers = {
         role,
         accountStatus,
       });
-      res.status(200).json(response);
+
+      // Xóa email khỏi danh sách đã xác thực (để tránh đăng ký lại)
+      verifiedEmails.delete(email);
+
+      res.status(201).json(response);
     } catch (err) {
       res.status(400).json({ message: err.message });
     }

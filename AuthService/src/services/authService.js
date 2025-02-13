@@ -7,6 +7,7 @@ const crypto = require("crypto");
 const nodemailer = require("nodemailer");
 
 const otpStore = {};
+const verifiedEmails = new Set(); 
 
 const transporter = nodemailer.createTransport({
   service: "gmail",
@@ -47,32 +48,27 @@ const authService = {
     }
   },
 
-  verifyOtpAndCreateUser: async (userData) => {
-    const {
-      email,
-      otp,
-      phone,
-      username,
-      password,
-      dateOfBirth,
-      avatar,
-      address,
-      role,
-      accountStatus,
-    } = userData;
-
+  verifyOtp: async (email, otp) => {
     const storedOtp = otpStore[email];
-    if (
-      !storedOtp ||
-      storedOtp.otp !== otp ||
-      storedOtp.expiresAt < Date.now()
-    ) {
+    if (!storedOtp || storedOtp.otp !== otp || storedOtp.expiresAt < Date.now()) {
       throw new Error("Mã OTP không hợp lệ hoặc đã hết hạn.");
     }
 
-    const existingUser = await User.findOne({
-      $or: [{ email }, { phone }, { username }],
-    });
+    verifiedEmails.add(email);
+    delete otpStore[email]; // Xóa OTP sau khi xác thực thành công
+
+    return { message: "Xác thực OTP thành công!" };
+  },
+
+  // Đăng ký tài khoản
+  createUser: async (userData) => {
+    const { email, phone, username, password, dateOfBirth, avatar, address, role, accountStatus } = userData;
+
+    if (!verifiedEmails.has(email)) {
+      throw new Error("Email chưa được xác thực OTP.");
+    }
+
+    const existingUser = await User.findOne({ $or: [{ email }, { phone }, { username }] });
     if (existingUser) {
       throw new Error("User đã tồn tại.");
     }
@@ -101,8 +97,8 @@ const authService = {
       await user.save();
     }
 
-    delete otpStore[email];
-    return { message: "Tài khoản đã được xác thực và lưu thành công!", user };
+    verifiedEmails.delete(email); // Xóa email khỏi danh sách đã xác thực
+    return { message: "Tài khoản đã được tạo thành công!", user };
   },
 
   login: async (email, password) => {

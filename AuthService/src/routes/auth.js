@@ -35,7 +35,7 @@ router.post("/send-otp", authControllers.sendOtp);
  * @swagger
  * /api/auth/verify-otp:
  *   post:
- *     summary: Xác thực OTP và tạo người dùng
+ *     summary: Xác thực OTP
  *     tags:
  *       - Auth
  *     parameters:
@@ -51,6 +51,28 @@ router.post("/send-otp", authControllers.sendOtp);
  *         schema:
  *           type: string
  *         description: Mã OTP đã nhận
+ *     responses:
+ *       200:
+ *         description: OTP hợp lệ
+ *       400:
+ *         description: OTP không hợp lệ hoặc đã hết hạn
+ */
+router.post("/verify-otp", authControllers.verifyOtp);
+
+/**
+ * @swagger
+ * /api/auth/register:
+ *   post:
+ *     summary: Đăng ký tài khoản người dùng
+ *     tags:
+ *       - Auth
+ *     parameters:
+ *       - in: query
+ *         name: email
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Email của người dùng (phải xác thực OTP trước)
  *       - in: query
  *         name: username
  *         required: true
@@ -92,9 +114,9 @@ router.post("/send-otp", authControllers.sendOtp);
  *       201:
  *         description: Người dùng được tạo thành công
  *       400:
- *         description: Yêu cầu không hợp lệ
+ *         description: Yêu cầu không hợp lệ hoặc email chưa xác thực OTP
  */
-router.post("/verify-otp", authControllers.verifyOtpAndCreateUser);
+router.post("/register", authControllers.registerUser);
 
 /**
  * @swagger
