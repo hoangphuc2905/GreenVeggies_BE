@@ -1,10 +1,11 @@
+const Review = require("../models/Review");
 const Product = require("../models/Product");
 
 const productService = {
   getLastProduct: async () => {
     return await Product.findOne().sort({ createdAt: -1 });
   },
-  
+
   createProduct: async (productData) => {
     return await Product.create(productData);
   },

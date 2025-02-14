@@ -12,7 +12,10 @@ const productController = {
 
   getProductById: async (req, res) => {
     try {
-      const product = await productService.getProductById(req.params.id);
+      const product = await productService
+        .getProductById(req.params.id)
+        .populate("category")
+        .populate("review");
       if (!product) {
         return res.status(404).json({ message: "Product not found" });
       }
@@ -65,9 +68,6 @@ const productController = {
       res.status(400).json({ message: err.message });
     }
   },
-
 };
-
- 
 
 module.exports = productController;
