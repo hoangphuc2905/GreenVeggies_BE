@@ -37,6 +37,7 @@ app.use("/api/products", require("./src/routers/product"));
 app.use("/api/auth", require("./src/routers/auth"));
 app.use("/api/address", require("./src/routers/address"));
 app.use("/api/categories", require("./src/routers/category"));
+app.use("/api/reviews", require("./src/routers/review"));
 
 
 app.listen(8000, () => {
