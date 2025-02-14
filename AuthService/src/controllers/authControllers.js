@@ -4,7 +4,6 @@ const verifiedEmails = new Set();
 const otpStore = {};
 const verifiedPasswordResetEmails = new Set();
 
-
 const authControllers = {
   // Gửi OTP khi người dùng nhập email
   sendOtp: async (req, res) => {
@@ -33,7 +32,7 @@ const authControllers = {
 
       const response = await authService.verifyOtp(email, otp);
       if (response.success) {
-        verifiedEmails.add(email); 
+        verifiedEmails.add(email);
       }
       res.status(200).json(response);
     } catch (err) {
@@ -94,9 +93,13 @@ const authControllers = {
   // Đăng nhập
   login: async (req, res) => {
     try {
-      const { email, password } = req.query;
+      const { email, password } = req.body;
       const response = await authService.login(email, password);
-      res.status(200).json(response);
+
+      res
+        .status(200)
+        .header("Authorization", `Bearer ${response.token}`)
+        .json(response);
     } catch (err) {
       res.status(400).json({ message: err.message });
     }

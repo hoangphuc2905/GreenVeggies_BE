@@ -123,14 +123,24 @@ const authService = {
     if (!user) {
       throw new Error("User not found");
     }
+
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
       throw new Error("Invalid password");
     }
+
     const token = jwt.sign({ id: user._id }, process.env.MYSECRET, {
       expiresIn: "1h",
     });
-    return { user, token };
+
+    return {
+      user: {
+        id: user._id,
+        email: user.email,
+        name: user.name,
+      },
+      token,
+    };
   },
 
   getLatestOtp: (email) => {

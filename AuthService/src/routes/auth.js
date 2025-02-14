@@ -125,22 +125,35 @@ router.post("/register", authControllers.registerUser);
  *     summary: Đăng nhập người dùng
  *     tags:
  *       - Auth
- *     parameters:
- *       - in: query
- *         name: email
- *         required: true
- *         schema:
- *           type: string
- *         description: Email của người dùng
- *       - in: query
- *         name: password
- *         required: true
- *         schema:
- *           type: string
- *         description: Mật khẩu của người dùng
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: "user@example.com"
+ *                 description: Email của người dùng
+ *               password:
+ *                 type: string
+ *                 example: "password123"
+ *                 description: Mật khẩu của người dùng
  *     responses:
  *       200:
  *         description: Đăng nhập thành công
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 user:
+ *                   type: object
+ *                   description: Thông tin người dùng
+ *                 token:
+ *                   type: string
+ *                   description: JWT token dùng để xác thực
  *       400:
  *         description: Yêu cầu không hợp lệ
  */
