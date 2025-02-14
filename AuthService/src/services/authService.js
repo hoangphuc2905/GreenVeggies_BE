@@ -60,7 +60,8 @@ const authService = {
     }
 
     verifiedEmails.add(email);
-    delete otpStore[email]; // Xóa OTP sau khi xác thực thành công
+    delete otpStore[email];
+    console.log("Danh sách email đã xác thực:", verifiedEmails);
 
     return { message: "Xác thực OTP thành công!" };
   },
@@ -79,6 +80,8 @@ const authService = {
       accountStatus,
     } = userData;
 
+    console.log("Danh sách email đã xác thực khi đăng ký:", verifiedEmails);
+    console.log("Dữ liệu đăng ký:", userData);
     if (!verifiedEmails.has(email)) {
       throw new Error("Email chưa được xác thực OTP.");
     }
@@ -114,7 +117,9 @@ const authService = {
       await user.save();
     }
 
+    // Remove email from verifiedEmails after successful registration
     verifiedEmails.delete(email);
+
     return { message: "Tài khoản đã được tạo thành công!", user };
   },
 
@@ -189,7 +194,7 @@ const authService = {
       throw new Error("Mã OTP không hợp lệ hoặc đã hết hạn.");
     }
 
-    verifiedEmails.add(email);
+    verifiedPasswordResetEmails.add(email);
     delete otpStore[email];
 
     return { message: "Xác thực OTP thành công - tiếp tục đổi mật khẩu!" };

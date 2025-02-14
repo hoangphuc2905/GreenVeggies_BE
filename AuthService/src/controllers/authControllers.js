@@ -31,7 +31,7 @@ const authControllers = {
       }
 
       const response = await authService.verifyOtp(email, otp);
-      if (response.success) {
+      if (response.message === "Xác thực OTP thành công!") {
         verifiedEmails.add(email);
       }
       res.status(200).json(response);
@@ -42,6 +42,8 @@ const authControllers = {
 
   // **Bước 2: Đăng ký tài khoản**
   registerUser: async (req, res) => {
+    console.log("Nhận yêu cầu đăng ký:", req.query);
+
     try {
       const {
         email,
@@ -53,7 +55,7 @@ const authControllers = {
         address,
         role,
         accountStatus,
-      } = req.body;
+      } = req.query;
 
       if (!email || !phone || !username || !password || !dateOfBirth) {
         return res.status(400).json({
@@ -69,7 +71,7 @@ const authControllers = {
           .json({ message: "Email chưa được xác thực OTP." });
       }
 
-      const response = await authService.registerUser({
+      const response = await authService.createUser({
         email,
         phone,
         username,
@@ -124,6 +126,9 @@ const authControllers = {
     try {
       const { email, otp } = req.query;
       const response = await authService.verifyOtpForPasswordReset(email, otp);
+      if (response.message === "Xác thực OTP thành công - tiếp tục đổi mật khẩu!") {
+        verifiedPasswordResetEmails.add(email);
+      }
       res.status(200).json(response);
     } catch (err) {
       res.status(400).json({ message: err.message });
