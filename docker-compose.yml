@@ -1,56 +1,69 @@
-version: '3.8'
+version: "3"
 services:
+  auth-service:
+    build:
+      context: ./AuthService
+    ports:
+      - "8001:8001"
+    environment:
+      - PORT=8001
+      - MONGODB_URL=mongodb://mongo:27017/auth
+      - AUTH_SERVICE_URL=http://localhost:8001
+
+  user-service:
+    build:
+      context: ./UserService
+    ports:
+      - "8002:8002"
+    environment:
+      - PORT=8002
+      - MONGODB_URL=mongodb://mongo:27017/user
+      - USER_SERVICE_URL=http://localhost:8002
+
+  product-service:
+    build:
+      context: ./ProductService
+    ports:
+      - "8003:8003"
+    environment:
+      - PORT=8003
+      - MONGODB_URL=mongodb://mongo:27017/product
+      - PRODUCT_SERVICE_URL=http://localhost:8003
+
+  address-service:
+    build:
+      context: ./AddressService
+    ports:
+      - "8004:8004"
+    environment:
+      - PORT=8004
+      - MONGODB_URL=mongodb://mongo:27017/address
+      - ADDRESS_SERVICE_URL=http://localhost:8004
+
+  review-service:
+    build:
+      context: ./ReviewService
+    ports:
+      - "8008:8008"
+    environment:
+      - PORT=8008
+      - MONGODB_URL=mongodb://mongo:27017/review
+      - REVIEW_SERVICE_URL=http://localhost:8008
+
   api-gateway:
-    build: ./APIGateway
+    build:
+      context: ./APIGateway
     ports:
       - "8000:8000"
     environment:
       - PORT=8000
-      - AUTH_SERVICE_URL=http://auth-service:5001
-      - USER_SERVICE_URL=http://user-service:5002
-      - PRODUCT_SERVICE_URL=http://product-service:5003
-      - ADDRESS_SERVICE_URL=http://address-service:5004
-      # - ORDER_SERVICE_URL=http://order-service:5005
-      # - PAYMENT_SERVICE_URL=http://payment-service:5006
-      # - REVIEW_SERVICE_URL=http://review-service:5007
-    depends_on:
-      - auth-service
-      - user-service
-      - product-service
-      - address-service
+      - AUTH_SERVICE_URL=http://auth-service:8001
+      - USER_SERVICE_URL=http://user-service:8002
+      - PRODUCT_SERVICE_URL=http://product-service:8003
+      - ADDRESS_SERVICE_URL=http://address-service:8004
+      - REVIEW_SERVICE_URL=http://review-service:8008
 
-  auth-service:
-    build: ./AuthService
+  mongo:
+    image: mongo
     ports:
-      - "5001:5001"
-    environment:
-      - PORT=5001
-      - MONGODB_URL=mongodb+srv://mongobasic:hellohm11@cluster0.dbvpcq4.mongodb.net/greenveggies?retryWrites=true&w=majority&appName=Cluster0
-      - MYSECRET=mysecret
-      - MYREFRESHSECRET=my
-      - EMAIL_USER=smileshopptit@gmail.com
-      - EMAIL_PASS=swav fuid psup bcpt
-
-  user-service:
-    build: ./UserService
-    ports:
-      - "5002:5002"
-    environment:
-      - PORT=5002
-      - MONGODB_URL=mongodb+srv://mongobasic:hellohm11@cluster0.dbvpcq4.mongodb.net/greenveggies?retryWrites=true&w=majority&appName=Cluster0
-
-  product-service:
-    build: ./ProductService
-    ports:
-      - "5003:5003"
-    environment:
-      - PORT=5003
-      - MONGODB_URL=mongodb+srv://mongobasic:hellohm11@cluster0.dbvpcq4.mongodb.net/greenveggies?retryWrites=true&w=majority&appName=Cluster0
-
-  address-service:
-    build: ./AddressService
-    ports:
-      - "5004:5004"
-    environment:
-      - PORT=5004
-      - MONGODB_URL=mongodb+srv://mongobasic:hellohm11@cluster0.dbvpcq4.mongodb.net/greenveggies?retryWrites=true&w=majority&appName=Cluster0
+      - "27017:27017"

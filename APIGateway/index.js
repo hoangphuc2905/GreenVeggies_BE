@@ -11,32 +11,44 @@ app.use(cors());
 app.use(express.json());
 
 // Proxy đến Auth Service
-app.use("/api/auth", createProxyMiddleware({
-  target: process.env.AUTH_SERVICE_URL,
-  changeOrigin: true,
-  pathRewrite: { '^/api/auth': '' } 
-}));
+app.use(
+  "/api/auth",
+  createProxyMiddleware({
+    target: process.env.AUTH_SERVICE_URL,
+    changeOrigin: true,
+    pathRewrite: { "^/api/auth": "" },
+  })
+);
 
 // Proxy đến User Service
-app.use("/api/users", createProxyMiddleware({
-  target: process.env.USER_SERVICE_URL,
-  changeOrigin: true,
-  pathRewrite: { '^/api/users': '' }
-}));
+app.use(
+  "/api/users",
+  createProxyMiddleware({
+    target: process.env.USER_SERVICE_URL,
+    changeOrigin: true,
+    pathRewrite: { "^/api/users": "" },
+  })
+);
 
 // Proxy đến Product Service
-app.use("/api/products", createProxyMiddleware({
-  target: process.env.PRODUCT_SERVICE_URL,
-  changeOrigin: true,
-  pathRewrite: { '^/api/products': '' }
-}));
+app.use(
+  "/api/products",
+  createProxyMiddleware({
+    target: process.env.PRODUCT_SERVICE_URL,
+    changeOrigin: true,
+    pathRewrite: { "^/api/products": "" },
+  })
+);
 
 // Proxy đến Address Service
-app.use("/api/address", createProxyMiddleware({
-  target: process.env.ADDRESS_SERVICE_URL,
-  changeOrigin: true,
-  pathRewrite: { '^/api/address': '' }
-}));
+app.use(
+  "/api/address",
+  createProxyMiddleware({
+    target: process.env.ADDRESS_SERVICE_URL,
+    changeOrigin: true,
+    pathRewrite: { "^/api/address": "" },
+  })
+);
 
 // // Proxy đến Order Service
 // app.use("/api/orders", createProxyMiddleware({
@@ -52,15 +64,27 @@ app.use("/api/address", createProxyMiddleware({
 //   pathRewrite: { '^/api/payments': '' }
 // }));
 
-// // Proxy đến Review Service
-// app.use("/api/reviews", createProxyMiddleware({
-//   target: process.env.REVIEW_SERVICE_URL,
-//   changeOrigin: true,
-//   pathRewrite: { '^/api/reviews': '' }
-// }));
+// Proxy đến Review Service
+app.use(
+  "/api/reviews",
+  createProxyMiddleware({
+    target: process.env.REVIEW_SERVICE_URL,
+    changeOrigin: true,
+    pathRewrite: { "^/api/reviews": "" },
+  })
+);
 
-// Khởi chạy server
+// Start the server
 const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => {
   console.log(`API Gateway is running on port ${PORT}`);
+  console.log(`
+  Auth Service: ${process.env.AUTH_SERVICE_URL + "/greenveggies-api-docs"}
+  User Service: ${process.env.USER_SERVICE_URL + "/greenveggies-api-docs"}
+  Product Service: ${process.env.PRODUCT_SERVICE_URL + "/greenveggies-api-docs"}
+  Address Service: ${process.env.ADDRESS_SERVICE_URL + "/greenveggies-api-docs"}
+
+  Review Service: ${process.env.REVIEW_SERVICE_URL + "/greenveggies-api-docs"}
+  Swagger Documentation: http://localhost:${PORT}/greenveggies-api-docs
+  `);
 });

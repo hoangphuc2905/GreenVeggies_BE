@@ -34,8 +34,8 @@ swaggerSetup(app);
 //Routes
 app.use("/api/auth", require("./src/routes/auth"));
 
-app.listen(8009, () => {
-  console.log("Server is running on port 8009");
+app.listen(8001, () => {
+  console.log("Server is running on port 8001");
   console.log("Swagger is running on:");
-  console.log("http://localhost:8009/greenveggies-api-docs");
+  console.log("http://localhost:8001/greenveggies-api-docs");
 });

@@ -16,7 +16,7 @@ const options = {
       },
     ],
   },
-  apis: ["./routers/*.js"], // Update this line to point to the correct directory
+  apis: ["./routers/*.js"], 
 };
 
 const swaggerSpec = swaggerJsDoc(options);
