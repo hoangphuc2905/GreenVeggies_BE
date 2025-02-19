@@ -11,11 +11,11 @@ const productService = {
   },
 
   getAllProducts: async () => {
-    return await Product.find().populate("category").populate("review");
+    return await Product.find().populate("category").populate("reviews");
   },
 
   getProductById: async (id) => {
-    return await Product.findById(id).populate("category").populate("review");
+    return await Product.findById(id).populate("category").populate("reviews");
   },
 
   updateProduct: async (id, productData) => {
