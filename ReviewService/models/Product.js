@@ -59,11 +59,10 @@ const productSchema = new mongoose.Schema(
       default: "available",
       required: [true, "Please specify the product status"],
     },
-    review: [
+    reviews: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Review",
-        required: false,
       },
     ],
   },

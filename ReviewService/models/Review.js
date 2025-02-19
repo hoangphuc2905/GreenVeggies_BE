@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const Product = require("./Product");
 
 const reviewSchema = new mongoose.Schema(
   {
@@ -33,5 +34,18 @@ const reviewSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+reviewSchema.post("save", async function (doc, next) {
+  try {
+    const product = await mongoose.model("Product").findById(doc.productID);
+    if (product) {
+      product.reviews.push(doc._id);
+      await product.save();
+    }
+    next();
+  } catch (error) {
+    next(error);
+  }
+});
 
 module.exports = mongoose.model("Review", reviewSchema);
