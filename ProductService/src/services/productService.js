@@ -19,7 +19,9 @@ const productService = {
   },
 
   updateProduct: async (id, productData) => {
-    return await Product.findByIdAndUpdate(id, productData, { new: true });
+    return await Product.findByIdAndUpdate(id, productData, { new: true })
+      .populate("category")
+      .populate("reviews");
   },
 };
 
