@@ -55,7 +55,7 @@ const authControllers = {
         address,
         role,
         accountStatus,
-      } = req.query;
+      } = req.body;
 
       if (!email || !phone || !username || !password || !dateOfBirth) {
         return res.status(400).json({
