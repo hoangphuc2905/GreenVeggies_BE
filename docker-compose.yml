@@ -40,6 +40,17 @@ services:
       - MONGODB_URL=mongodb://mongo:27017/address
       - ADDRESS_SERVICE_URL=http://localhost:8004
 
+  order-service:
+    build:
+      context: ./OrderService
+    ports:
+      - "8005:8005"
+    environment:
+      - PORT=8005
+      - MONGODB_URL=mongodb://mongo:27017/address
+      - ADDRESS_SERVICE_URL=http://localhost:8005
+
+
   review-service:
     build:
       context: ./ReviewService
@@ -61,6 +72,7 @@ services:
       - USER_SERVICE_URL=http://user-service:8002
       - PRODUCT_SERVICE_URL=http://product-service:8003
       - ADDRESS_SERVICE_URL=http://address-service:8004
+      - ORDER_SERVICE_URL=http://order-service:8005
       - REVIEW_SERVICE_URL=http://review-service:8008
 
   mongo:

@@ -34,6 +34,7 @@ const orderSchema = new mongoose.Schema(
     paymentMethod: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "PaymentMethod",
+      required: [true, "Please provide a payment method"],
     },
   },
   { timestamps: true }

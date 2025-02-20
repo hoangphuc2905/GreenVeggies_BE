@@ -37,5 +37,5 @@ app.use("/api/user", require("./src/routers/user"));
 app.listen(process.env.PORT, () => {
   console.log("UserService is running on port 8002");
   console.log("Swagger is running on:");
-  console.log("http://localhost:8001/greenveggies-api-docs");
+  console.log("http://localhost:8002/greenveggies-api-docs");
 });

@@ -38,6 +38,8 @@ app.use("/api/auth", require("./src/routers/auth"));
 app.use("/api/address", require("./src/routers/address"));
 app.use("/api/categories", require("./src/routers/category"));
 app.use("/api/reviews", require("./src/routers/review"));
+app.use("/api/orders", require("./src/routers/order"));
+app.use("/api/shipping", require("./src/routers/shipping"));
 
 
 app.listen(8000, () => {
