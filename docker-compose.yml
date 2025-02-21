@@ -7,7 +7,7 @@ services:
       - "8001:8001"
     environment:
       - PORT=8001
-      - MONGODB_URL=mongodb://mongo:27017/auth
+      - MONGODB_URL=mongodb+srv://mongobasic:hellohm11@cluster0.dbvpcq4.mongodb.net/greenveggies?retryWrites=true&w=majority&appName=Cluster0
       - AUTH_SERVICE_URL=http://localhost:8001
 
   user-service:
@@ -17,7 +17,7 @@ services:
       - "8002:8002"
     environment:
       - PORT=8002
-      - MONGODB_URL=mongodb://mongo:27017/user
+      - MONGODB_URL=mongodb+srv://mongobasic:hellohm11@cluster0.dbvpcq4.mongodb.net/greenveggies?retryWrites=true&w=majority&appName=Cluster0
       - USER_SERVICE_URL=http://localhost:8002
 
   product-service:
@@ -27,7 +27,7 @@ services:
       - "8003:8003"
     environment:
       - PORT=8003
-      - MONGODB_URL=mongodb://mongo:27017/product
+      - MONGODB_URL=mongodb+srv://mongobasic:hellohm11@cluster0.dbvpcq4.mongodb.net/greenveggies?retryWrites=true&w=majority&appName=Cluster0
       - PRODUCT_SERVICE_URL=http://localhost:8003
 
   address-service:
@@ -37,7 +37,7 @@ services:
       - "8004:8004"
     environment:
       - PORT=8004
-      - MONGODB_URL=mongodb://mongo:27017/address
+      - MONGODB_URL=mongodb+srv://mongobasic:hellohm11@cluster0.dbvpcq4.mongodb.net/greenveggies?retryWrites=true&w=majority&appName=Cluster0
       - ADDRESS_SERVICE_URL=http://localhost:8004
 
   order-service:
@@ -47,9 +47,8 @@ services:
       - "8005:8005"
     environment:
       - PORT=8005
-      - MONGODB_URL=mongodb://mongo:27017/address
-      - ADDRESS_SERVICE_URL=http://localhost:8005
-
+      - MONGODB_URL=mongodb+srv://mongobasic:hellohm11@cluster0.dbvpcq4.mongodb.net/greenveggies?retryWrites=true&w=majority&appName=Cluster0
+      - ORDER_SERVICE_URL=http://localhost:8005
 
   review-service:
     build:
@@ -58,7 +57,7 @@ services:
       - "8008:8008"
     environment:
       - PORT=8008
-      - MONGODB_URL=mongodb://mongo:27017/review
+      - MONGODB_URL=mongodb+srv://mongobasic:hellohm11@cluster0.dbvpcq4.mongodb.net/greenveggies?retryWrites=true&w=majority&appName=Cluster0
       - REVIEW_SERVICE_URL=http://localhost:8008
 
   api-gateway:

@@ -1,7 +1,6 @@
 const express = require("express");
-const orderController = require("../controllers/orderController");
-
 const router = express.Router();
+const orderController = require("../controllers/orderController");
 
 /**
  * @swagger
@@ -164,7 +163,5 @@ router.get("/:id", orderController.getOrderById);
  *         description: Không tìm thấy đơn hàng
  */
 router.put("/:id", orderController.updateOrder);
-
-
 
 module.exports = router;

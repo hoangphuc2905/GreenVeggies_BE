@@ -34,20 +34,21 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: "default.jpg",
     },
-    address: [{
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Address",
-      required: false,
-    }],
+    address: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Address",
+      },
+    ],
     role: {
       type: String,
-      enum: ['admin', 'user', 'guest'],
-      default: 'guest', 
+      enum: ["admin", "user", "guest"],
+      default: "user",
     },
     accountStatus: {
       type: String,
-      enum: ['Active', 'Inactive', 'Suspended'],
-      default: 'Active',
+      enum: ["Active", "Inactive", "Suspended"],
+      default: "Active",
     },
   },
   { timestamps: true }
