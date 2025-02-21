@@ -14,9 +14,8 @@ exports.getShoppingCartById = async (id) => {
 };
 
 exports.updateShoppingCart = async (id, shoppingCartData) => {
-  return await ShoppingCart.findByIdAndUpdate(id, shoppingCartData, { new: true, runValidators: true });
-};
-
-exports.deleteShoppingCart = async (id) => {
-  return await ShoppingCart.findByIdAndDelete(id);
+  return await ShoppingCart.findByIdAndUpdate(id, shoppingCartData, {
+    new: true,
+    runValidators: true,
+  });
 };

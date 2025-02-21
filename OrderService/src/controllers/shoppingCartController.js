@@ -46,16 +46,3 @@ exports.updateShoppingCart = async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 };
-
-// Delete shopping cart
-exports.deleteShoppingCart = async (req, res) => {
-  try {
-    const shoppingCart = await ShoppingCart.findByIdAndDelete(req.params.id);
-    if (!shoppingCart) {
-      return res.status(404).json({ error: "Shopping cart not found" });
-    }
-    res.status(200).json({ message: "Shopping cart deleted successfully" });
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-};

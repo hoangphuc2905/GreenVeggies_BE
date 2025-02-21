@@ -177,24 +177,5 @@ router.get("/:id", shoppingCartController.getShoppingCartById);
  */
 router.put("/:id", shoppingCartController.updateShoppingCart);
 
-/**
- * @swagger
- * /api/shopping-carts/{id}:
- *   delete:
- *     summary: Xóa giỏ hàng theo ID
- *     tags: [ShoppingCarts]
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *     responses:
- *       200:
- *         description: Giỏ hàng được xóa thành công
- *       404:
- *         description: Không tìm thấy giỏ hàng
- */
-router.delete("/:id", shoppingCartController.deleteShoppingCart);
 
 module.exports = router;

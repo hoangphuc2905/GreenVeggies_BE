@@ -165,24 +165,6 @@ router.get("/:id", orderController.getOrderById);
  */
 router.put("/:id", orderController.updateOrder);
 
-/**
- * @swagger
- * /api/orders/{id}:
- *   delete:
- *     summary: Xóa đơn hàng theo ID
- *     tags: [Orders]
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *     responses:
- *       200:
- *         description: Đơn hàng được xóa thành công
- *       404:
- *         description: Không tìm thấy đơn hàng
- */
-router.delete("/:id", orderController.deleteOrder);
+
 
 module.exports = router;

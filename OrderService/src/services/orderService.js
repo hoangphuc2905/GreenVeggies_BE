@@ -19,7 +19,3 @@ exports.updateOrder = async (id, orderData) => {
     runValidators: true,
   });
 };
-
-exports.deleteOrder = async (id) => {
-  return await Order.findByIdAndDelete(id);
-};
