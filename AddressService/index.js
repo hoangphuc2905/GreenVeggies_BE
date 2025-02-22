@@ -3,10 +3,9 @@ const cors = require("cors");
 const dotenv = require("dotenv");
 const mongoose = require("mongoose");
 const admin = require("firebase-admin");
-const credentials = require("../firebaseConfig.json");
 
 admin.initializeApp({
-  credential: admin.credential.cert(credentials),
+  credential: admin.credential.applicationDefault(),
 });
 
 dotenv.config();

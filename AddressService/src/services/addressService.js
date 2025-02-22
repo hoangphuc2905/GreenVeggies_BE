@@ -45,7 +45,6 @@ const getAddresses = async (userID) => {
   if (!address.length) {
     throw new Error("User chưa có địa chỉ nào!");
   }
-
   return address;
 };
 
