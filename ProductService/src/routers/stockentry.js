@@ -41,13 +41,13 @@ router.post("/", stockEntryController.createStockEntry);
  *       400:
  *         description: Lỗi khi lấy danh sách các bản ghi nhập hàng
  */
-router.post("/", stockEntryController.getAllStockEntries);
+router.get("/", stockEntryController.getAllStockEntries);
 
 /**
  * @swagger
  * /api/stock-entries/{id}:
  *   get:
- *     summary: Lấy thông tin bản ghi nhập hàng theo ID thiệt không
+ *     summary: Lấy thông tin bản ghi nhập hàng theo ID
  *     tags: [StockEntries]
  *     parameters:
  *       - in: path
