@@ -5,4 +5,4 @@ RUN npm install
 COPY . .
 COPY firebaseConfig.json ./firebaseConfig.json
 EXPOSE 8003
-CMD ["node", "index.js"]
+CMD ["node", "index.js", "dev"]

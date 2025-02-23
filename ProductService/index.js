@@ -34,6 +34,7 @@ swaggerSetup(app);
 //Routes
 app.use("/api/products", require("./src/routers/product"));
 app.use("/api/categories", require("./src/routers/category"));
+app.use("/api/stock-entries", require("./src/routers/stockentry"));
 
 app.listen(process.env.PORT, () => {
   console.log("ProductService is running on port 8003");

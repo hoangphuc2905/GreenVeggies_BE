@@ -27,6 +27,8 @@ services:
       context: ./ProductService
     ports:
       - "8003:8003"
+    volumes:
+      - ./ProductService:/app
     environment:
       - PORT=8003
       - MONGODB_URL=mongodb+srv://mongobasic:hellohm11@cluster0.dbvpcq4.mongodb.net/greenveggies?retryWrites=true&w=majority&appName=Cluster0
