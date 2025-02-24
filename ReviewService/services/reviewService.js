@@ -18,9 +18,6 @@ const reviewService = {
     return await Review.findByIdAndUpdate(id, reviewData, { new: true });
   },
 
-  deleteReview: async (id) => {
-    return await Review.findByIdAndDelete(id);
-  },
 };
 
 module.exports = reviewService;

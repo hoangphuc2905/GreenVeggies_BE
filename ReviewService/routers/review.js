@@ -150,25 +150,5 @@ router.get("/:id", reviewController.getReviewById);
  */
 router.put("/:id", reviewController.updateReview);
 
-/**
- * @swagger
- * /api/reviews/{id}:
- *   delete:
- *     summary: Delete a review by ID
- *     tags: [Reviews]
- *     parameters:
- *       - in: path
- *         name: id
- *         schema:
- *           type: string
- *         required: true
- *         description: ID of the review
- *     responses:
- *       200:
- *         description: Review deleted successfully
- *       404:
- *         description: Review not found
- */
-router.delete("/:id", reviewController.deleteReview);
 
 module.exports = router;

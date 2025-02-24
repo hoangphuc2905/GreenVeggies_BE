@@ -17,10 +17,6 @@ const categoryService = {
     return await Category.findOneAndUpdate({ categoryID: id }, updateData, { new: true });
   },
 
-  deleteCategory: async (id) => {
-    return await Category.findOneAndDelete({ categoryID: id });
-  },
-
   countCategories: async () => {
     return await Category.countDocuments();
   },

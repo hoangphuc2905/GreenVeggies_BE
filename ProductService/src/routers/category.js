@@ -120,26 +120,4 @@ router.post("/", categoryController.createCategory);
  */
 router.put("/:id", categoryController.updateCategory);
 
-/**
- * @swagger
- * /api/categories/{id}:
- *   delete:
- *     summary: Xóa danh mục theo ID
- *     tags:
- *       - Category
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *         description: ID của danh mục cần xóa
- *     responses:
- *       200:
- *         description: Danh mục đã được xóa thành công
- *       404:
- *         description: Không tìm thấy danh mục
- */
-router.delete("/:id", categoryController.deleteCategory);
-
 module.exports = router;
