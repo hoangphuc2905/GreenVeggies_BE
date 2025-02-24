@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const Product = require("./Product");
 
 const reviewSchema = new mongoose.Schema(
   {
@@ -35,17 +34,41 @@ const reviewSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-reviewSchema.post("save", async function (doc, next) {
-  try {
-    const product = await mongoose.model("Product").findById(doc.productID);
-    if (product) {
-      product.reviews.push(doc._id);
-      await product.save();
+// Middleware tạo reviewID tự động
+reviewSchema.pre("save", async function (next) {
+  if (!this.reviewID) {
+    const product = await mongoose.model("Product").findById(this.productID);
+    if (!product) {
+      throw new Error("Product not found");
     }
-    next();
-  } catch (error) {
-    next(error);
+
+    const date = new Date();
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    const hours = String(date.getHours()).padStart(2, "0");
+    const minutes = String(date.getMinutes()).padStart(2, "0");
+    const seconds = String(date.getSeconds()).padStart(2, "0");
+
+    const lastReview = await mongoose
+      .model("Review")
+      .findOne({ productID: this.productID })
+      .sort({ reviewID: -1 });
+
+    let newID = `RV${product.productID}-${year}${month}${day}${hours}${minutes}${seconds}-001`;
+
+    if (lastReview && lastReview.reviewID) {
+      const lastID = parseInt(lastReview.reviewID.split("-")[2]);
+      newID = `RV${
+        product.productID
+      }-${year}${month}${day}${hours}${minutes}${seconds}-${String(
+        lastID + 1
+      ).padStart(3, "0")}`;
+    }
+
+    this.reviewID = newID;
   }
+  next();
 });
 
 module.exports = mongoose.model("Review", reviewSchema);
