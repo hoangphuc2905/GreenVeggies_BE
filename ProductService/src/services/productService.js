@@ -14,15 +14,20 @@ const productService = {
     return await Product.find().populate("category").populate("reviews");
   },
 
-  getProductById: async (id) => {
-    return await Product.findById(id).populate("category").populate("reviews");
-  },
-
-  updateProduct: async (id, productData) => {
-    return await Product.findByIdAndUpdate(id, productData, { new: true })
+  getProductById: async (productID) => {
+    return await Product.findOne({ productID })
       .populate("category")
       .populate("reviews");
   },
+
+  updateProduct: async (productID, productData) => {
+    return await Product.findOneAndUpdate({ productID }, productData, {
+      new: true,
+    })
+      .populate("category")
+      .populate("reviews");
+  },
+
 };
 
 module.exports = productService;

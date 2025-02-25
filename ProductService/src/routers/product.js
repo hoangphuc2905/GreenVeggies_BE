@@ -130,13 +130,13 @@ router.post("/", productController.createProduct);
 
 /**
  * @swagger
- * /api/products/{id}:
+ * /api/products/{productID}:
  *   get:
  *     summary: Tìm kiếm sản phẩm theo ID
  *     tags: [Products]
  *     parameters:
  *       - in: path
- *         name: id
+ *         name: productID
  *         required: true
  *         schema:
  *           type: string
@@ -166,7 +166,7 @@ router.post("/", productController.createProduct);
  *       404:
  *         description: Không tìm thấy sản phẩm
  */
-router.get("/:id", productController.getProductById);
+router.get("/:productID", productController.getProductById);
 
 /**
  * @swagger
@@ -177,7 +177,7 @@ router.get("/:id", productController.getProductById);
  *       - Products
  *     parameters:
  *       - in: path
- *         name: id
+ *         name: productID
  *         required: true
  *         schema:
  *           type: string

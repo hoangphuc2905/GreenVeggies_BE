@@ -12,7 +12,7 @@ const productController = {
 
   getProductById: async (req, res) => {
     try {
-      const product = await productService.getProductById(req.params.id);
+      const product = await productService.getProductById(req.params.productID);
       if (!product) {
         return res.status(404).json({ message: "Product not found" });
       }
@@ -34,7 +34,7 @@ const productController = {
       }
 
       const newProduct = {
-        ...req.body,
+        ...req.query,
         productID: newID,
       };
 
@@ -53,10 +53,7 @@ const productController = {
           .json({ message: "Không thể chỉnh sửa mã sản phẩm!" });
       }
 
-      const product = await productService.updateProduct(
-        req.params.id,
-        req.body
-      );
+      const product = await productService.updateProduct(productID, req.body);
       if (!product) {
         return res.status(404).json({ message: "Product not found" });
       }
