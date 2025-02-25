@@ -1,8 +1,6 @@
 const userService = require("../services/userService");
-const mongoose = require("mongoose");
 
 const userControllers = {
-  //GET ALL USERS
   getAllUsers: async (req, res) => {
     try {
       const users = await userService.getAllUsers();
@@ -14,13 +12,10 @@ const userControllers = {
 
   // LAY THONG TIN USER
   getUserInfo: async (req, res) => {
-    const userId = req.query.userId || req.params.id;
-    if (!mongoose.Types.ObjectId.isValid(userId)) {
-      return res.status(400).json({ message: "Invalid user ID" });
-    }
+    const userID = req.query.userID;
 
     try {
-      const user = await userService.getUserInfo(userId);
+      const user = await userService.getUserInfo(userID);
       if (user) {
         res.status(200).json(user);
       } else {
@@ -32,11 +27,7 @@ const userControllers = {
   },
 
   updateProfile: async (req, res) => {
-    const userId = req.params.id;
-
-    if (!mongoose.Types.ObjectId.isValid(userId)) {
-      return res.status(400).json({ message: "Invalid user ID" });
-    }
+    const userID = req.query.userID || req.params.id;
 
     try {
       const updateFields = {};
@@ -57,7 +48,7 @@ const userControllers = {
         updateFields.password = await bcrypt.hash(updateFields.password, salt);
       }
 
-      const user = await userService.updateProfile(userId, updateFields);
+      const user = await userService.updateProfile(userID, updateFields);
 
       if (!user) {
         return res.status(404).json({ message: "User not found" });

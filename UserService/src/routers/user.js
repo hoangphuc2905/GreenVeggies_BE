@@ -43,7 +43,7 @@ router.get("/", userControllers.getAllUsers);
  *       - User
  *     parameters:
  *       - in: query
- *         name: userId
+ *         name: userID
  *         required: false
  *         schema:
  *           type: string
@@ -65,7 +65,7 @@ router.get("/:id", userControllers.getUserInfo);
  *       - User
  *     parameters:
  *       - in: path
- *         name: id
+ *         name: UserID
  *         required: true
  *         schema:
  *           type: string

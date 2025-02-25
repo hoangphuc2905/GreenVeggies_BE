@@ -6,8 +6,8 @@ const userService = {
     return await User.find().populate("address");
   },
 
-  getUserInfo: async (id) => {
-    const user = await User.findById(id).populate("address");
+  getUserInfo: async (userID) => {
+    const user = await User.findOne({ userID }).populate("address");
     if (user) {
       return user;
     } else {
@@ -16,8 +16,8 @@ const userService = {
   },
 
   // update profile
-  updateProfile: async (id, userData) => {
-    const user = await User.findByIdAndUpdate(id, userData, {
+  updateProfile: async (userID, userData) => {
+    const user = await User.findOneAndUpdate({ userID }, userData, {
       new: true,
     }).populate("address");
     if (user) {
