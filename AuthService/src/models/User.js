@@ -59,7 +59,7 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// USER + 000n+ngày tháng năm : mã userID
+// USER + 000n + ngày tháng năm : mã userID
 userSchema.pre("save", async function (next) {
   if (!this.userID) {
     const date = new Date();
@@ -76,8 +76,7 @@ userSchema.pre("save", async function (next) {
 
     if (lastUser && lastUser.userID) {
       const lastID = lastUser.userID;
-      const splitID = lastID.split("-");
-      const lastNumber = parseInt(splitID[splitID.length - 1]);
+      const lastNumber = parseInt(lastID.substring(4, 8));
       newID = `USER${String(lastNumber + 1).padStart(
         4,
         "0"

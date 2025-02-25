@@ -19,8 +19,12 @@ const categorySchema = new mongoose.Schema(
 // Tạo categoryID tự động
 categorySchema.pre("save", async function (next) {
   if (!this.categoryID) {
-    const lastCategory = await this.constructor.findOne().sort({ createdAt: -1 });
-    const lastNumber = lastCategory ? parseInt(lastCategory.categoryID.replace("CATE", "")) : 0;
+    const lastCategory = await this.constructor
+      .findOne()
+      .sort({ createdAt: -1 });
+    const lastNumber = lastCategory
+      ? parseInt(lastCategory.categoryID.replace("CATE", ""))
+      : 0;
     this.categoryID = `CATE${String(lastNumber + 1).padStart(4, "0")}`;
   }
   next();
