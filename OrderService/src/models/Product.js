@@ -65,6 +65,12 @@ const productSchema = new mongoose.Schema(
         ref: "Review",
       },
     ],
+    stockEntries: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "StockEntry",
+      },
+    ],
   },
   { timestamps: true }
 );

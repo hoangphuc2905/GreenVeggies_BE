@@ -29,7 +29,7 @@ const addressSchema = new mongoose.Schema(
     },
     default: {
       type: Boolean,
-      default: false, // đánh dấu địa chỉ mặc định
+      default: false,
     },
   },
   { timestamps: true }
