@@ -35,9 +35,9 @@ const router = express.Router();
  *             type: string
  *           description: Image URLs related to the review
  *       example:
- *         reviewID: "12345"
- *         userID: "67890"
- *         productID: "54321"
+ *         reviewID: "RVSP0001-20250226083111-001"
+ *         userID: "USER000120250225"
+ *         productID: "SP0001"
  *         rating: 5
  *         comment: "Great product!"
  *         imageUrl: ["http://example.com/image1.jpg", "http://example.com/image2.jpg"]
@@ -94,13 +94,13 @@ router.get("/", reviewController.getReviews);
 
 /**
  * @swagger
- * /api/reviews/{id}:
+ * /api/reviews/{reviewID}:
  *   get:
  *     summary: Get a review by ID
  *     tags: [Reviews]
  *     parameters:
  *       - in: path
- *         name: id
+ *         name: reviewID
  *         schema:
  *           type: string
  *         required: true
@@ -115,17 +115,17 @@ router.get("/", reviewController.getReviews);
  *       404:
  *         description: Review not found
  */
-router.get("/:id", reviewController.getReviewById);
+router.get("/:reviewID", reviewController.getReviewById);
 
 /**
  * @swagger
- * /api/reviews/{id}:
+ * /api/reviews/{reviewID}:
  *   put:
  *     summary: Update a review by ID
  *     tags: [Reviews]
  *     parameters:
  *       - in: path
- *         name: id
+ *         name: reviewID
  *         schema:
  *           type: string
  *         required: true
@@ -148,7 +148,6 @@ router.get("/:id", reviewController.getReviewById);
  *       400:
  *         description: Bad request
  */
-router.put("/:id", reviewController.updateReview);
-
+router.put("/:reviewID", reviewController.updateReview);
 
 module.exports = router;

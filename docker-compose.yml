@@ -9,6 +9,8 @@ services:
       - PORT=8001
       - MONGODB_URL=mongodb+srv://mongobasic:hellohm11@cluster0.dbvpcq4.mongodb.net/greenveggies?retryWrites=true&w=majority&appName=Cluster0
       - AUTH_SERVICE_URL=http://localhost:8001
+    volumes:
+      - ./AuthService:/app
 
   user-service:
     container_name: user-service
@@ -20,6 +22,8 @@ services:
       - PORT=8002
       - MONGODB_URL=mongodb+srv://mongobasic:hellohm11@cluster0.dbvpcq4.mongodb.net/greenveggies?retryWrites=true&w=majority&appName=Cluster0
       - USER_SERVICE_URL=http://localhost:8002
+    volumes:
+      - ./UserService:/app
 
   product-service:
     container_name: product-service
@@ -44,6 +48,8 @@ services:
       - PORT=8004
       - MONGODB_URL=mongodb+srv://mongobasic:hellohm11@cluster0.dbvpcq4.mongodb.net/greenveggies?retryWrites=true&w=majority&appName=Cluster0
       - ADDRESS_SERVICE_URL=http://localhost:8004
+    volumes:
+      - ./AddressService:/app
 
   order-service:
     container_name: order-service
@@ -55,6 +61,8 @@ services:
       - PORT=8005
       - MONGODB_URL=mongodb+srv://mongobasic:hellohm11@cluster0.dbvpcq4.mongodb.net/greenveggies?retryWrites=true&w=majority&appName=Cluster0
       - ORDER_SERVICE_URL=http://localhost:8005
+    volumes:
+      - ./OrderService:/app
 
   review-service:
     container_name: review-service
@@ -66,6 +74,8 @@ services:
       - PORT=8008
       - MONGODB_URL=mongodb+srv://mongobasic:hellohm11@cluster0.dbvpcq4.mongodb.net/greenveggies?retryWrites=true&w=majority&appName=Cluster0
       - REVIEW_SERVICE_URL=http://localhost:8008
+    volumes:
+      - ./ReviewService:/app
 
   api-gateway:
     container_name: api-gateway
@@ -81,6 +91,8 @@ services:
       - ADDRESS_SERVICE_URL=http://address-service:8004
       - ORDER_SERVICE_URL=http://order-service:8005
       - REVIEW_SERVICE_URL=http://review-service:8008
+    volumes:
+      - ./APIGateway:/app
 
   mongo:
     container_name: mongo

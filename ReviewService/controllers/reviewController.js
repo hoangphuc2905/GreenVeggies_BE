@@ -7,37 +7,12 @@ const reviewController = {
       const { userID, productID, rating, comment, imageUrl } = req.body;
 
       // Tìm sản phẩm theo productID
-      const product = await Product.findById(productID);
+      const product = await Product.findOne({ productID });
       if (!product) {
         return res.status(404).json({ message: "Product not found" });
       }
 
-      // Tạo reviewID tự động
-      const date = new Date();
-      const year = date.getFullYear();
-      const month = String(date.getMonth() + 1).padStart(2, "0");
-      const day = String(date.getDate()).padStart(2, "0");
-      const hours = String(date.getHours()).padStart(2, "0");
-      const minutes = String(date.getMinutes()).padStart(2, "0");
-      const seconds = String(date.getSeconds()).padStart(2, "0");
-
-      const lastReview = await Review.findOne({ productID }).sort({
-        reviewID: -1,
-      });
-
-      let newID = `RV${product.productID}-${year}${month}${day}${hours}${minutes}${seconds}-001`;
-
-      if (lastReview && lastReview.reviewID) {
-        const lastID = parseInt(lastReview.reviewID.split("-")[2]);
-        newID = `RV${
-          product.productID
-        }-${year}${month}${day}${hours}${minutes}${seconds}-${String(
-          lastID + 1
-        ).padStart(3, "0")}`;
-      }
-
       const newReview = new Review({
-        reviewID: newID,
         userID,
         productID,
         rating,
@@ -49,7 +24,7 @@ const reviewController = {
 
       // Cập nhật sản phẩm với ID của đánh giá mới
       await Product.findByIdAndUpdate(
-        productID,
+        product._id,
         { $push: { reviews: newReview._id } },
         { new: true }
       );
@@ -73,8 +48,8 @@ const reviewController = {
 
   getReviewById: async (req, res) => {
     try {
-      const { id } = req.params;
-      const review = await Review.findById(id);
+      const { reviewID } = req.params;
+      const review = await Review.findById(reviewID);
       if (!review) {
         return res.status(404).json({ message: "Review not found" });
       }
@@ -86,8 +61,8 @@ const reviewController = {
 
   updateReview: async (req, res) => {
     try {
-      const { id } = req.params;
-      const updatedReview = await Review.findByIdAndUpdate(id, req.body, {
+      const { reviewID } = req.params;
+      const updatedReview = await Review.findByIdAndUpdate(reviewID, req.body, {
         new: true,
       });
       if (!updatedReview) {

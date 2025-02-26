@@ -4,22 +4,21 @@ const reviewSchema = new mongoose.Schema(
   {
     reviewID: {
       type: String,
-      required: [true, "Please provide a review ID"],
       unique: true,
     },
     userID: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      type: String,
       required: [true, "Please provide a user ID"],
     },
     productID: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Product",
+      type: String,
       required: [true, "Please provide a product ID"],
     },
     rating: {
       type: Number,
       required: [true, "Please provide a rating"],
+      min: 1,
+      max: 5,
     },
     comment: {
       type: String,
@@ -37,7 +36,9 @@ const reviewSchema = new mongoose.Schema(
 // Middleware tạo reviewID tự động
 reviewSchema.pre("save", async function (next) {
   if (!this.reviewID) {
-    const product = await mongoose.model("Product").findById(this.productID);
+    const product = await mongoose
+      .model("Product")
+      .findOne({ productID: this.productID });
     if (!product) {
       throw new Error("Product not found");
     }
