@@ -53,7 +53,10 @@ const productController = {
           .json({ message: "Không thể chỉnh sửa mã sản phẩm!" });
       }
 
-      const product = await productService.updateProduct(productID, req.body);
+      const product = await productService.updateProduct(
+        req.params.productID,
+        req.body
+      );
       if (!product) {
         return res.status(404).json({ message: "Product not found" });
       }
