@@ -170,7 +170,7 @@ router.get("/:productID", productController.getProductById);
 
 /**
  * @swagger
- * /api/products/{id}:
+ * /api/products/{productID}:
  *   put:
  *     summary: Cập nhật thông tin sản phẩm theo ID
  *     tags:
@@ -217,6 +217,6 @@ router.get("/:productID", productController.getProductById);
  *       404:
  *         description: Không tìm thấy sản phẩm
  */
-router.put("/:id", productController.updateProduct);
+router.put("/:productID", productController.updateProduct);
 
 module.exports = router;
