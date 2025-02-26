@@ -49,7 +49,7 @@ const reviewController = {
   getReviewById: async (req, res) => {
     try {
       const { reviewID } = req.params;
-      const review = await Review.findById(reviewID);
+      const review = await Review.findOne({ reviewID });
       if (!review) {
         return res.status(404).json({ message: "Review not found" });
       }
@@ -62,9 +62,13 @@ const reviewController = {
   updateReview: async (req, res) => {
     try {
       const { reviewID } = req.params;
-      const updatedReview = await Review.findByIdAndUpdate(reviewID, req.body, {
-        new: true,
-      });
+      const updatedReview = await Review.findOneAndUpdate(
+        { reviewID },
+        req.body,
+        {
+          new: true,
+        }
+      );
       if (!updatedReview) {
         return res.status(404).json({ message: "Review not found" });
       }

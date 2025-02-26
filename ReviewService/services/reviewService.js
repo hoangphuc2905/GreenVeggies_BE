@@ -10,14 +10,13 @@ const reviewService = {
     return await Review.find();
   },
 
-  getReviewById: async (id) => {
-    return await Review.findById(id);
+  getReviewById: async (reviewID) => {
+    return await Review.findOne({ reviewID });
   },
 
-  updateReview: async (id, reviewData) => {
-    return await Review.findByIdAndUpdate(id, reviewData, { new: true });
+  updateReview: async (reviewID, reviewData) => {
+    return await Review.findByIdAndUpdate(reviewID, reviewData, { new: true });
   },
-
 };
 
 module.exports = reviewService;
