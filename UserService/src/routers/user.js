@@ -36,7 +36,7 @@ router.get("/", userControllers.getAllUsers);
 
 /**
  * @swagger
- * /api/user/{id}:
+ * /api/user/{userID}:
  *   get:
  *     summary: Lấy thông tin tài khoản người dùng
  *     tags:
@@ -54,11 +54,11 @@ router.get("/", userControllers.getAllUsers);
  *       401:
  *         description: Không được phép
  */
-router.get("/:id", userControllers.getUserInfo);
+router.get("/:userID", userControllers.getUserInfo);
 
 /**
  * @swagger
- * /api/user/{id}:
+ * /api/user/{userID}:
  *   put:
  *     summary: Cập nhật thông tin người dùng
  *     tags:
@@ -106,6 +106,6 @@ router.get("/:id", userControllers.getUserInfo);
  *       404:
  *         description: Không tìm thấy người dùng
  */
-router.put("/:id", userControllers.updateProfile);
+router.put("/:userID", userControllers.updateProfile);
 
 module.exports = router;
