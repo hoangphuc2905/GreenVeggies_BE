@@ -10,9 +10,8 @@ const userControllers = {
     }
   },
 
-  // LAY THONG TIN USER
   getUserInfo: async (req, res) => {
-    const userID = req.query.userID;
+    const userID = req.params.userID;
 
     try {
       const user = await userService.getUserInfo(userID);
@@ -27,7 +26,7 @@ const userControllers = {
   },
 
   updateProfile: async (req, res) => {
-    const userID = req.query.userID || req.params.id;
+    const userID = req.params.userID;
 
     try {
       const updateFields = {};

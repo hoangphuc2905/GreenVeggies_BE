@@ -42,12 +42,12 @@ router.get("/", userControllers.getAllUsers);
  *     tags:
  *       - User
  *     parameters:
- *       - in: query
+ *       - in: path
  *         name: userID
- *         required: false
+ *         required: true
  *         schema:
  *           type: string
- *         description: ID của người dùng cần lấy thông tin (tùy chọn)
+ *         description: ID của người dùng cần lấy thông tin
  *     responses:
  *       200:
  *         description: Thành công
@@ -65,7 +65,7 @@ router.get("/:userID", userControllers.getUserInfo);
  *       - User
  *     parameters:
  *       - in: path
- *         name: UserID
+ *         name: userID
  *         required: true
  *         schema:
  *           type: string

@@ -143,6 +143,7 @@ const authService = {
         id: user._id,
         email: user.email,
         name: user.name,
+        userID: user.userID,
       },
       token,
     };
