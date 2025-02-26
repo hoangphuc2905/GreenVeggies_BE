@@ -46,6 +46,14 @@ const reviewController = {
       });
 
       await newReview.save();
+
+      // Cập nhật sản phẩm với ID của đánh giá mới
+      await Product.findByIdAndUpdate(
+        productID,
+        { $push: { reviews: newReview._id } },
+        { new: true }
+      );
+
       res
         .status(201)
         .json({ message: "Review created successfully", review: newReview });

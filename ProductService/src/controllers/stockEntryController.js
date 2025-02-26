@@ -23,6 +23,7 @@ const stockEntryController = {
       // Cập nhật sản phẩm với bản ghi nhập hàng mới
       product.stockEntries.push(stockEntry._id);
       product.quantity += entryQuantity;
+      product.import += entryQuantity;
       await product.save();
 
       res.status(201).json(stockEntry);
