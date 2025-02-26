@@ -3,7 +3,7 @@ const addressService = require("../services/addressService");
 const addressController = {
   createAddress: async (req, res) => {
     try {
-      const { userID, city, district, ward, street, isDefault } = req.query;
+      const { userID, city, district, ward, street, isDefault } = req.body;
       
       const defaultFlag = isDefault === "true" || isDefault === true;
       

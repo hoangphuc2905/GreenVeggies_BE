@@ -34,7 +34,7 @@ const productController = {
       }
 
       const newProduct = {
-        ...req.query,
+        ...req.body,
         productID: newID,
       };
 

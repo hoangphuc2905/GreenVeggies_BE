@@ -3,7 +3,7 @@ const addressService = require("../services/addressService");
 const addressController = {
   createAddress: async (req, res) => {
     try {
-      const { userID, city, district, ward, street, isDefault } = req.query;
+      const { userID, city, district, ward, street, isDefault } = req.body;
       
       const defaultFlag = isDefault === "true" || isDefault === true;
       
@@ -26,7 +26,7 @@ const addressController = {
   // Lấy danh sách địa chỉ của user
   getAddresses: async (req, res) => {
     try {
-      const { userID } = req.query;
+      const { userID } = req.body;
       const address = await addressService.getAddresses(userID);
       return res.status(200).json(address);
     } catch (error) {
