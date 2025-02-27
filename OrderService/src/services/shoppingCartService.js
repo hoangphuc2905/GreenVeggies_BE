@@ -19,3 +19,7 @@ exports.updateShoppingCart = async (id, shoppingCartData) => {
     runValidators: true,
   });
 };
+
+exports.deleteShoppingCart = async (id) => {
+  return await ShoppingCart.findByIdAndDelete(id);
+};

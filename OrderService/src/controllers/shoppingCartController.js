@@ -54,6 +54,19 @@ const shoppingCartController = {
       res.status(400).json({ error: error.message });
     }
   },
+
+  // delete shopping cart
+  deleteShoppingCart: async (req, res) => {
+    try {
+      const shoppingCart = await ShoppingCart.findByIdAndDelete(req.params.id);
+      if (!shoppingCart) {
+        return res.status(404).json({ error: "Shopping cart not found" });
+      }
+      res.status(200).json(shoppingCart);
+    } catch (error) {
+      res.status(400).json({ error: error.message });
+    }
+  },
 };
 
 module.exports = shoppingCartController;
