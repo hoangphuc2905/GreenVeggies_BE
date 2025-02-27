@@ -65,6 +65,29 @@ const productController = {
       res.status(400).json({ message: err.message });
     }
   },
+
+  getProductsByCategory: async (req, res) => {
+    try {
+      const { categoryID } = req.params;
+      const products = await productService.getProductsByCategory(categoryID);
+      res.status(200).json(products);
+    } catch (error) {
+      res.status(400).json({ message: error.message });
+    }
+  },
+
+  searchProductbyName: async (req, res) => {
+    try {
+      const { keyword } = req.query;
+      const products = await productService.searchProductbyName(keyword);
+      if (products.length === 0) {
+        return res.status(404).json({ message: "Product not found" });
+      }
+      res.status(200).json(products);
+    } catch (error) {
+      res.status(400).json({ message: error.message });
+    }
+  },
 };
 
 module.exports = productController;

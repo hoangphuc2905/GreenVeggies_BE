@@ -1,12 +1,69 @@
 const express = require("express");
-const router = express.Router();
 const productController = require("../controllers/productController");
+const router = express.Router();
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Product:
+ *       type: object
+ *       required:
+ *         - productID
+ *         - name
+ *         - description
+ *         - price
+ *         - quantity
+ *         - category
+ *         - origin
+ *         - unit
+ *       properties:
+ *         productID:
+ *           type: string
+ *           description: Auto-generated ID of the product
+ *         name:
+ *           type: string
+ *           description: Name of the product
+ *         description:
+ *           type: string
+ *           description: Description of the product
+ *         price:
+ *           type: number
+ *           description: Price of the product
+ *         quantity:
+ *           type: number
+ *           description: Quantity of the product
+ *         category:
+ *           type: string
+ *           description: Category ID of the product
+ *         origin:
+ *           type: string
+ *           description: Origin of the product
+ *         unit:
+ *           type: string
+ *           description: Unit of the product
+ *         imageUrl:
+ *           type: array
+ *           items:
+ *             type: string
+ *           description: Image URLs of the product
+ *       example:
+ *         productID: "SP0001"
+ *         name: "Táo 500ml"
+ *         description: "Táo"
+ *         price: 1111
+ *         quantity: 2070
+ *         category: "CATE0001"
+ *         origin: "Việt Nam"
+ *         unit: "kg"
+ *         imageUrl: ["https://example.com/image1.jpg", "https://example.com/image2.jpg"]
+ */
 
 /**
  * @swagger
  * tags:
  *   - name: Products
- *     description: Các API liên quan đến sản phẩm
+ *     description: API for managing products
  */
 
 /**
@@ -218,5 +275,59 @@ router.get("/:productID", productController.getProductById);
  *         description: Không tìm thấy sản phẩm
  */
 router.put("/:productID", productController.updateProduct);
+
+/**
+ * @swagger
+ * /api/products/category/{categoryID}:
+ *   get:
+ *     summary: Get all products by category
+ *     tags: [Products]
+ *     parameters:
+ *       - in: path
+ *         name: categoryID
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: ID of the category
+ *     responses:
+ *       200:
+ *         description: List of products
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Product'
+ *       400:
+ *         description: Bad request
+ */
+router.get("/category/:categoryID", productController.getProductsByCategory);
+
+/**
+ * @swagger
+ * /api/products/search:
+ *   get:
+ *     summary: Search products by name
+ *     tags: [Products]
+ *     parameters:
+ *       - in: query
+ *         name: keyword
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Keyword to search for products
+ *     responses:
+ *       200:
+ *         description: List of products
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Product'
+ *       400:
+ *         description: Bad request
+ */
+router.get("/search", productController.searchProductbyName);
 
 module.exports = router;

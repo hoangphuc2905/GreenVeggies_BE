@@ -94,4 +94,9 @@ productSchema.pre("save", async function (next) {
   next();
 });
 
+// Phương thức tìm sản phẩm theo danh mục
+productSchema.statics.getProductsByCategory = async function (categoryID) {
+  return await this.find({ category: categoryID }).populate("category");
+};
+
 module.exports = mongoose.model("Product", productSchema);

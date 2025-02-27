@@ -1,5 +1,6 @@
 const Review = require("../models/Review");
 const Product = require("../models/Product");
+const { get } = require("mongoose");
 
 const productService = {
   getLastProduct: async () => {
@@ -28,6 +29,15 @@ const productService = {
       .populate("reviews");
   },
 
+  getProductsByCategory: async (categoryID) => {
+    return await Product.getProductsByCategory(categoryID);
+  },
+
+  searchProductbyName: async (keyword) => {
+    return await Product.find({
+      name: { $regex: keyword, $options: "i" },
+    }).populate("category").populate("reviews");
+  },
 };
 
 module.exports = productService;
