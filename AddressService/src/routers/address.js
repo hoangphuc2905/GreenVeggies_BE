@@ -33,6 +33,14 @@ const addressController = require("../controllers/addressController");
  *         - district
  *         - ward
  *         - street
+ *   parameters:
+ *     UserIDParam:
+ *       in: query
+ *       name: userID
+ *       required: true
+ *       schema:
+ *         type: string
+ *       description: ID của người dùng
  */
 
 /**
@@ -65,24 +73,19 @@ router.post("/", addressController.createAddress);
 
 /**
  * @swagger
- * /api/address/{userID}:
+ * /api/address:
  *   get:
  *     summary: Lấy danh sách địa chỉ của người dùng
  *     tags:
  *       - Address
  *     parameters:
- *       - in: path
- *         name: userID
- *         required: true
- *         schema:
- *           type: string
- *         description: ID của người dùng
+ *       - $ref: '#/components/parameters/UserIDParam'
  *     responses:
  *       200:
  *         description: Danh sách địa chỉ của người dùng
  *       400:
  *         description: Yêu cầu không hợp lệ
  */
-router.get("/:userID", addressController.getAddresses);
+router.get("/", addressController.getAddresses);
 
 module.exports = router;

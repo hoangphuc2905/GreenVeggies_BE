@@ -5,7 +5,7 @@ const addressController = {
     try {
       const { userID, city, district, ward, street, isDefault } = req.body;
 
-      console.log("Received userID:", userID); 
+      console.log("Received userID:", userID);
 
       const defaultFlag = isDefault === "true" || isDefault === true;
 
@@ -28,8 +28,8 @@ const addressController = {
   getAddresses: async (req, res) => {
     try {
       const { userID } = req.query;
-      const address = await addressService.getAddresses(userID);
-      return res.status(200).json(address);
+      const addresses = await addressService.getAddresses(userID);
+      return res.status(200).json(addresses);
     } catch (error) {
       return res.status(500).json({ message: error.message });
     }
