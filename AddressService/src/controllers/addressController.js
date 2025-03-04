@@ -4,9 +4,11 @@ const addressController = {
   createAddress: async (req, res) => {
     try {
       const { userID, city, district, ward, street, isDefault } = req.body;
-      
+
+      console.log("Received userID:", userID); 
+
       const defaultFlag = isDefault === "true" || isDefault === true;
-      
+
       const newAddress = await addressService.createAddress(
         userID,
         city,
@@ -22,7 +24,6 @@ const addressController = {
       return res.status(500).json({ message: error.message });
     }
   },
-
   // Lấy danh sách địa chỉ của user
   getAddresses: async (req, res) => {
     try {

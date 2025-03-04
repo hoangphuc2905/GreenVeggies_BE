@@ -33,56 +33,6 @@ const addressController = require("../controllers/addressController");
  *         - district
  *         - ward
  *         - street
- *   parameters:
- *     UserIDParam:
- *       in: path
- *       name: userID
- *       required: true
- *       schema:
- *         type: string
- *       description: ID của người dùng
- *     AddressUserID:
- *       in: query
- *       name: userID
- *       required: true
- *       schema:
- *         type: string
- *       description: ID của người dùng
- *     AddressCity:
- *       in: query
- *       name: city
- *       required: true
- *       schema:
- *         type: string
- *       description: Thành phố
- *     AddressDistrict:
- *       in: query
- *       name: district
- *       required: true
- *       schema:
- *         type: string
- *       description: Quận/Huyện
- *     AddressWard:
- *       in: query
- *       name: ward
- *       required: true
- *       schema:
- *         type: string
- *       description: Phường/Xã
- *     AddressStreet:
- *       in: query
- *       name: street
- *       required: true
- *       schema:
- *         type: string
- *       description: Địa chỉ cụ thể
- *     AddressIsDefault:
- *       in: query
- *       name: isDefault
- *       required: false
- *       schema:
- *         type: boolean
- *       description: Đánh dấu là địa chỉ mặc định hay không
  */
 
 /**
@@ -99,13 +49,12 @@ const addressController = require("../controllers/addressController");
  *     summary: Thêm địa chỉ mới cho người dùng
  *     tags:
  *       - Address
- *     parameters:
- *       - $ref: '#/components/parameters/AddressUserID'
- *       - $ref: '#/components/parameters/AddressCity'
- *       - $ref: '#/components/parameters/AddressDistrict'
- *       - $ref: '#/components/parameters/AddressWard'
- *       - $ref: '#/components/parameters/AddressStreet'
- *       - $ref: '#/components/parameters/AddressIsDefault'
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Address'
  *     responses:
  *       201:
  *         description: Địa chỉ đã được thêm thành công
@@ -122,7 +71,12 @@ router.post("/", addressController.createAddress);
  *     tags:
  *       - Address
  *     parameters:
- *       - $ref: '#/components/parameters/UserIDParam'
+ *       - in: path
+ *         name: userID
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID của người dùng
  *     responses:
  *       200:
  *         description: Danh sách địa chỉ của người dùng

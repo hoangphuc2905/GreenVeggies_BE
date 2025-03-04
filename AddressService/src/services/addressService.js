@@ -10,7 +10,7 @@ const createAddress = async (
   isDefault
 ) => {
   // Kiểm tra user có tồn tại không
-  const user = await User.findById(userID);
+  const user = await User.findOne({ userID });
   if (!user) {
     throw new Error("User không tồn tại!");
   }
