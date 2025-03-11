@@ -33,7 +33,7 @@ swaggerSetup(app);
 
 //Routes
 app.use("/api/orders", require("./src/routers/order"));
-app.use("/api/shipping", require("./src/routers/shopping"));
+app.use("/api/shopping-carts", require("./src/routers/shopping"));
 
 app.listen(process.env.PORT, () => {
   console.log("Order Service is running on port " + process.env.PORT);

@@ -23,14 +23,14 @@ const router = express.Router();
  *           schema:
  *             type: object
  *             properties:
- *               userId:
+ *               userID:
  *                 type: string
  *               items:
  *                 type: array
  *                 items:
  *                   type: object
  *                   properties:
- *                     productId:
+ *                     productID:
  *                       type: string
  *                     quantity:
  *                       type: number
