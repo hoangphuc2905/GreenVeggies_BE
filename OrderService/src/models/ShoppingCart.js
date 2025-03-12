@@ -5,7 +5,7 @@ const shoppingCartSchema = new mongoose.Schema(
     shoppingCartID: {
       type: String,
       required: true,
-      unique: true, 
+      unique: true,
     },
     userID: {
       type: String,
@@ -14,7 +14,7 @@ const shoppingCartSchema = new mongoose.Schema(
     },
     shoppingCartDetailID: [
       {
-        type: String,
+        type: String, 
         ref: "ShoppingCartDetail",
       },
     ],

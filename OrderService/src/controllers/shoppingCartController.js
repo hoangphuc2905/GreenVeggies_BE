@@ -1,5 +1,6 @@
-const ShoppingCart = require("../models/ShoppingCart");
 const ShoppingCartDetail = require("../models/ShoppingCartDetail");
+const ShoppingCart = require("../models/ShoppingCart");
+const shoppingCartService = require("../services/shoppingCartService");
 
 const shoppingCartController = {
   // Create or update shopping cart
@@ -70,10 +71,7 @@ const shoppingCartController = {
   // Get all shopping carts
   getAllShoppingCarts: async (req, res) => {
     try {
-      const shoppingCarts = await ShoppingCart.find().populate({
-        path: "shoppingCartDetailID",
-        model: "ShoppingCartDetail",
-      });
+      const shoppingCarts = await shoppingCartService.getAllShoppingCarts();
       res.status(200).json(shoppingCarts);
     } catch (error) {
       res.status(400).json({ error: error.message });
@@ -81,14 +79,11 @@ const shoppingCartController = {
   },
 
   // Get shopping cart by shoppingCartID
-  getShoppingCartById: async (req, res) => {
+  getShoppingCartByID: async (req, res) => {
     try {
-      const shoppingCart = await ShoppingCart.findOne({
-        shoppingCartID: req.params.id,
-      }).populate({
-        path: "shoppingCartDetailID",
-        model: "ShoppingCartDetail",
-      });
+      const shoppingCart = await shoppingCartService.getShoppingCartByID(
+        req.params.shoppingCartID
+      );
       if (!shoppingCart) {
         return res.status(404).json({ error: "Shopping cart not found" });
       }
@@ -99,14 +94,11 @@ const shoppingCartController = {
   },
 
   // Get shopping cart by userID
-  getShoppingCartByUserId: async (req, res) => {
+  getShoppingCartByUserID: async (req, res) => {
     try {
-      const shoppingCart = await ShoppingCart.findOne({
-        userID: req.params.userID,
-      }).populate({
-        path: "shoppingCartDetailID",
-        model: "ShoppingCartDetail",
-      });
+      const shoppingCart = await shoppingCartService.getShoppingCartByUserID(
+        req.params.userID
+      );
       if (!shoppingCart) {
         return res.status(404).json({ error: "Shopping cart not found" });
       }
@@ -119,9 +111,9 @@ const shoppingCartController = {
   // Delete shopping cart
   deleteShoppingCart: async (req, res) => {
     try {
-      const shoppingCart = await ShoppingCart.findOneAndDelete({
-        shoppingCartID: req.params.id,
-      });
+      const shoppingCart = await shoppingCartService.deleteShoppingCart(
+        req.params.shoppingCartID
+      );
       if (!shoppingCart) {
         return res.status(404).json({ error: "Shopping cart not found" });
       }
@@ -132,6 +124,34 @@ const shoppingCartController = {
       });
 
       res.status(200).json({ message: "Giỏ hàng đã được xóa thành công" });
+    } catch (error) {
+      res.status(400).json({ error: error.message });
+    }
+  },
+
+  deleteShoppingCartDetail: async (req, res) => {
+    try {
+      const shoppingCartDetail =
+        await shoppingCartService.deleteShoppingCartDetail(
+          req.params.shoppingCartDetailID
+        );
+
+      if (!shoppingCartDetail) {
+        return res
+          .status(404)
+          .json({ error: "Shopping cart detail not found" });
+      }
+
+      // Cập nhật tổng giá của giỏ hàng chính
+      const shoppingCart = await ShoppingCart.findOne({
+        shoppingCartID: shoppingCartDetail.shoppingCartID,
+      });
+      shoppingCart.totalPrice -= shoppingCartDetail.totalAmount;
+      await shoppingCart.save();
+
+      res.status(200).json({
+        message: "Chi tiết giỏ hàng đã được xóa thành công",
+      });
     } catch (error) {
       res.status(400).json({ error: error.message });
     }

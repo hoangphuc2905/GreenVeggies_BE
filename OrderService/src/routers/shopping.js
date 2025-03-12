@@ -68,14 +68,14 @@ router.post("/", shoppingCartController.createOrUpdateShoppingCart);
  *                 properties:
  *                   _id:
  *                     type: string
- *                   userId:
+ *                   userID:
  *                     type: string
  *                   items:
  *                     type: array
  *                     items:
  *                       type: object
  *                       properties:
- *                         productId:
+ *                         productID:
  *                           type: string
  *                         quantity:
  *                           type: number
@@ -92,13 +92,13 @@ router.get("/", shoppingCartController.getAllShoppingCarts);
 
 /**
  * @swagger
- * /api/shopping-carts/{id}:
+ * /api/shopping-carts/{shoppingCartID}:
  *   get:
  *     summary: Tìm kiếm giỏ hàng theo shoppingCartID
  *     tags: [ShoppingCarts]
  *     parameters:
  *       - in: path
- *         name: id
+ *         name: shoppingCartID
  *         required: true
  *         schema:
  *           type: string
@@ -113,14 +113,14 @@ router.get("/", shoppingCartController.getAllShoppingCarts);
  *               properties:
  *                 _id:
  *                   type: string
- *                 userId:
+ *                 userID:
  *                   type: string
  *                 items:
  *                   type: array
  *                   items:
  *                     type: object
  *                     properties:
- *                       productId:
+ *                       productID:
  *                         type: string
  *                       quantity:
  *                         type: number
@@ -133,7 +133,7 @@ router.get("/", shoppingCartController.getAllShoppingCarts);
  *       404:
  *         description: Không tìm thấy giỏ hàng
  */
-router.get("/:id", shoppingCartController.getShoppingCartById);
+router.get("/:shoppingCartID", shoppingCartController.getShoppingCartByID);
 
 /**
  * @swagger
@@ -158,14 +158,14 @@ router.get("/:id", shoppingCartController.getShoppingCartById);
  *               properties:
  *                 _id:
  *                   type: string
- *                 userId:
+ *                 userID:
  *                   type: string
  *                 items:
  *                   type: array
  *                   items:
  *                     type: object
  *                     properties:
- *                       productId:
+ *                       productID:
  *                         type: string
  *                       quantity:
  *                         type: number
@@ -178,17 +178,17 @@ router.get("/:id", shoppingCartController.getShoppingCartById);
  *       404:
  *         description: Không tìm thấy giỏ hàng
  */
-router.get("/user/:userID", shoppingCartController.getShoppingCartByUserId);
+router.get("/user/:userID", shoppingCartController.getShoppingCartByUserID);
 
 /**
  * @swagger
- * /api/shopping-carts/{id}:
+ * /api/shopping-carts/{shoppingCartID}:
  *   delete:
  *     summary: Xóa giỏ hàng theo shoppingCartID
  *     tags: [ShoppingCarts]
  *     parameters:
  *       - in: path
- *         name: id
+ *         name: shoppingCartID
  *         required: true
  *         schema:
  *           type: string
@@ -199,6 +199,30 @@ router.get("/user/:userID", shoppingCartController.getShoppingCartByUserId);
  *       404:
  *         description: Không tìm thấy giỏ hàng
  */
-router.delete("/:id", shoppingCartController.deleteShoppingCart);
+router.delete("/:shoppingCartID", shoppingCartController.deleteShoppingCart);
+
+/**
+ * @swagger
+ * /api/shopping-carts/shopping-cart-details/{shoppingCartDetailID}:
+ *   delete:
+ *     summary: Xóa chi tiết giỏ hàng theo shoppingCartDetailID
+ *     tags: [ShoppingCarts]
+ *     parameters:
+ *       - in: path
+ *         name: shoppingCartDetailID
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: shoppingCartDetailID của chi tiết giỏ hàng cần xóa
+ *     responses:
+ *       200:
+ *         description: Chi tiết giỏ hàng được xóa thành công
+ *       404:
+ *         description: Không tìm thấy chi tiết giỏ hàng
+ */
+router.delete(
+    "/shopping-cart-details/:shoppingCartDetailID",
+  shoppingCartController.deleteShoppingCartDetail
+);
 
 module.exports = router;
