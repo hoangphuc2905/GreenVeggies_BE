@@ -14,7 +14,7 @@ const router = express.Router();
  * @swagger
  * /api/shopping-carts:
  *   post:
- *     summary: Tạo giỏ hàng mới
+ *     summary: Tạo hoặc cập nhật giỏ hàng mới
  *     tags: [ShoppingCarts]
  *     requestBody:
  *       required: true
@@ -36,17 +36,19 @@ const router = express.Router();
  *                       type: number
  *                     price:
  *                       type: number
+ *                     description:
+ *                       type: string
  *                     imageUrl:
  *                       type: string
  *               totalPrice:
  *                 type: number
  *     responses:
  *       201:
- *         description: Giỏ hàng được tạo thành công
+ *         description: Giỏ hàng được tạo hoặc cập nhật thành công
  *       400:
  *         description: Yêu cầu không hợp lệ
  */
-router.post("/", shoppingCartController.createShoppingCart);
+router.post("/", shoppingCartController.createOrUpdateShoppingCart);
 
 /**
  * @swagger
@@ -92,7 +94,7 @@ router.get("/", shoppingCartController.getAllShoppingCarts);
  * @swagger
  * /api/shopping-carts/{id}:
  *   get:
- *     summary: Tìm kiếm giỏ hàng theo ID
+ *     summary: Tìm kiếm giỏ hàng theo shoppingCartID
  *     tags: [ShoppingCarts]
  *     parameters:
  *       - in: path
@@ -100,7 +102,7 @@ router.get("/", shoppingCartController.getAllShoppingCarts);
  *         required: true
  *         schema:
  *           type: string
- *         description: ID của giỏ hàng cần tìm kiếm
+ *         description: shoppingCartID của giỏ hàng cần tìm kiếm
  *     responses:
  *       200:
  *         description: Tìm kiếm thành công
@@ -135,53 +137,54 @@ router.get("/:id", shoppingCartController.getShoppingCartById);
 
 /**
  * @swagger
- * /api/shopping-carts/{id}:
- *   put:
- *     summary: Cập nhật thông tin giỏ hàng theo ID
+ * /api/shopping-carts/user/{userID}:
+ *   get:
+ *     summary: Tìm kiếm giỏ hàng theo userID
  *     tags: [ShoppingCarts]
  *     parameters:
  *       - in: path
- *         name: id
+ *         name: userID
  *         required: true
  *         schema:
  *           type: string
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               userId:
- *                 type: string
- *               items:
- *                 type: array
- *                 items:
- *                   type: object
- *                   properties:
- *                     productId:
- *                       type: string
- *                     quantity:
- *                       type: number
- *                     price:
- *                       type: number
- *                     imageUrl:
- *                       type: string
- *               totalPrice:
- *                 type: number
+ *         description: userID của giỏ hàng cần tìm kiếm
  *     responses:
  *       200:
- *         description: Giỏ hàng được cập nhật thành công
+ *         description: Tìm kiếm thành công
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 _id:
+ *                   type: string
+ *                 userId:
+ *                   type: string
+ *                 items:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       productId:
+ *                         type: string
+ *                       quantity:
+ *                         type: number
+ *                       price:
+ *                         type: number
+ *                       imageUrl:
+ *                         type: string
+ *                 totalPrice:
+ *                   type: number
  *       404:
  *         description: Không tìm thấy giỏ hàng
  */
-router.put("/:id", shoppingCartController.updateShoppingCart);
+router.get("/user/:userID", shoppingCartController.getShoppingCartByUserId);
 
 /**
  * @swagger
  * /api/shopping-carts/{id}:
  *   delete:
- *     summary: Xóa giỏ hàng theo ID
+ *     summary: Xóa giỏ hàng theo shoppingCartID
  *     tags: [ShoppingCarts]
  *     parameters:
  *       - in: path
@@ -189,7 +192,7 @@ router.put("/:id", shoppingCartController.updateShoppingCart);
  *         required: true
  *         schema:
  *           type: string
- *         description: ID của giỏ hàng cần xóa
+ *         description: shoppingCartID của giỏ hàng cần xóa
  *     responses:
  *       200:
  *         description: Giỏ hàng được xóa thành công
