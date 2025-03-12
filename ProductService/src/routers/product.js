@@ -330,4 +330,30 @@ router.get("/category/:categoryID", productController.getProductsByCategory);
  */
 router.get("/search", productController.searchProductbyName);
 
+/**
+ * @swagger
+ * /api/products/delete-image:
+ *   post:
+ *     summary: Xóa hình ảnh
+ *     tags: [Products]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               publicId:
+ *                 type: string
+ *                 example: "sample_public_id"
+ *     responses:
+ *       200:
+ *         description: Xóa ảnh thành công
+ *       400:
+ *         description: Xóa ảnh thất bại
+ *       500:
+ *         description: Lỗi server
+ */
+router.post("/delete-image", productController.deleteImage);
+
 module.exports = router;

@@ -36,7 +36,9 @@ const productService = {
   searchProductbyName: async (keyword) => {
     return await Product.find({
       name: { $regex: keyword, $options: "i" },
-    }).populate("category").populate("reviews");
+    })
+      .populate("category")
+      .populate("reviews");
   },
 };
 

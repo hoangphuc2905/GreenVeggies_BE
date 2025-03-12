@@ -1,4 +1,11 @@
 const productService = require("../services/productService");
+const cloudinary = require("cloudinary").v2;
+
+cloudinary.config({
+  cloud_name: "dze57n4oa",
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 const productController = {
   getAllProducts: async (req, res) => {
@@ -86,6 +93,20 @@ const productController = {
       res.status(200).json(products);
     } catch (error) {
       res.status(400).json({ message: error.message });
+    }
+  },
+
+  deleteImage: async (req, res) => {
+    const { publicId } = req.body;
+    try {
+      const result = await cloudinary.uploader.destroy(publicId);
+      if (result.result === "ok") {
+        res.json({ success: true, message: "Xóa ảnh thành công!" });
+      } else {
+        res.status(400).json({ success: false, message: "Xóa ảnh thất bại!" });
+      }
+    } catch (error) {
+      res.status(500).json({ success: false, message: "Lỗi server!", error });
     }
   },
 };
