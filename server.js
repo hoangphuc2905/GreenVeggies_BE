@@ -39,7 +39,8 @@ app.use("/api/address", require("./src/routers/address"));
 app.use("/api/categories", require("./src/routers/category"));
 app.use("/api/reviews", require("./src/routers/review"));
 app.use("/api/orders", require("./src/routers/order"));
-app.use("/api/shopping-carts", require("./src/routers/shipping"));
+app.use("/api/shopping-carts", require("./src/routers/shopping"));
+app.use("/api/payment", require("./src/routers/payment"));
 
 app.listen(8000, () => {
   console.log("Server is running on port 8000");
