@@ -22,19 +22,23 @@ const orderController = require("../controllers/orderController");
  *           schema:
  *             type: object
  *             properties:
- *               orderID:
- *                 type: string
  *               userID:
  *                 type: string
- *               productID:
- *                 type: string
- *               quantity:
+ *               orderDetails:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     productID:
+ *                       type: string
+ *                     quantity:
+ *                       type: number
+ *               totalQuantity:
  *                 type: number
  *               totalAmount:
  *                 type: number
- *               status:
+ *               paymentMethod:
  *                 type: string
- *                 enum: ["Pending", "Shipped", "Delivered", "Cancelled"]
  *     responses:
  *       201:
  *         description: Đơn hàng được tạo thành công
@@ -52,31 +56,6 @@ router.post("/", orderController.createOrder);
  *     responses:
  *       200:
  *         description: Thành công
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 type: object
- *                 properties:
- *                   _id:
- *                     type: string
- *                   orderID:
- *                     type: string
- *                   userID:
- *                     type: string
- *                   productID:
- *                     type: string
- *                   quantity:
- *                     type: number
- *                   totalAmount:
- *                     type: number
- *                   status:
- *                     type: string
- *                   paymentMethod:
- *                     type: string
- *       400:
- *         description: Yêu cầu không hợp lệ
  */
 router.get("/", orderController.getAllOrders);
 
@@ -84,7 +63,7 @@ router.get("/", orderController.getAllOrders);
  * @swagger
  * /api/orders/{id}:
  *   get:
- *     summary: Tìm kiếm đơn hàng theo ID
+ *     summary: Lấy thông tin đơn hàng theo ID
  *     tags: [Orders]
  *     parameters:
  *       - in: path
@@ -92,31 +71,10 @@ router.get("/", orderController.getAllOrders);
  *         required: true
  *         schema:
  *           type: string
- *         description: ID của đơn hàng cần tìm kiếm
+ *         description: ID của đơn hàng
  *     responses:
  *       200:
- *         description: Tìm kiếm thành công
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 _id:
- *                   type: string
- *                 orderID:
- *                   type: string
- *                 userID:
- *                   type: string
- *                 productID:
- *                   type: string
- *                 quantity:
- *                   type: number
- *                 totalAmount:
- *                   type: number
- *                 status:
- *                   type: string
- *                 paymentMethod:
- *                   type: string
+ *         description: Thành công
  *       404:
  *         description: Không tìm thấy đơn hàng
  */
@@ -126,7 +84,7 @@ router.get("/:id", orderController.getOrderById);
  * @swagger
  * /api/orders/{id}:
  *   put:
- *     summary: Cập nhật thông tin đơn hàng theo ID
+ *     summary: Cập nhật thông tin đơn hàng
  *     tags: [Orders]
  *     parameters:
  *       - in: path
@@ -134,6 +92,7 @@ router.get("/:id", orderController.getOrderById);
  *         required: true
  *         schema:
  *           type: string
+ *         description: ID của đơn hàng cần cập nhật
  *     requestBody:
  *       required: true
  *       content:
@@ -141,26 +100,20 @@ router.get("/:id", orderController.getOrderById);
  *           schema:
  *             type: object
  *             properties:
- *               orderID:
- *                 type: string
- *               userID:
- *                 type: string
- *               productID:
- *                 type: string
- *               quantity:
+ *               totalQuantity:
  *                 type: number
  *               totalAmount:
  *                 type: number
  *               status:
  *                 type: string
  *                 enum: ["Pending", "Shipped", "Delivered", "Cancelled"]
- *               paymentMethod:
- *                 type: string
  *     responses:
  *       200:
  *         description: Đơn hàng được cập nhật thành công
  *       404:
  *         description: Không tìm thấy đơn hàng
+ *       400:
+ *         description: Yêu cầu không hợp lệ
  */
 router.put("/:id", orderController.updateOrder);
 

@@ -32,10 +32,10 @@ app.use(express.json());
 swaggerSetup(app);
 
 //Routes
-app.use("/api/orders", require("./src/routers/order"));
+app.use("/api/shopping-carts", require("./src/routers/shopping"));
 
 app.listen(process.env.PORT, () => {
-  console.log("Order Service is running on port " + process.env.PORT);
+  console.log("Shopping Cart Service is running on port " + process.env.PORT);
   console.log("Swagger is running on:");
-  console.log("http://localhost:8005/greenveggies-api-docs");
+  console.log("http://localhost:8006/greenveggies-api-docs");
 });

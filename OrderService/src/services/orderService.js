@@ -1,4 +1,5 @@
 const Order = require("../models/Order");
+const OrderDetail = require("../models/OrderDetails");
 
 exports.createOrder = async (orderData) => {
   const order = new Order(orderData);
@@ -6,11 +7,17 @@ exports.createOrder = async (orderData) => {
 };
 
 exports.getAllOrders = async () => {
-  return await Order.find().populate("userID productID paymentMethod");
+  return await Order.find()
+    .populate("userID")
+    .populate("orderDetails")
+    .populate("paymentMethod");
 };
 
 exports.getOrderById = async (id) => {
-  return await Order.findById(id).populate("userID productID paymentMethod");
+  return await Order.findById(id)
+    .populate("userID")
+    .populate("orderDetails")
+    .populate("paymentMethod");
 };
 
 exports.updateOrder = async (id, orderData) => {
@@ -18,4 +25,10 @@ exports.updateOrder = async (id, orderData) => {
     new: true,
     runValidators: true,
   });
+};
+
+exports.deleteOrder = async (id) => {
+  await OrderDetail.deleteMany({ orderID: id });
+
+  return await Order.findByIdAndDelete(id);
 };

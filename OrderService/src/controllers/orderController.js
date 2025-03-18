@@ -7,30 +7,56 @@ const orderController = {
     const session = await Order.startSession();
     session.startTransaction();
     try {
-      const { productID, quantity } = req.body;
+      const {
+        userID,
+        orderDetails,
+        totalQuantity,
+        totalAmount,
+        paymentMethod,
+      } = req.body;
 
-      // Tìm sản phẩm và kiểm tra số lượng
-      const product = await Product.findById(productID).session(session);
-      if (!product) {
-        throw new Error("Product not found");
-      }
-      if (product.quantity < quantity) {
-        throw new Error("Not enough products in stock");
+      // Kiểm tra và cập nhật số lượng sản phẩm
+      for (const detail of orderDetails) {
+        const { productID, quantity } = detail;
+
+        // Tìm sản phẩm
+        const product = await Product.findById(productID).session(session);
+        if (!product) {
+          throw new Error(`Product with ID ${productID} not found`);
+        }
+
+        // Kiểm tra số lượng sản phẩm trong kho
+        if (product.quantity < quantity) {
+          throw new Error(`Not enough stock for product ${product.name}`);
+        }
+
+        // Trừ số lượng sản phẩm
+        product.quantity -= quantity;
+        await product.save({ session });
       }
 
       // Tạo đơn hàng
-      const order = new Order(req.body);
-      await order.save({ session });
+      const newOrder = new Order({
+        userID,
+        orderDetails,
+        totalQuantity,
+        totalAmount,
+        paymentMethod,
+      });
 
-      // Trừ số lượng sản phẩm
-      product.quantity -= quantity;
-      await product.save({ session });
+      // Lưu đơn hàng
+      await newOrder.save({ session });
 
+      // Commit transaction
       await session.commitTransaction();
       session.endSession();
 
-      res.status(201).json(order);
+      res.status(201).json({
+        message: "Order created successfully",
+        order: newOrder,
+      });
     } catch (error) {
+      // Rollback transaction nếu có lỗi
       await session.abortTransaction();
       session.endSession();
       res.status(400).json({ error: error.message });
@@ -41,7 +67,7 @@ const orderController = {
   getAllOrders: async (req, res) => {
     try {
       const orders = await Order.find().populate(
-        "userID productID paymentMethod"
+        "userID orderDetails paymentMethod"
       );
       res.status(200).json(orders);
     } catch (error) {
@@ -53,7 +79,7 @@ const orderController = {
   getOrderById: async (req, res) => {
     try {
       const order = await Order.findById(req.params.id).populate(
-        "userID productID paymentMethod"
+        "userID orderDetails paymentMethod"
       );
       if (!order) {
         return res.status(404).json({ error: "Order not found" });

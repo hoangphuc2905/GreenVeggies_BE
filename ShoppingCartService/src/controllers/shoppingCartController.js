@@ -156,6 +156,42 @@ const shoppingCartController = {
       res.status(400).json({ error: error.message });
     }
   },
+
+  updateQuantity: async (req, res) => {
+    const { shoppingCartID, productID, quantity } = req.body;
+
+    try {
+      // Kiểm tra giỏ hàng
+      const shoppingCart = await ShoppingCart.findOne({ shoppingCartID });
+      if (!shoppingCart) {
+        return res.status(404).json({ message: "Không tìm thấy giỏ hàng" });
+      }
+
+      // Kiểm tra chi tiết giỏ hàng
+      const shoppingCartDetail = await ShoppingCartDetail.findOne({
+        shoppingCartID,
+        productID,
+      });
+      if (!shoppingCartDetail) {
+        return res.status(404).json({ message: "Không tìm thấy sản phẩm trong giỏ hàng" });
+      }
+
+      // Cập nhật số lượng và tổng giá
+      shoppingCartDetail.quantity = quantity;
+      shoppingCartDetail.totalAmount = quantity * shoppingCartDetail.totalAmount / shoppingCartDetail.quantity;
+      await shoppingCartDetail.save();
+
+      // Cập nhật tổng giá của giỏ hàng
+      const allDetails = await ShoppingCartDetail.find({ shoppingCartID });
+      shoppingCart.totalPrice = allDetails.reduce((sum, detail) => sum + detail.totalAmount, 0);
+      await shoppingCart.save();
+
+      res.status(200).json({ message: "Cập nhật số lượng thành công", shoppingCart });
+    } catch (error) {
+      res.status(500).json({ message: "Lỗi server", error });
+    }
+  },
+
 };
 
 module.exports = shoppingCartController;

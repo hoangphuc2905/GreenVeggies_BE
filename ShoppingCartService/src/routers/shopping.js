@@ -221,8 +221,41 @@ router.delete("/:shoppingCartID", shoppingCartController.deleteShoppingCart);
  *         description: Không tìm thấy chi tiết giỏ hàng
  */
 router.delete(
-    "/shopping-cart-details/:shoppingCartDetailID",
+  "/shopping-cart-details/:shoppingCartDetailID",
   shoppingCartController.deleteShoppingCartDetail
 );
+
+/**
+ * @swagger
+ * /api/shopping-carts/update-quantity:
+ *   patch:
+ *     summary: Cập nhật số lượng sản phẩm trong giỏ hàng
+ *     tags:
+ *       - ShoppingCarts
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               shoppingCartID:
+ *                 type: string
+ *                 example: "SC123456"
+ *               productID:
+ *                 type: string
+ *                 example: "P123456"
+ *               quantity:
+ *                 type: number
+ *                 example: 3
+ *     responses:
+ *       200:
+ *         description: Số lượng sản phẩm được cập nhật thành công
+ *       404:
+ *         description: Không tìm thấy giỏ hàng hoặc sản phẩm
+ *       400:
+ *         description: Yêu cầu không hợp lệ
+ */
+router.patch("/update-quantity", shoppingCartController.updateQuantity);
 
 module.exports = router;
