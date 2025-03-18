@@ -61,13 +61,13 @@ router.get("/", orderController.getAllOrders);
 
 /**
  * @swagger
- * /api/orders/{id}:
+ * /api/orders/{orderID}:
  *   get:
  *     summary: Lấy thông tin đơn hàng theo ID
  *     tags: [Orders]
  *     parameters:
  *       - in: path
- *         name: id
+ *         name: orderID
  *         required: true
  *         schema:
  *           type: string
@@ -78,17 +78,17 @@ router.get("/", orderController.getAllOrders);
  *       404:
  *         description: Không tìm thấy đơn hàng
  */
-router.get("/:id", orderController.getOrderById);
+router.get("/:orderID", orderController.getOrderById);
 
 /**
  * @swagger
- * /api/orders/{id}:
+ * /api/orders/{orderID}:
  *   put:
  *     summary: Cập nhật thông tin đơn hàng
  *     tags: [Orders]
  *     parameters:
  *       - in: path
- *         name: id
+ *         name: orderID
  *         required: true
  *         schema:
  *           type: string
@@ -100,10 +100,6 @@ router.get("/:id", orderController.getOrderById);
  *           schema:
  *             type: object
  *             properties:
- *               totalQuantity:
- *                 type: number
- *               totalAmount:
- *                 type: number
  *               status:
  *                 type: string
  *                 enum: ["Pending", "Shipped", "Delivered", "Cancelled"]
@@ -112,9 +108,7 @@ router.get("/:id", orderController.getOrderById);
  *         description: Đơn hàng được cập nhật thành công
  *       404:
  *         description: Không tìm thấy đơn hàng
- *       400:
- *         description: Yêu cầu không hợp lệ
  */
-router.put("/:id", orderController.updateOrder);
+router.put("/:orderID", orderController.updateOrder);
 
 module.exports = router;

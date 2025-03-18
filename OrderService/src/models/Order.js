@@ -8,7 +8,7 @@ const orderSchema = new mongoose.Schema(
       unique: true,
     },
     userID: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: String,
       ref: "User",
       required: [true, "Please provide a user ID"],
     },
@@ -33,7 +33,7 @@ const orderSchema = new mongoose.Schema(
       default: "Pending",
     },
     paymentMethod: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: String,
       ref: "PaymentMethod",
     },
   },

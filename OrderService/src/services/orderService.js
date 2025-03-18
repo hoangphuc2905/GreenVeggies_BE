@@ -10,25 +10,25 @@ exports.getAllOrders = async () => {
   return await Order.find()
     .populate("userID")
     .populate("orderDetails")
-    .populate("paymentMethod");
+    // .populate("paymentMethod");
 };
 
-exports.getOrderById = async (id) => {
-  return await Order.findById(id)
+exports.getOrderById = async (orderID) => {
+  return await Order.findOne({ orderID })
     .populate("userID")
     .populate("orderDetails")
-    .populate("paymentMethod");
+    // .populate("paymentMethod");
 };
 
-exports.updateOrder = async (id, orderData) => {
-  return await Order.findByIdAndUpdate(id, orderData, {
+exports.updateOrder = async (orderID, orderData) => {
+  return await Order.findByIdAndUpdate(orderID, orderData, {
     new: true,
     runValidators: true,
   });
 };
 
-exports.deleteOrder = async (id) => {
-  await OrderDetail.deleteMany({ orderID: id });
+exports.deleteOrder = async (orderID) => {
+  await OrderDetail.deleteMany({ orderID });
 
-  return await Order.findByIdAndDelete(id);
+  return await Order.findByIdAndDelete(orderID);
 };

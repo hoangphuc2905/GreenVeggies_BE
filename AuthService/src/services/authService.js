@@ -144,6 +144,7 @@ const authService = {
         email: user.email,
         name: user.name,
         userID: user.userID,
+        role: user.role,
       },
       token,
     };
