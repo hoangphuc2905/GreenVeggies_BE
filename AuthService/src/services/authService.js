@@ -103,7 +103,7 @@ const authService = {
       password: hashedPassword,
       dateOfBirth: dob,
       avatar: avatar || "",
-      role: role || "guest",
+      role: role || "user",
       accountStatus: accountStatus || "Active",
     });
 

@@ -14,6 +14,7 @@ const orderController = {
         totalQuantity,
         totalAmount,
         paymentMethod,
+        address,
       } = req.body;
 
       // Tạo đơn hàng trước để lấy orderID
@@ -50,6 +51,7 @@ const orderController = {
         totalQuantity,
         totalAmount,
         paymentMethod,
+        address,
       });
       await newOrder.save({ session });
 
@@ -149,13 +151,11 @@ const orderController = {
         throw new Error("Order not found");
       }
 
-      // Commit transaction
       await session.commitTransaction();
       session.endSession();
 
       res.status(200).json({ message: "Order deleted successfully" });
     } catch (error) {
-      // Rollback transaction nếu có lỗi
       await session.abortTransaction();
       session.endSession();
       res.status(500).json({ error: error.message });
@@ -164,18 +164,17 @@ const orderController = {
 
   updateOrder: async (req, res) => {
     try {
+      const { orderID } = req.params; 
+      const { status } = req.body; 
 
-      const { status } = req.body;
-
-      // Cập nhật trạng thái đơn hàng
-      const updatedOrder = await Order.findByIdAndUpdate(
-        req.params.orderID,
+      const updatedOrder = await Order.findOneAndUpdate(
+        { orderID }, 
         { status },
-        { new: true, runValidators: true }
+        { new: true, runValidators: true } 
       );
 
       if (!updatedOrder) {
-        return res.status(404).json({ message: "Order not found" });
+        return res.status(404).json({ error: "Order not found" });
       }
 
       res.status(200).json({

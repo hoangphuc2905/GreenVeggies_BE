@@ -77,6 +77,19 @@ services:
     volumes:
       - ./ShoppingCartService:/app
 
+  notification-service:
+    container_name: notification-service
+    build:
+      context: ./NotificationService
+    ports:
+      - "8007:8007"
+    environment:
+      - PORT=8007
+      - MONGODB_URL=mongodb+srv://mongobasic:hellohm11@cluster0.dbvpcq4.mongodb.net/greenveggies?retryWrites=true&w=majority&appName=Cluster0
+      - ORDER_SERVICE_URL=http://localhost:8007
+    volumes:
+      - ./NotificationService:/app
+
   review-service:
     container_name: review-service
     build:

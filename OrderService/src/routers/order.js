@@ -37,6 +37,8 @@ const orderController = require("../controllers/orderController");
  *                 type: number
  *               totalAmount:
  *                 type: number
+ *               address:
+ *                 type: string
  *               paymentMethod:
  *                 type: string
  *     responses:

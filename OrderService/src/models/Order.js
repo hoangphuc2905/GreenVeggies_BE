@@ -36,12 +36,16 @@ const orderSchema = new mongoose.Schema(
       type: String,
       ref: "PaymentMethod",
     },
+    address: {
+      type: String,
+      required: [true, "Please provide an address"],
+      trim: true,
+    },
   },
   { timestamps: true }
 );
 
-// Id hóa đơn theo quy tắc: 1.1	maHoaDon	String	Dãy số mã hóa đơn HĐXXXX + Mã userID + DDMMYY trong đó XXXX là số phát sinh theo quy luật tự tăng từ 1, DDMMYY là ngày tháng năm hiện tại	Tự phát sinh
-
+// Middleware để tự động tạo orderID
 orderSchema.pre("save", async function (next) {
   const currentDate = new Date();
 
