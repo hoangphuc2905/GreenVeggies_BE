@@ -71,8 +71,13 @@ const orderController = {
           throw new Error(`Not enough stock for product ${product.name}`);
         }
 
-        // Trừ số lượng sản phẩm
+        // Trừ số lượng sản phẩm trong kho
         product.quantity -= quantity;
+
+        // Cộng dồn số lượng bán (sold)
+        product.sold = (product.sold || 0) + quantity;
+
+        // Lưu sản phẩm sau khi cập nhật
         await product.save({ session });
 
         // Tạo chi tiết đơn hàng với orderID
@@ -80,7 +85,7 @@ const orderController = {
           orderID: newOrder.orderID, // Gán orderID sau khi Order đã được lưu
           productID,
           quantity,
-          totalAmount: product.price * quantity,
+          totalAmount: product.price * 1.5 * quantity, // Tính giá bán thành tiền
         });
         await orderDetail.save({ session });
         orderDetailDocs.push(orderDetail);
@@ -105,7 +110,6 @@ const orderController = {
       res.status(400).json({ error: error.message });
     }
   },
-
   // Lấy danh sách tất cả đơn hàng
   getAllOrders: async (req, res) => {
     try {
@@ -164,13 +168,13 @@ const orderController = {
 
   updateOrder: async (req, res) => {
     try {
-      const { orderID } = req.params; 
-      const { status } = req.body; 
+      const { orderID } = req.params;
+      const { status } = req.body;
 
       const updatedOrder = await Order.findOneAndUpdate(
-        { orderID }, 
+        { orderID },
         { status },
-        { new: true, runValidators: true } 
+        { new: true, runValidators: true }
       );
 
       if (!updatedOrder) {
