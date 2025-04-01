@@ -94,7 +94,6 @@ const productController = {
         "name",
         "description",
         "price",
-        "quantity",
         "category",
         "origin",
         "imageUrl",
