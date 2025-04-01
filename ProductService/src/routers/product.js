@@ -254,11 +254,6 @@ router.get("/:productID", productController.getProductById);
  *         schema:
  *           type: number
  *       - in: query
- *         name: quantity
- *         required: false
- *         schema:
- *           type: number
- *       - in: query
  *         name: category
  *         required: false
  *         schema:
