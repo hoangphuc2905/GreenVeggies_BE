@@ -17,6 +17,32 @@ const orderController = {
         address,
       } = req.body;
 
+      // Kiểm tra các trường bắt buộc
+      if (!userID) {
+        throw new Error("Vui lòng cung cấp mã người dùng (userID)");
+      }
+      if (
+        !orderDetails ||
+        !Array.isArray(orderDetails) ||
+        orderDetails.length === 0
+      ) {
+        throw new Error("Vui lòng cung cấp chi tiết đơn hàng (orderDetails)");
+      }
+      if (!totalQuantity || totalQuantity <= 0) {
+        throw new Error("Tổng số lượng (totalQuantity) phải lớn hơn 0");
+      }
+      if (!totalAmount || totalAmount <= 0) {
+        throw new Error("Tổng số tiền (totalAmount) phải lớn hơn 0");
+      }
+      if (!paymentMethod) {
+        throw new Error(
+          "Vui lòng cung cấp phương thức thanh toán (paymentMethod)"
+        );
+      }
+      if (!address) {
+        throw new Error("Vui lòng cung cấp địa chỉ giao hàng (address)");
+      }
+
       // Tạo đơn hàng trước để lấy orderID
       const currentDate = new Date();
       const orderDate = `${String(currentDate.getDate()).padStart(

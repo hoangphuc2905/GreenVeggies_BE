@@ -10,13 +10,18 @@ const authControllers = {
     try {
       const { email } = req.query;
       if (!email) {
-        return res.status(400).json({ message: "Email là bắt buộc." });
+        return res.status(400).json({ message: "Vui lòng nhập email." });
       }
 
       const response = await authService.sendOtp(email);
       res.status(200).json(response);
     } catch (err) {
-      res.status(400).json({ message: err.message });
+      res
+        .status(400)
+        .json({
+          message:
+            "Không thể gửi OTP. Có thể email không hợp lệ hoặc hệ thống gặp sự cố.",
+        });
     }
   },
 
@@ -24,10 +29,11 @@ const authControllers = {
   verifyOtp: async (req, res) => {
     try {
       const { email, otp } = req.query;
-      if (!email || !otp) {
-        return res.status(400).json({
-          message: "Vui lòng nhập đầy đủ email và OTP.",
-        });
+      if (!email) {
+        return res.status(400).json({ message: "Vui lòng nhập email." });
+      }
+      if (!otp) {
+        return res.status(400).json({ message: "Vui lòng nhập OTP." });
       }
 
       const response = await authService.verifyOtp(email, otp);
@@ -36,7 +42,12 @@ const authControllers = {
       }
       res.status(200).json(response);
     } catch (err) {
-      res.status(400).json({ message: err.message });
+      res
+        .status(400)
+        .json({
+          message:
+            "Không thể xác thực OTP. OTP có thể không chính xác hoặc đã hết hạn.",
+        });
     }
   },
 
@@ -57,11 +68,20 @@ const authControllers = {
         accountStatus,
       } = req.body;
 
-      if (!email || !phone || !username || !password || !dateOfBirth) {
-        return res.status(400).json({
-          message:
-            "Vui lòng nhập đầy đủ các trường: email, phone, username, password, dateOfBirth.",
-        });
+      if (!email) {
+        return res.status(400).json({ message: "Vui lòng nhập email." });
+      }
+      if (!phone) {
+        return res.status(400).json({ message: "Vui lòng nhập số điện thoại." });
+      }
+      if (!username) {
+        return res.status(400).json({ message: "Vui lòng nhập tên người dùng." });
+      }
+      if (!password) {
+        return res.status(400).json({ message: "Vui lòng nhập mật khẩu." });
+      }
+      if (!dateOfBirth) {
+        return res.status(400).json({ message: "Vui lòng nhập ngày sinh." });
       }
 
       // Kiểm tra xem email đã được xác thực OTP chưa
@@ -88,7 +108,12 @@ const authControllers = {
 
       res.status(201).json(response);
     } catch (err) {
-      res.status(400).json({ message: err.message });
+      res
+        .status(400)
+        .json({
+          message:
+            "Không thể đăng ký tài khoản. Có thể thông tin không hợp lệ hoặc hệ thống gặp sự cố.",
+        });
     }
   },
 
@@ -96,6 +121,13 @@ const authControllers = {
   login: async (req, res) => {
     try {
       const { email, password } = req.body;
+      if (!email) {
+        return res.status(400).json({ message: "Vui lòng nhập email." });
+      }
+      if (!password) {
+        return res.status(400).json({ message: "Vui lòng nhập mật khẩu." });
+      }
+
       const response = await authService.login(email, password);
 
       res
@@ -103,7 +135,11 @@ const authControllers = {
         .header("Authorization", `Bearer ${response.token}`)
         .json(response);
     } catch (err) {
-      res.status(400).json({ message: err.message });
+      res
+        .status(400)
+        .json({
+          message: "Không thể đăng nhập. Email hoặc mật khẩu không chính xác.",
+        });
     }
   },
 
@@ -112,26 +148,45 @@ const authControllers = {
     try {
       const { email } = req.query;
       if (!email) {
-        return res.status(400).json({ message: "Email là bắt buộc." });
+        return res.status(400).json({ message: "Vui lòng nhập email." });
       }
 
       const response = await authService.forgotPassword(email);
       res.status(200).json(response);
     } catch (err) {
-      res.status(400).json({ message: err.message });
+      res
+        .status(400)
+        .json({
+          message:
+            "Không thể gửi OTP quên mật khẩu. Có thể email không hợp lệ hoặc hệ thống gặp sự cố.",
+        });
     }
   },
 
   verifyOtpForPasswordReset: async (req, res) => {
     try {
       const { email, otp } = req.query;
+      if (!email) {
+        return res.status(400).json({ message: "Vui lòng nhập email." });
+      }
+      if (!otp) {
+        return res.status(400).json({ message: "Vui lòng nhập OTP." });
+      }
+
       const response = await authService.verifyOtpForPasswordReset(email, otp);
-      if (response.message === "Xác thực OTP thành công - tiếp tục đổi mật khẩu!") {
+      if (
+        response.message === "Xác thực OTP thành công - tiếp tục đổi mật khẩu!"
+      ) {
         verifiedPasswordResetEmails.add(email);
       }
       res.status(200).json(response);
     } catch (err) {
-      res.status(400).json({ message: err.message });
+      res
+        .status(400)
+        .json({
+          message:
+            "Không thể xác thực OTP. OTP có thể không chính xác hoặc đã hết hạn.",
+        });
     }
   },
 
@@ -139,10 +194,22 @@ const authControllers = {
   updatePassword: async (req, res) => {
     try {
       const { email, newPassword } = req.query;
+      if (!email) {
+        return res.status(400).json({ message: "Vui lòng nhập email." });
+      }
+      if (!newPassword) {
+        return res.status(400).json({ message: "Vui lòng nhập mật khẩu mới." });
+      }
+
       const response = await authService.updatePassword(email, newPassword);
       res.status(200).json(response);
     } catch (err) {
-      res.status(400).json({ message: err.message });
+      res
+        .status(400)
+        .json({
+          message:
+            "Không thể cập nhật mật khẩu. Có thể thông tin không hợp lệ hoặc hệ thống gặp sự cố.",
+        });
     }
   },
 
@@ -150,11 +217,14 @@ const authControllers = {
   changePassword: async (req, res) => {
     try {
       const { email, oldPassword, newPassword } = req.query;
-      if (!email || !oldPassword || !newPassword) {
-        return res.status(400).json({
-          message:
-            "Vui lòng nhập đầy đủ các trường: email, oldPassword và newPassword.",
-        });
+      if (!email) {
+        return res.status(400).json({ message: "Vui lòng nhập email." });
+      }
+      if (!oldPassword) {
+        return res.status(400).json({ message: "Vui lòng nhập mật khẩu cũ." });
+      }
+      if (!newPassword) {
+        return res.status(400).json({ message: "Vui lòng nhập mật khẩu mới." });
       }
 
       const response = await authService.changePassword(
@@ -164,7 +234,12 @@ const authControllers = {
       );
       res.status(200).json(response);
     } catch (err) {
-      res.status(400).json({ message: err.message });
+      res
+        .status(400)
+        .json({
+          message:
+            "Không thể đổi mật khẩu. Có thể thông tin không hợp lệ hoặc hệ thống gặp sự cố.",
+        });
     }
   },
 };

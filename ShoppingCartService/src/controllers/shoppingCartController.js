@@ -64,7 +64,9 @@ const shoppingCartController = {
         shoppingCart,
       });
     } catch (error) {
-      return res.status(500).json({ message: error.message });
+      return res
+        .status(500)
+        .json({ message: "Đã xảy ra lỗi trên máy chủ", error: error.message });
     }
   },
 
@@ -74,7 +76,12 @@ const shoppingCartController = {
       const shoppingCarts = await shoppingCartService.getAllShoppingCarts();
       res.status(200).json(shoppingCarts);
     } catch (error) {
-      res.status(400).json({ error: error.message });
+      res
+        .status(400)
+        .json({
+          error: "Không thể lấy danh sách giỏ hàng",
+          message: error.message,
+        });
     }
   },
 
@@ -89,7 +96,9 @@ const shoppingCartController = {
       }
       res.status(200).json(shoppingCart);
     } catch (error) {
-      res.status(400).json({ error: error.message });
+      res
+        .status(400)
+        .json({ error: "Không thể lấy giỏ hàng", message: error.message });
     }
   },
 
@@ -104,7 +113,12 @@ const shoppingCartController = {
       }
       res.status(200).json(shoppingCart);
     } catch (error) {
-      res.status(400).json({ error: error.message });
+      res
+        .status(400)
+        .json({
+          error: "Không thể lấy giỏ hàng theo người dùng",
+          message: error.message,
+        });
     }
   },
 
@@ -125,7 +139,9 @@ const shoppingCartController = {
 
       res.status(200).json({ message: "Giỏ hàng đã được xóa thành công" });
     } catch (error) {
-      res.status(400).json({ error: error.message });
+      res
+        .status(400)
+        .json({ error: "Không thể xóa giỏ hàng", message: error.message });
     }
   },
 
@@ -153,7 +169,12 @@ const shoppingCartController = {
         message: "Chi tiết giỏ hàng đã được xóa thành công",
       });
     } catch (error) {
-      res.status(400).json({ error: error.message });
+      res
+        .status(400)
+        .json({
+          error: "Không thể xóa chi tiết giỏ hàng",
+          message: error.message,
+        });
     }
   },
 
@@ -173,25 +194,35 @@ const shoppingCartController = {
         productID,
       });
       if (!shoppingCartDetail) {
-        return res.status(404).json({ message: "Không tìm thấy sản phẩm trong giỏ hàng" });
+        return res
+          .status(404)
+          .json({ message: "Không tìm thấy sản phẩm trong giỏ hàng" });
       }
 
       // Cập nhật số lượng và tổng giá
       shoppingCartDetail.quantity = quantity;
-      shoppingCartDetail.totalAmount = quantity * shoppingCartDetail.totalAmount / shoppingCartDetail.quantity;
+      shoppingCartDetail.totalAmount =
+        (quantity * shoppingCartDetail.totalAmount) /
+        shoppingCartDetail.quantity;
       await shoppingCartDetail.save();
 
       // Cập nhật tổng giá của giỏ hàng
       const allDetails = await ShoppingCartDetail.find({ shoppingCartID });
-      shoppingCart.totalPrice = allDetails.reduce((sum, detail) => sum + detail.totalAmount, 0);
+      shoppingCart.totalPrice = allDetails.reduce(
+        (sum, detail) => sum + detail.totalAmount,
+        0
+      );
       await shoppingCart.save();
 
-      res.status(200).json({ message: "Cập nhật số lượng thành công", shoppingCart });
+      res
+        .status(200)
+        .json({ message: "Cập nhật số lượng thành công", shoppingCart });
     } catch (error) {
-      res.status(500).json({ message: "Lỗi server", error });
+      res
+        .status(500)
+        .json({ message: "Đã xảy ra lỗi trên máy chủ", error: error.message });
     }
   },
-
 };
 
 module.exports = shoppingCartController;

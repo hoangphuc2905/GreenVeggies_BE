@@ -6,10 +6,24 @@ const reviewController = {
     try {
       const { userID, productID, rating, comment, imageUrl } = req.body;
 
+      // Kiểm tra các trường bắt buộc
+      if (!userID) {
+        return res.status(400).json({ message: "Thiếu trường userID" });
+      }
+      if (!productID) {
+        return res.status(400).json({ message: "Thiếu trường productID" });
+      }
+      if (!rating || rating < 1 || rating > 5) {
+        return res.status(400).json({ message: "Rating phải từ 1 đến 5" });
+      }
+      if (!comment) {
+        return res.status(400).json({ message: "Thiếu trường comment" });
+      }
+
       // Tìm sản phẩm theo productID
       const product = await Product.findOne({ productID });
       if (!product) {
-        return res.status(404).json({ message: "Product not found" });
+        return res.status(404).json({ message: "Không tìm thấy sản phẩm" });
       }
 
       const newReview = new Review({
@@ -31,7 +45,7 @@ const reviewController = {
 
       res
         .status(201)
-        .json({ message: "Review created successfully", review: newReview });
+        .json({ message: "Tạo đánh giá thành công", review: newReview });
     } catch (error) {
       res.status(400).json({ message: error.message });
     }

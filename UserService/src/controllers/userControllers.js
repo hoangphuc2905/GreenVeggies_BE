@@ -6,7 +6,7 @@ const userControllers = {
       const users = await userService.getAllUsers();
       res.status(200).json(users);
     } catch (err) {
-      res.status(500).json({ message: err.message });
+      res.status(500).json({ message: "Lỗi máy chủ, vui lòng thử lại sau." });
     }
   },
 
@@ -18,10 +18,10 @@ const userControllers = {
       if (user) {
         res.status(200).json(user);
       } else {
-        res.status(404).json({ message: "User not found" });
+        res.status(404).json({ message: "Không tìm thấy người dùng." });
       }
     } catch (err) {
-      res.status(500).json({ message: err.message });
+      res.status(500).json({ message: "Lỗi máy chủ, vui lòng thử lại sau." });
     }
   },
 
@@ -38,7 +38,9 @@ const userControllers = {
 
       // Nếu không có trường nào để cập nhật, trả về lỗi
       if (Object.keys(updateFields).length === 0) {
-        return res.status(400).json({ message: "No valid fields to update" });
+        return res
+          .status(400)
+          .json({ message: "Không có trường hợp lệ để cập nhật." });
       }
 
       // Nếu có mật khẩu, hash trước khi cập nhật
@@ -50,12 +52,12 @@ const userControllers = {
       const user = await userService.updateProfile(userID, updateFields);
 
       if (!user) {
-        return res.status(404).json({ message: "User not found" });
+        return res.status(404).json({ message: "Không tìm thấy người dùng." });
       }
 
-      res.status(200).json({ message: "Profile updated successfully", user });
+      res.status(200).json({ message: "Cập nhật hồ sơ thành công.", user });
     } catch (err) {
-      res.status(500).json({ message: err.message });
+      res.status(500).json({ message: "Lỗi máy chủ, vui lòng thử lại sau." });
     }
   },
 };

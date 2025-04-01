@@ -31,6 +31,32 @@ const productController = {
 
   createProduct: async (req, res) => {
     try {
+      // Kiểm tra các trường bắt buộc
+      const requiredFields = [
+        "name",
+        "description",
+        "price",
+        "quantity",
+        "category",
+        "origin",
+        "imageUrl",
+        "unit",
+      ];
+      const errors = {};
+
+      requiredFields.forEach((field) => {
+        if (!req.body[field] || req.body[field].length === 0) {
+          errors[field] = `Trường ${field} là bắt buộc.`;
+        }
+      });
+
+      if (Object.keys(errors).length > 0) {
+        return res.status(400).json({
+          message: "Thiếu các trường bắt buộc.",
+          errors,
+        });
+      }
+
       // Tạo mã sản phẩm tự động
       const lastProduct = await productService.getLastProduct();
       let newID = "SP0001";
@@ -48,7 +74,10 @@ const productController = {
       const product = await productService.createProduct(newProduct);
       res.status(201).json(product);
     } catch (err) {
-      res.status(400).json({ message: err.message });
+      res.status(400).json({
+        message: "Đã xảy ra lỗi khi tạo sản phẩm!",
+        error: err.message,
+      });
     }
   },
 
@@ -58,6 +87,32 @@ const productController = {
         return res
           .status(400)
           .json({ message: "Không thể chỉnh sửa mã sản phẩm!" });
+      }
+
+      // Kiểm tra các trường bắt buộc
+      const requiredFields = [
+        "name",
+        "description",
+        "price",
+        "quantity",
+        "category",
+        "origin",
+        "imageUrl",
+        "unit",
+      ];
+      const errors = {};
+
+      requiredFields.forEach((field) => {
+        if (req.body[field] === undefined || req.body[field] === null) {
+          errors[field] = `Trường ${field} là bắt buộc.`;
+        }
+      });
+
+      if (Object.keys(errors).length > 0) {
+        return res.status(400).json({
+          message: "Thiếu các trường bắt buộc.",
+          errors,
+        });
       }
 
       const product = await productService.updateProduct(
