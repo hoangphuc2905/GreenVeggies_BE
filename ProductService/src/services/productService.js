@@ -29,6 +29,16 @@ const productService = {
       .populate("reviews");
   },
 
+  updateProductStatus: async (productID, status) => {
+    return await Product.findOneAndUpdate(
+      { productID },
+      { status },
+      { new: true }
+    )
+      .populate("category")
+      .populate("reviews");
+  },
+
   getProductsByCategory: async (categoryID) => {
     return await Product.getProductsByCategory(categoryID);
   },

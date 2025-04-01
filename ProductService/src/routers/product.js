@@ -273,6 +273,43 @@ router.put("/:productID", productController.updateProduct);
 
 /**
  * @swagger
+ * /api/products/status/{productID}:
+ *   put:
+ *     summary: Cập nhật trạng thái sản phẩm
+ *     tags:
+ *       - Products
+ *     parameters:
+ *       - in: path
+ *         name: productID
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID của sản phẩm cần cập nhật trạng thái
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               status:
+ *                 type: string
+ *                 enum: [available, unavailable, out_of_stock]
+ *                 description: Trạng thái mới của sản phẩm
+ *             example:
+ *               status: "available"
+ *     responses:
+ *       200:
+ *         description: Trạng thái sản phẩm được cập nhật thành công
+ *       404:
+ *         description: Không tìm thấy sản phẩm
+ *       400:
+ *         description: Yêu cầu không hợp lệ
+ */
+router.put("/status/:productID", productController.updateProductStatus);
+
+/**
+ * @swagger
  * /api/products/category/{categoryID}:
  *   get:
  *     summary: Get all products by category

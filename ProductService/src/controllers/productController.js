@@ -127,6 +127,35 @@ const productController = {
     }
   },
 
+  updateProductStatus: async (req, res) => {
+    try {
+      const { status } = req.body;
+
+      // Chỉ chấp nhận 3 trạng thái cụ thể
+      const validStatuses = ["available", "unavailable", "out_of_stock"];
+      if (!validStatuses.includes(status)) {
+        return res.status(400).json({
+          message: `Trạng thái không hợp lệ. Chỉ chấp nhận các trạng thái: ${validStatuses.join(
+            ", "
+          )}.`,
+        });
+      }
+
+      const product = await productService.updateProductStatus(
+        req.params.productID,
+        status
+      );
+
+      if (!product) {
+        return res.status(404).json({ message: "Product not found" });
+      }
+
+      res.status(200).json(product);
+    } catch (err) {
+      res.status(400).json({ message: err.message });
+    }
+  },
+
   getProductsByCategory: async (req, res) => {
     try {
       const { categoryID } = req.params;
