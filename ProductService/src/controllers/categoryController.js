@@ -1,34 +1,49 @@
 const categoryService = require("../services/categoryService");
 
 const categoryController = {
+  // Lấy tất cả danh mục
   getAllCategories: async (req, res) => {
     try {
       const categories = await categoryService.getAllCategories();
       res.status(200).json(categories);
     } catch (err) {
-      res.status(500).json({ message: err.message });
+      res
+        .status(500)
+        .json({ errors: { server: "Lỗi máy chủ: " + err.message } });
     }
   },
 
+  // Lấy danh mục theo ID
   getCategoryById: async (req, res) => {
     try {
       const category = await categoryService.getCategoryById(req.params.id);
       if (!category) {
-        return res.status(404).json({ message: "Category not found" });
+        return res
+          .status(404)
+          .json({ errors: { categoryID: "Không tìm thấy danh mục." } });
       }
       res.status(200).json(category);
     } catch (err) {
-      res.status(500).json({ message: err.message });
+      res
+        .status(500)
+        .json({ errors: { server: "Lỗi máy chủ: " + err.message } });
     }
   },
 
+  // Tạo danh mục mới
   createCategory: async (req, res) => {
     try {
+      const errors = {};
       if (!req.body.name) {
-        return res.status(400).json({ message: "Tên danh mục là bắt buộc." });
+        errors.name = "Vui lòng nhập tên danh mục.";
       }
       if (!req.body.description) {
-        return res.status(400).json({ message: "Mô tả danh mục là bắt buộc." });
+        errors.description = "Vui lòng nhập mô tả danh mục.";
+      }
+
+      // Nếu có lỗi, trả về object lỗi
+      if (Object.keys(errors).length > 0) {
+        return res.status(400).json({ errors });
       }
 
       const count = await categoryService.countCategories();
@@ -39,17 +54,26 @@ const categoryController = {
 
       res.status(201).json(category);
     } catch (err) {
-      res.status(400).json({ message: `Lỗi khi tạo danh mục: ${err.message}` });
+      res
+        .status(500)
+        .json({ errors: { server: "Lỗi khi tạo danh mục: " + err.message } });
     }
   },
 
+  // Cập nhật danh mục
   updateCategory: async (req, res) => {
     try {
+      const errors = {};
       if (!req.body.name) {
-        return res.status(400).json({ message: "Tên danh mục là bắt buộc." });
+        errors.name = "Vui lòng nhập tên danh mục.";
       }
       if (!req.body.description) {
-        return res.status(400).json({ message: "Mô tả danh mục là bắt buộc." });
+        errors.description = "Vui lòng nhập mô tả danh mục.";
+      }
+
+      // Nếu có lỗi, trả về object lỗi
+      if (Object.keys(errors).length > 0) {
+        return res.status(400).json({ errors });
       }
 
       const category = await categoryService.updateCategory(
@@ -57,13 +81,15 @@ const categoryController = {
         req.body
       );
       if (!category) {
-        return res.status(404).json({ message: "Không tìm thấy danh mục." });
+        return res
+          .status(404)
+          .json({ errors: { categoryID: "Không tìm thấy danh mục." } });
       }
       res.status(200).json(category);
     } catch (err) {
-      res
-        .status(400)
-        .json({ message: `Lỗi khi cập nhật danh mục: ${err.message}` });
+      res.status(500).json({
+        errors: { server: "Lỗi khi cập nhật danh mục: " + err.message },
+      });
     }
   },
 };

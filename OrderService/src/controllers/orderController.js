@@ -17,30 +17,32 @@ const orderController = {
         address,
       } = req.body;
 
-      // Kiểm tra các trường bắt buộc
-      if (!userID) {
-        throw new Error("Vui lòng cung cấp mã người dùng (userID)");
-      }
+      // Tạo object lưu trữ lỗi
+      const errors = {};
+      if (!userID) errors.userID = "Vui lòng cung cấp mã người dùng.";
       if (
         !orderDetails ||
         !Array.isArray(orderDetails) ||
         orderDetails.length === 0
       ) {
-        throw new Error("Vui lòng cung cấp chi tiết đơn hàng (orderDetails)");
+        errors.orderDetails = "Vui lòng cung cấp chi tiết đơn hàng.";
       }
       if (!totalQuantity || totalQuantity <= 0) {
-        throw new Error("Tổng số lượng (totalQuantity) phải lớn hơn 0");
+        errors.totalQuantity = "Tổng số lượng phải lớn hơn 0.";
       }
       if (!totalAmount || totalAmount <= 0) {
-        throw new Error("Tổng số tiền (totalAmount) phải lớn hơn 0");
+        errors.totalAmount = "Tổng số tiền phải lớn hơn 0.";
       }
       if (!paymentMethod) {
-        throw new Error(
-          "Vui lòng cung cấp phương thức thanh toán (paymentMethod)"
-        );
+        errors.paymentMethod = "Vui lòng cung cấp phương thức thanh toán .";
       }
       if (!address) {
-        throw new Error("Vui lòng cung cấp địa chỉ giao hàng (address)");
+        errors.address = "Vui lòng cung cấp địa chỉ giao hàng.";
+      }
+
+      // Nếu có lỗi, trả về object lỗi
+      if (Object.keys(errors).length > 0) {
+        return res.status(400).json({ errors });
       }
 
       // Tạo đơn hàng trước để lấy orderID
@@ -89,12 +91,20 @@ const orderController = {
         // Tìm sản phẩm bằng productID
         const product = await Product.findOne({ productID }).session(session);
         if (!product) {
-          throw new Error(`Product with ID ${productID} not found`);
+          return res.status(400).json({
+            errors: {
+              productID: `Không tìm thấy sản phẩm với ID ${productID}.`,
+            },
+          });
         }
 
         // Kiểm tra số lượng sản phẩm trong kho
         if (product.quantity < quantity) {
-          throw new Error(`Not enough stock for product ${product.name}`);
+          return res.status(400).json({
+            errors: {
+              stock: `Sản phẩm ${product.name} không đủ số lượng trong kho. Số lượng còn lại: ${product.quantity}.`,
+            },
+          });
         }
 
         // Trừ số lượng sản phẩm trong kho
@@ -108,10 +118,10 @@ const orderController = {
 
         // Tạo chi tiết đơn hàng với orderID
         const orderDetail = new OrderDetail({
-          orderID: newOrder.orderID, // Gán orderID sau khi Order đã được lưu
+          orderID: newOrder.orderID,
           productID,
           quantity,
-          totalAmount: product.price * 1.5 * quantity, // Tính giá bán thành tiền
+          totalAmount: product.price * 1.5 * quantity,
         });
         await orderDetail.save({ session });
         orderDetailDocs.push(orderDetail);
@@ -126,24 +136,23 @@ const orderController = {
       session.endSession();
 
       res.status(201).json({
-        message: "Order created successfully",
+        message: "Đơn hàng đã được tạo thành công.",
         order: newOrder,
       });
     } catch (error) {
-      // Rollback transaction nếu có lỗi
       await session.abortTransaction();
       session.endSession();
-      res.status(400).json({ error: error.message });
+      res.status(500).json({ errors: { server: error.message } });
     }
   },
+
   // Lấy danh sách tất cả đơn hàng
   getAllOrders: async (req, res) => {
     try {
       const orders = await Order.find().populate("orderDetails");
-      // .populate("paymentMethod");
       res.status(200).json(orders);
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      res.status(500).json({ errors: { server: error.message } });
     }
   },
 
@@ -153,13 +162,14 @@ const orderController = {
       const order = await Order.findOne({
         orderID: req.params.orderID,
       }).populate("orderDetails");
-      // .populate("paymentMethod");
       if (!order) {
-        return res.status(404).json({ error: "Order not found" });
+        return res
+          .status(404)
+          .json({ errors: { orderID: "Không tìm thấy đơn hàng." } });
       }
       res.status(200).json(order);
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      res.status(500).json({ errors: { server: error.message } });
     }
   },
 
@@ -178,20 +188,23 @@ const orderController = {
         req.params.orderID
       ).session(session);
       if (!deletedOrder) {
-        throw new Error("Order not found");
+        return res
+          .status(404)
+          .json({ errors: { orderID: "Không tìm thấy đơn hàng." } });
       }
 
       await session.commitTransaction();
       session.endSession();
 
-      res.status(200).json({ message: "Order deleted successfully" });
+      res.status(200).json({ message: "Đơn hàng đã được xóa thành công." });
     } catch (error) {
       await session.abortTransaction();
       session.endSession();
-      res.status(500).json({ error: error.message });
+      res.status(500).json({ errors: { server: error.message } });
     }
   },
 
+  // Cập nhật trạng thái đơn hàng
   updateOrder: async (req, res) => {
     try {
       const { orderID } = req.params;
@@ -204,15 +217,17 @@ const orderController = {
       );
 
       if (!updatedOrder) {
-        return res.status(404).json({ error: "Order not found" });
+        return res
+          .status(404)
+          .json({ errors: { orderID: "Không tìm thấy đơn hàng." } });
       }
 
       res.status(200).json({
-        message: "Order updated successfully",
+        message: "Trạng thái đơn hàng đã được cập nhật thành công.",
         order: updatedOrder,
       });
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      res.status(500).json({ errors: { server: error.message } });
     }
   },
 };
