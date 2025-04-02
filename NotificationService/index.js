@@ -31,7 +31,7 @@ app.use(express.json());
 swaggerSetup(app);
 
 //Routes
-app.use("/api/notification", require("./src/routers/notification"));
+app.use("/api/notifications", require("./src/routers/notification"));
 
 app.listen(process.env.PORT, () => {
   console.log("AddressService is running on port 8007");

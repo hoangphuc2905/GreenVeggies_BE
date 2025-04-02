@@ -13,7 +13,9 @@ const productController = {
       const products = await productService.getAllProducts();
       res.status(200).json(products);
     } catch (err) {
-      res.status(500).json({ message: err.message });
+      res
+        .status(500)
+        .json({ errors: { server: "Lỗi máy chủ. Vui lòng thử lại sau." } });
     }
   },
 
@@ -21,40 +23,41 @@ const productController = {
     try {
       const product = await productService.getProductById(req.params.productID);
       if (!product) {
-        return res.status(404).json({ message: "Product not found" });
+        return res
+          .status(404)
+          .json({ errors: { productID: "Không tìm thấy sản phẩm." } });
       }
       res.status(200).json(product);
     } catch (err) {
-      res.status(500).json({ message: err.message });
+      res
+        .status(500)
+        .json({ errors: { server: "Lỗi máy chủ. Vui lòng thử lại sau." } });
     }
   },
 
   createProduct: async (req, res) => {
     try {
       // Kiểm tra các trường bắt buộc
-      const requiredFields = [
-        "name",
-        "description",
-        "price",
-        "quantity",
-        "category",
-        "origin",
-        "imageUrl",
-        "unit",
-      ];
-      const errors = {};
+      const requiredFields = {
+        name: "Vui lòng nhập tên sản phẩm.",
+        description: "Vui lòng nhập mô tả sản phẩm.",
+        price: "Vui lòng nhập giá sản phẩm.",
+        quantity: "Vui lòng nhập số lượng sản phẩm.",
+        category: "Vui lòng nhập danh mục sản phẩm.",
+        origin: "Vui lòng nhập nguồn gốc sản phẩm.",
+        imageUrl: "Vui lòng nhập URL hình ảnh sản phẩm.",
+        unit: "Vui lòng nhập đơn vị sản phẩm.",
+      };
 
-      requiredFields.forEach((field) => {
+      const errors = {};
+      Object.keys(requiredFields).forEach((field) => {
         if (!req.body[field] || req.body[field].length === 0) {
-          errors[field] = `Trường ${field} là bắt buộc.`;
+          errors[field] = requiredFields[field];
         }
       });
 
       if (Object.keys(errors).length > 0) {
-        return res.status(400).json({
-          message: "Thiếu các trường bắt buộc.",
-          errors,
-        });
+        return res.status(400).json({ errors });
       }
 
       // Tạo mã sản phẩm tự động
@@ -74,10 +77,11 @@ const productController = {
       const product = await productService.createProduct(newProduct);
       res.status(201).json(product);
     } catch (err) {
-      res.status(400).json({
-        message: "Đã xảy ra lỗi khi tạo sản phẩm!",
-        error: err.message,
-      });
+      res
+        .status(500)
+        .json({
+          errors: { server: "Lỗi khi tạo sản phẩm. Vui lòng thử lại sau." },
+        });
     }
   },
 
@@ -86,32 +90,29 @@ const productController = {
       if (req.body.productID) {
         return res
           .status(400)
-          .json({ message: "Không thể chỉnh sửa mã sản phẩm!" });
+          .json({ errors: { productID: "Không thể chỉnh sửa mã sản phẩm." } });
       }
 
       // Kiểm tra các trường bắt buộc
-      const requiredFields = [
-        "name",
-        "description",
-        "price",
-        "category",
-        "origin",
-        "imageUrl",
-        "unit",
-      ];
-      const errors = {};
+      const requiredFields = {
+        name: "Vui lòng nhập tên sản phẩm.",
+        description: "Vui lòng nhập mô tả sản phẩm.",
+        price: "Vui lòng nhập giá sản phẩm.",
+        category: "Vui lòng nhập danh mục sản phẩm.",
+        origin: "Vui lòng nhập nguồn gốc sản phẩm.",
+        imageUrl: "Vui lòng nhập URL hình ảnh sản phẩm.",
+        unit: "Vui lòng nhập đơn vị sản phẩm.",
+      };
 
-      requiredFields.forEach((field) => {
+      const errors = {};
+      Object.keys(requiredFields).forEach((field) => {
         if (req.body[field] === undefined || req.body[field] === null) {
-          errors[field] = `Trường ${field} là bắt buộc.`;
+          errors[field] = requiredFields[field];
         }
       });
 
       if (Object.keys(errors).length > 0) {
-        return res.status(400).json({
-          message: "Thiếu các trường bắt buộc.",
-          errors,
-        });
+        return res.status(400).json({ errors });
       }
 
       const product = await productService.updateProduct(
@@ -119,11 +120,15 @@ const productController = {
         req.body
       );
       if (!product) {
-        return res.status(404).json({ message: "Product not found" });
+        return res
+          .status(404)
+          .json({ errors: { productID: "Không tìm thấy sản phẩm." } });
       }
       res.status(200).json(product);
     } catch (err) {
-      res.status(400).json({ message: err.message });
+      res
+        .status(500)
+        .json({ errors: { server: "Lỗi máy chủ. Vui lòng thử lại sau." } });
     }
   },
 
@@ -135,9 +140,11 @@ const productController = {
       const validStatuses = ["available", "unavailable", "out_of_stock"];
       if (!validStatuses.includes(status)) {
         return res.status(400).json({
-          message: `Trạng thái không hợp lệ. Chỉ chấp nhận các trạng thái: ${validStatuses.join(
-            ", "
-          )}.`,
+          errors: {
+            status: `Trạng thái không hợp lệ. Chỉ chấp nhận các trạng thái: ${validStatuses.join(
+              ", "
+            )}.`,
+          },
         });
       }
 
@@ -147,12 +154,16 @@ const productController = {
       );
 
       if (!product) {
-        return res.status(404).json({ message: "Product not found" });
+        return res
+          .status(404)
+          .json({ errors: { productID: "Không tìm thấy sản phẩm." } });
       }
 
       res.status(200).json(product);
     } catch (err) {
-      res.status(400).json({ message: err.message });
+      res
+        .status(500)
+        .json({ errors: { server: "Lỗi máy chủ. Vui lòng thử lại sau." } });
     }
   },
 
@@ -162,7 +173,9 @@ const productController = {
       const products = await productService.getProductsByCategory(categoryID);
       res.status(200).json(products);
     } catch (error) {
-      res.status(400).json({ message: error.message });
+      res
+        .status(500)
+        .json({ errors: { server: "Lỗi máy chủ. Vui lòng thử lại sau." } });
     }
   },
 
@@ -171,11 +184,15 @@ const productController = {
       const { keyword } = req.query;
       const products = await productService.searchProductbyName(keyword);
       if (products.length === 0) {
-        return res.status(404).json({ message: "Product not found" });
+        return res
+          .status(404)
+          .json({ errors: { keyword: "Không tìm thấy sản phẩm." } });
       }
       res.status(200).json(products);
     } catch (error) {
-      res.status(400).json({ message: error.message });
+      res
+        .status(500)
+        .json({ errors: { server: "Lỗi máy chủ. Vui lòng thử lại sau." } });
     }
   },
 
@@ -186,10 +203,16 @@ const productController = {
       if (result.result === "ok") {
         res.json({ success: true, message: "Xóa ảnh thành công!" });
       } else {
-        res.status(400).json({ success: false, message: "Xóa ảnh thất bại!" });
+        res
+          .status(400)
+          .json({
+            errors: { image: "Không thể xóa ảnh. Vui lòng kiểm tra lại." },
+          });
       }
     } catch (error) {
-      res.status(500).json({ success: false, message: "Lỗi server!", error });
+      res
+        .status(500)
+        .json({ errors: { server: "Lỗi máy chủ. Vui lòng thử lại sau." } });
     }
   },
 };

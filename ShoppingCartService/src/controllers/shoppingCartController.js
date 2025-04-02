@@ -6,7 +6,22 @@ const shoppingCartController = {
   // Create or update shopping cart
   createOrUpdateShoppingCart: async (req, res) => {
     try {
+      const errors = {};
       const { userID, items, totalPrice } = req.body;
+
+      if (!userID) {
+        errors.userID = "Vui lòng cung cấp userID.";
+      }
+      if (!items || !Array.isArray(items) || items.length === 0) {
+        errors.items = "Vui lòng cung cấp danh sách sản phẩm.";
+      }
+      if (!totalPrice || totalPrice <= 0) {
+        errors.totalPrice = "Vui lòng cung cấp tổng giá hợp lệ.";
+      }
+
+      if (Object.keys(errors).length > 0) {
+        return res.status(400).json({ errors });
+      }
 
       let shoppingCart = await ShoppingCart.findOne({ userID });
 
@@ -32,14 +47,20 @@ const shoppingCartController = {
       });
 
       for (const item of items) {
+        if (!item.productID || !item.quantity || !item.price) {
+          return res.status(400).json({
+            errors: {
+              item: "Mỗi sản phẩm phải có productID, quantity và price.",
+            },
+          });
+        }
+
         if (detailMap.has(item.productID.toString())) {
-          // Nếu sản phẩm đã tồn tại trong giỏ hàng, cập nhật số lượng và tổng giá
           let detail = detailMap.get(item.productID.toString());
           detail.quantity += item.quantity;
           detail.totalAmount += item.price * item.quantity;
           await detail.save();
         } else {
-          // Nếu sản phẩm chưa tồn tại, thêm mới vào giỏ hàng
           let newDetail = new ShoppingCartDetail({
             shoppingCartDetailID: `SCD${Date.now()}`,
             shoppingCartID: shoppingCart.shoppingCartID,
@@ -53,20 +74,22 @@ const shoppingCartController = {
         }
       }
 
-      // Cập nhật danh sách chi tiết giỏ hàng trong giỏ hàng chính
       shoppingCart.shoppingCartDetailID = Array.from(detailMap.values()).map(
         (detail) => detail.shoppingCartDetailID
       );
       await shoppingCart.save();
 
       return res.status(201).json({
-        message: "Giỏ hàng được tạo hoặc cập nhật thành công",
+        message: "Giỏ hàng được tạo hoặc cập nhật thành công.",
         shoppingCart,
       });
     } catch (error) {
-      return res
-        .status(500)
-        .json({ message: "Đã xảy ra lỗi trên máy chủ", error: error.message });
+      return res.status(500).json({
+        errors: {
+          server: "Đã xảy ra lỗi trên máy chủ.",
+          message: error.message,
+        },
+      });
     }
   },
 
@@ -76,89 +99,130 @@ const shoppingCartController = {
       const shoppingCarts = await shoppingCartService.getAllShoppingCarts();
       res.status(200).json(shoppingCarts);
     } catch (error) {
-      res
-        .status(400)
-        .json({
-          error: "Không thể lấy danh sách giỏ hàng",
+      res.status(400).json({
+        errors: {
+          server: "Không thể lấy danh sách giỏ hàng.",
           message: error.message,
-        });
+        },
+      });
     }
   },
 
   // Get shopping cart by shoppingCartID
   getShoppingCartByID: async (req, res) => {
     try {
+      const { shoppingCartID } = req.params;
+
+      if (!shoppingCartID) {
+        return res.status(400).json({
+          errors: { shoppingCartID: "Vui lòng cung cấp shoppingCartID." },
+        });
+      }
+
       const shoppingCart = await shoppingCartService.getShoppingCartByID(
-        req.params.shoppingCartID
+        shoppingCartID
       );
       if (!shoppingCart) {
-        return res.status(404).json({ error: "Shopping cart not found" });
+        return res.status(404).json({
+          errors: { shoppingCartID: "Không tìm thấy giỏ hàng." },
+        });
       }
       res.status(200).json(shoppingCart);
     } catch (error) {
-      res
-        .status(400)
-        .json({ error: "Không thể lấy giỏ hàng", message: error.message });
+      res.status(400).json({
+        errors: { server: "Không thể lấy giỏ hàng.", message: error.message },
+      });
     }
   },
 
   // Get shopping cart by userID
   getShoppingCartByUserID: async (req, res) => {
     try {
+      const { userID } = req.params;
+
+      if (!userID) {
+        return res.status(400).json({
+          errors: { userID: "Vui lòng cung cấp userID." },
+        });
+      }
+
       const shoppingCart = await shoppingCartService.getShoppingCartByUserID(
-        req.params.userID
+        userID
       );
       if (!shoppingCart) {
-        return res.status(404).json({ error: "Shopping cart not found" });
+        return res.status(404).json({
+          errors: { userID: "Không tìm thấy giỏ hàng." },
+        });
       }
       res.status(200).json(shoppingCart);
     } catch (error) {
-      res
-        .status(400)
-        .json({
-          error: "Không thể lấy giỏ hàng theo người dùng",
+      res.status(400).json({
+        errors: {
+          server: "Không thể lấy giỏ hàng theo người dùng.",
           message: error.message,
-        });
+        },
+      });
     }
   },
 
   // Delete shopping cart
   deleteShoppingCart: async (req, res) => {
     try {
-      const shoppingCart = await shoppingCartService.deleteShoppingCart(
-        req.params.shoppingCartID
-      );
-      if (!shoppingCart) {
-        return res.status(404).json({ error: "Shopping cart not found" });
+      const { shoppingCartID } = req.params;
+
+      if (!shoppingCartID) {
+        return res.status(400).json({
+          errors: { shoppingCartID: "Vui lòng cung cấp shoppingCartID." },
+        });
       }
 
-      // Xóa tất cả các chi tiết giỏ hàng liên quan
+      const shoppingCart = await shoppingCartService.deleteShoppingCart(
+        shoppingCartID
+      );
+      if (!shoppingCart) {
+        return res.status(404).json({
+          errors: { shoppingCartID: "Không tìm thấy giỏ hàng." },
+        });
+      }
+
+      // Delete all related shopping cart details
       await ShoppingCartDetail.deleteMany({
         shoppingCartID: shoppingCart.shoppingCartID,
       });
 
-      res.status(200).json({ message: "Giỏ hàng đã được xóa thành công" });
+      res.status(200).json({ message: "Giỏ hàng đã được xóa thành công." });
     } catch (error) {
-      res
-        .status(400)
-        .json({ error: "Không thể xóa giỏ hàng", message: error.message });
+      res.status(400).json({
+        errors: { server: "Không thể xóa giỏ hàng.", message: error.message },
+      });
     }
   },
 
+  // Delete shopping cart detail
   deleteShoppingCartDetail: async (req, res) => {
     try {
+      const { shoppingCartDetailID } = req.params;
+
+      if (!shoppingCartDetailID) {
+        return res.status(400).json({
+          errors: {
+            shoppingCartDetailID: "Vui lòng cung cấp shoppingCartDetailID.",
+          },
+        });
+      }
+
       const shoppingCartDetail =
         await shoppingCartService.deleteShoppingCartDetail(
-          req.params.shoppingCartDetailID
+          shoppingCartDetailID
         );
 
       if (!shoppingCartDetail) {
-        return res
-          .status(404)
-          .json({ error: "Shopping cart detail not found" });
+        return res.status(404).json({
+          errors: { shoppingCartDetailID: "Không tìm thấy chi tiết giỏ hàng." },
+        });
       }
 
-      // Cập nhật tổng giá của giỏ hàng chính
+      // Update total price of the main shopping cart
       const shoppingCart = await ShoppingCart.findOne({
         shoppingCartID: shoppingCartDetail.shoppingCartID,
       });
@@ -166,47 +230,65 @@ const shoppingCartController = {
       await shoppingCart.save();
 
       res.status(200).json({
-        message: "Chi tiết giỏ hàng đã được xóa thành công",
+        message: "Chi tiết giỏ hàng đã được xóa thành công.",
       });
     } catch (error) {
-      res
-        .status(400)
-        .json({
-          error: "Không thể xóa chi tiết giỏ hàng",
+      res.status(400).json({
+        errors: {
+          server: "Không thể xóa chi tiết giỏ hàng.",
           message: error.message,
-        });
+        },
+      });
     }
   },
 
+  // Update quantity of a product in the shopping cart
   updateQuantity: async (req, res) => {
     const { shoppingCartID, productID, quantity } = req.body;
 
     try {
-      // Kiểm tra giỏ hàng
-      const shoppingCart = await ShoppingCart.findOne({ shoppingCartID });
-      if (!shoppingCart) {
-        return res.status(404).json({ message: "Không tìm thấy giỏ hàng" });
+      const errors = {};
+      if (!shoppingCartID) {
+        errors.shoppingCartID = "Vui lòng cung cấp shoppingCartID.";
+      }
+      if (!productID) {
+        errors.productID = "Vui lòng cung cấp productID.";
+      }
+      if (!quantity || quantity <= 0) {
+        errors.quantity = "Vui lòng cung cấp số lượng hợp lệ.";
       }
 
-      // Kiểm tra chi tiết giỏ hàng
+      if (Object.keys(errors).length > 0) {
+        return res.status(400).json({ errors });
+      }
+
+      // Check shopping cart
+      const shoppingCart = await ShoppingCart.findOne({ shoppingCartID });
+      if (!shoppingCart) {
+        return res.status(404).json({
+          errors: { shoppingCartID: "Không tìm thấy giỏ hàng." },
+        });
+      }
+
+      // Check shopping cart detail
       const shoppingCartDetail = await ShoppingCartDetail.findOne({
         shoppingCartID,
         productID,
       });
       if (!shoppingCartDetail) {
-        return res
-          .status(404)
-          .json({ message: "Không tìm thấy sản phẩm trong giỏ hàng" });
+        return res.status(404).json({
+          errors: { productID: "Không tìm thấy sản phẩm trong giỏ hàng." },
+        });
       }
 
-      // Cập nhật số lượng và tổng giá
-      shoppingCartDetail.quantity = quantity;
+      // Update quantity and total amount
       shoppingCartDetail.totalAmount =
-        (quantity * shoppingCartDetail.totalAmount) /
-        shoppingCartDetail.quantity;
+        (shoppingCartDetail.totalAmount / shoppingCartDetail.quantity) *
+        quantity;
+      shoppingCartDetail.quantity = quantity;
       await shoppingCartDetail.save();
 
-      // Cập nhật tổng giá của giỏ hàng
+      // Update total price of the shopping cart
       const allDetails = await ShoppingCartDetail.find({ shoppingCartID });
       shoppingCart.totalPrice = allDetails.reduce(
         (sum, detail) => sum + detail.totalAmount,
@@ -214,13 +296,17 @@ const shoppingCartController = {
       );
       await shoppingCart.save();
 
-      res
-        .status(200)
-        .json({ message: "Cập nhật số lượng thành công", shoppingCart });
+      res.status(200).json({
+        message: "Cập nhật số lượng thành công.",
+        shoppingCart,
+      });
     } catch (error) {
-      res
-        .status(500)
-        .json({ message: "Đã xảy ra lỗi trên máy chủ", error: error.message });
+      res.status(500).json({
+        errors: {
+          server: "Đã xảy ra lỗi trên máy chủ.",
+          message: error.message,
+        },
+      });
     }
   },
 };

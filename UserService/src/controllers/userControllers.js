@@ -6,58 +6,76 @@ const userControllers = {
       const users = await userService.getAllUsers();
       res.status(200).json(users);
     } catch (err) {
-      res.status(500).json({ message: "Lỗi máy chủ, vui lòng thử lại sau." });
+      res.status(500).json({
+        errors: { server: "Lỗi máy chủ, vui lòng thử lại sau." },
+      });
     }
   },
 
   getUserInfo: async (req, res) => {
-    const userID = req.params.userID;
+    const errors = {};
+    const { userID } = req.params;
+
+    if (!userID) {
+      errors.userID = "Vui lòng cung cấp userID.";
+      return res.status(400).json({ errors });
+    }
 
     try {
       const user = await userService.getUserInfo(userID);
       if (user) {
         res.status(200).json(user);
       } else {
-        res.status(404).json({ message: "Không tìm thấy người dùng." });
+        res.status(404).json({
+          errors: { userID: "Không tìm thấy người dùng." },
+        });
       }
     } catch (err) {
-      res.status(500).json({ message: "Lỗi máy chủ, vui lòng thử lại sau." });
+      res.status(500).json({
+        errors: { server: "Lỗi máy chủ, vui lòng thử lại sau." },
+      });
     }
   },
 
   updateProfile: async (req, res) => {
-    const userID = req.params.userID;
+    const errors = {};
+    const { userID } = req.params;
+
+    if (!userID) {
+      errors.userID = "Vui lòng cung cấp userID.";
+      return res.status(400).json({ errors });
+    }
 
     try {
       const updateFields = {};
       for (const key in req.body) {
         if (req.body[key] !== undefined && req.body[key] !== "") {
           updateFields[key] = req.body[key];
+        } else {
+          errors[key] = `Vui lòng cung cấp giá trị cho trường ${key}.`;
         }
       }
 
-      // Nếu không có trường nào để cập nhật, trả về lỗi
       if (Object.keys(updateFields).length === 0) {
-        return res
-          .status(400)
-          .json({ message: "Không có trường hợp lệ để cập nhật." });
-      }
-
-      // Nếu có mật khẩu, hash trước khi cập nhật
-      if (updateFields.password) {
-        const salt = await bcrypt.genSalt(10);
-        updateFields.password = await bcrypt.hash(updateFields.password, salt);
+        errors.fields = "Không có trường hợp lệ để cập nhật.";
+        return res.status(400).json({ errors });
       }
 
       const user = await userService.updateProfile(userID, updateFields);
 
       if (!user) {
-        return res.status(404).json({ message: "Không tìm thấy người dùng." });
+        errors.userID = "Không tìm thấy người dùng.";
+        return res.status(404).json({ errors });
       }
 
-      res.status(200).json({ message: "Cập nhật hồ sơ thành công.", user });
+      res.status(200).json({
+        message: "Cập nhật hồ sơ thành công.",
+        user,
+      });
     } catch (err) {
-      res.status(500).json({ message: "Lỗi máy chủ, vui lòng thử lại sau." });
+      res.status(500).json({
+        errors: { server: "Lỗi máy chủ, vui lòng thử lại sau." },
+      });
     }
   },
 };
