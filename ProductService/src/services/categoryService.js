@@ -13,8 +13,14 @@ const categoryService = {
     return await Category.create(categoryData);
   },
 
+  getCategoryByName: async (name) => {
+    return await Category.findOne({ name });
+  },
+
   updateCategory: async (id, updateData) => {
-    return await Category.findOneAndUpdate({ categoryID: id }, updateData, { new: true });
+    return await Category.findOneAndUpdate({ categoryID: id }, updateData, {
+      new: true,
+    });
   },
 
   countCategories: async () => {
