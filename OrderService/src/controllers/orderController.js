@@ -1,6 +1,8 @@
 const Order = require("../models/Order");
 const OrderDetail = require("../models/OrderDetails");
 const Product = require("../models/Product");
+const orderService = require("../services/orderService");
+const User = require("../models/User");
 
 const orderController = {
   // Tạo đơn hàng mới
@@ -225,6 +227,40 @@ const orderController = {
       res.status(200).json({
         message: "Trạng thái đơn hàng đã được cập nhật thành công.",
         order: updatedOrder,
+      });
+    } catch (error) {
+      res.status(500).json({ errors: { server: error.message } });
+    }
+  },
+
+  getOrdersByUserId: async (req, res) => {
+    try {
+      const { userID } = req.params;
+
+      if (!userID) {
+        return res.status(400).json({
+          errors: { userID: "Vui lòng cung cấp mã người dùng." },
+        });
+      }
+
+      const user = await User.findOne({ userID });
+      if (!user) {
+        return res.status(404).json({
+          errors: { userID: "Không tìm thấy thông tin người dùng." },
+        });
+      }
+
+      const orders = await Order.find({ userID }).populate("orderDetails");
+
+      if (!orders || orders.length === 0) {
+        return res.status(404).json({
+          errors: { userID: "Không tìm thấy đơn hàng nào cho người dùng này." },
+        });
+      }
+
+      res.status(200).json({
+        user,
+        orders,
       });
     } catch (error) {
       res.status(500).json({ errors: { server: error.message } });

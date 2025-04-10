@@ -113,4 +113,27 @@ router.get("/:orderID", orderController.getOrderById);
  */
 router.put("/:orderID", orderController.updateOrder);
 
+/**
+ * @swagger
+ * /api/orders/user/{userID}:
+ *   get:
+ *     summary: Lấy danh sách tất cả đơn hàng của một người dùng
+ *     tags: [Orders]
+ *     parameters:
+ *       - in: path
+ *         name: userID
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID của người dùng
+ *     responses:
+ *       200:
+ *         description: Thành công
+ *       400:
+ *         description: Yêu cầu không hợp lệ
+ *       404:
+ *         description: Không tìm thấy đơn hàng
+ */
+router.get("/user/:userID", orderController.getOrdersByUserId);
+
 module.exports = router;

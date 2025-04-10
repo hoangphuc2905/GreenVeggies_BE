@@ -9,7 +9,6 @@ const orderSchema = new mongoose.Schema(
     },
     userID: {
       type: String,
-      ref: "User",
       required: [true, "Please provide a user ID"],
     },
     orderDetails: [
