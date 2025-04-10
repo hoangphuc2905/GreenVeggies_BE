@@ -42,11 +42,11 @@ const productController = {
         name: "Vui lòng nhập tên sản phẩm.",
         description: "Vui lòng nhập mô tả sản phẩm.",
         price: "Vui lòng nhập giá sản phẩm.",
-        quantity: "Vui lòng nhập số lượng sản phẩm.",
-        category: "Vui lòng nhập danh mục sản phẩm.",
+        import: "Vui lòng nhập số lượng sản phẩm.",
+        category: "Vui lòng chọn danh mục sản phẩm.",
         origin: "Vui lòng nhập nguồn gốc sản phẩm.",
-        imageUrl: "Vui lòng nhập URL hình ảnh sản phẩm.",
-        unit: "Vui lòng nhập đơn vị sản phẩm.",
+        imageUrl: "Vui lòng đăng tải hình ảnh sản phẩm.",
+        unit: "Vui lòng chọn đơn vị sản phẩm.",
       };
 
       const errors = {};
@@ -77,11 +77,9 @@ const productController = {
       const product = await productService.createProduct(newProduct);
       res.status(201).json(product);
     } catch (err) {
-      res
-        .status(500)
-        .json({
-          errors: { server: "Lỗi khi tạo sản phẩm. Vui lòng thử lại sau." },
-        });
+      res.status(500).json({
+        errors: { server: "Lỗi khi tạo sản phẩm. Vui lòng thử lại sau." },
+      });
     }
   },
 
@@ -106,7 +104,7 @@ const productController = {
 
       const errors = {};
       Object.keys(requiredFields).forEach((field) => {
-        if (req.body[field] === undefined || req.body[field] === null) {
+        if (!req.body[field] || req.body[field].length === 0) {
           errors[field] = requiredFields[field];
         }
       });
@@ -203,11 +201,9 @@ const productController = {
       if (result.result === "ok") {
         res.json({ success: true, message: "Xóa ảnh thành công!" });
       } else {
-        res
-          .status(400)
-          .json({
-            errors: { image: "Không thể xóa ảnh. Vui lòng kiểm tra lại." },
-          });
+        res.status(400).json({
+          errors: { image: "Không thể xóa ảnh. Vui lòng kiểm tra lại." },
+        });
       }
     } catch (error) {
       res

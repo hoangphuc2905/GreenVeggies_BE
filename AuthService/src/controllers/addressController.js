@@ -7,7 +7,19 @@ const addressController = {
 
       const errors = {};
 
-      if (!userID) errors.userID = "Vui lòng cung cấp mã người dùng.";
+      // Kiểm tra userID
+      if (!userID) {
+        errors.userID = "Vui lòng cung cấp mã người dùng";
+      } else {
+        try {
+          const user = await addressService.getUserByID(userID);
+        } catch (error) {
+          errors.userID = error.message; 
+          return res.status(404).json({ errors });
+        }
+      }
+
+      // Kiểm tra các trường bắt buộc
       if (!city) errors.city = "Vui lòng cung cấp tên thành phố/tỉnh.";
       if (!district) errors.district = "Vui lòng cung cấp tên quận/huyện.";
       if (!ward) errors.ward = "Vui lòng cung cấp tên phường/xã.";
@@ -16,8 +28,6 @@ const addressController = {
       if (Object.keys(errors).length > 0) {
         return res.status(400).json({ errors });
       }
-
-      console.log("Received userID:", userID);
 
       const defaultFlag = isDefault === "true" || isDefault === true;
 
@@ -48,9 +58,7 @@ const addressController = {
       if (!userID) {
         return res
           .status(400)
-          .json({
-            errors: { userID: "Vui lòng cung cấp mã người dùng." },
-          });
+          .json({ errors: { userID: "Vui lòng cung cấp mã người dùng" } });
       }
 
       const addresses = await addressService.getAddresses(userID);

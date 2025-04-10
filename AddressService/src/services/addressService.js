@@ -48,4 +48,12 @@ const getAddresses = async (userID) => {
   return address;
 };
 
-module.exports = { createAddress, getAddresses };
+const getUserByID = async (userID) => {
+  const user = await User.findOne({ userID });
+  if (!user) {
+    throw new Error("Người dùng không tồn tại!");
+  }
+  return user;
+};
+
+module.exports = { createAddress, getAddresses, getUserByID };
