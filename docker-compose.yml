@@ -103,6 +103,19 @@ services:
     volumes:
       - ./ReviewService:/app
 
+  statistics-service:
+    container_name: statistics-service
+    build:
+      context: ./StatisticsService
+    ports:
+      - "8009:8009"
+    environment:
+      - PORT=8009
+      - MONGODB_URL=mongodb+srv://mongobasic:hellohm11@cluster0.dbvpcq4.mongodb.net/greenveggies?retryWrites=true&w=majority&appName=Cluster0
+      - STATISTICS_SERVICE_URL=http://localhost:8009
+    volumes:
+      - ./StatisticsService:/app
+
   api-gateway:
     container_name: api-gateway
     build:
@@ -117,6 +130,8 @@ services:
       - ADDRESS_SERVICE_URL=http://address-service:8004
       - ORDER_SERVICE_URL=http://order-service:8005
       - REVIEW_SERVICE_URL=http://review-service:8008
+      - STATISTICS_SERVICE_URL=http://statistics-service:8009
+      - SHOPPING_CART_SERVICE_URL=http://shopping-cart-service:8006
     volumes:
       - ./APIGateway:/app
 

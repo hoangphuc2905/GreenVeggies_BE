@@ -32,20 +32,10 @@ app.use(express.json());
 swaggerSetup(app);
 
 //Routes
-app.use("/api/user", require("./src/routers/user"));
-app.use("/api/products", require("./src/routers/product"));
-app.use("/api/auth", require("./src/routers/auth"));
-app.use("/api/address", require("./src/routers/address"));
-app.use("/api/categories", require("./src/routers/category"));
-app.use("/api/reviews", require("./src/routers/review"));
-app.use("/api/orders", require("./src/routers/order"));
-app.use("/api/shopping-carts", require("./src/routers/shopping"));
-app.use("/api/payment", require("./src/routers/payment"));
-app.use("/api/notifications", require("./src/routers/notification"));
 app.use("/api/statistics", require("./src/routers/statistics"));
 
-app.listen(8000, () => {
-  console.log("Server is running on port 8000");
+app.listen(process.env.PORT, () => {
+  console.log("Statistics Service is running on port", process.env.PORT);
   console.log("Swagger is running on:");
-  console.log("http://localhost:8000/greenveggies-api-docs");
+  console.log("http://localhost:8009/greenveggies-api-docs");
 });
