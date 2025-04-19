@@ -1,9 +1,9 @@
-const generatePaymentQR = async (amount) => {
+const generatePaymentQR = async (amount, orderCode) => {
   // Giá trị mặc định
   const bankCode = "MB";
   const accountNumber = "868629052003";
   const accountName = "HUYNH HOANG PHUC";
-  const description = "Thanh toan don hang";
+  const description = `Thanh toan don hang ${orderCode}`; // Thêm orderCode vào mô tả
 
   // Mã hóa các giá trị
   const encodedDescription = encodeURIComponent(description);

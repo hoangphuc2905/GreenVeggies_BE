@@ -191,6 +191,94 @@ const statisticsService = {
       );
     }
   },
+  getYearlyRevenueStatistics: async (year) => {
+    try {
+      const startOfYear = new Date(`${year}-01-01T00:00:00.000Z`);
+      const endOfYear = new Date(`${year}-12-31T23:59:59.999Z`);
+
+      // Lấy doanh thu theo từng tháng trong năm
+      const monthlyRevenue = await Order.aggregate([
+        {
+          $match: {
+            createdAt: { $gte: startOfYear, $lte: endOfYear },
+          },
+        },
+        {
+          $group: {
+            _id: { $month: "$createdAt" }, // Nhóm theo tháng
+            revenue: { $sum: "$totalAmount" }, // Tổng doanh thu
+          },
+        },
+        {
+          $sort: { _id: 1 }, // Sắp xếp theo tháng
+        },
+      ]);
+
+      // Đảm bảo đủ 12 tháng, ngay cả khi không có doanh thu
+      const stats = Array.from({ length: 12 }, (_, i) => ({
+        month: i + 1,
+        revenue: 0,
+      }));
+
+      monthlyRevenue.forEach((item) => {
+        stats[item._id - 1].revenue = item.revenue;
+      });
+
+      return stats;
+    } catch (error) {
+      throw new Error("Lỗi khi thống kê doanh thu theo năm: " + error.message);
+    }
+  },
+
+  getDailyOrderStatisticsByMonth: async (month, year) => {
+    try {
+      // Kiểm tra tháng hợp lệ
+      if (month < 1 || month > 12) {
+        throw new Error("Tháng không hợp lệ, phải từ 1 đến 12");
+      }
+  
+      const startOfMonth = new Date(`${year}-${month}-01T00:00:00.000Z`);
+      const endOfMonth = new Date(startOfMonth);
+      endOfMonth.setMonth(endOfMonth.getMonth() + 1);
+      endOfMonth.setDate(0); // Lấy ngày cuối cùng của tháng
+  
+      const dailyOrderStats = await Order.aggregate([
+        {
+          $match: {
+            createdAt: { $gte: startOfMonth, $lte: endOfMonth },
+            status: "Delivered", // Chỉ lấy đơn hàng thành công
+          },
+        },
+        {
+          $group: {
+            _id: { $dayOfMonth: "$createdAt" }, // Nhóm theo ngày
+            totalOrders: { $sum: 1 }, // Đếm số lượng đơn hàng
+          },
+        },
+        {
+          $sort: { _id: 1 }, // Sắp xếp theo ngày
+        },
+      ]);
+  
+      // Đảm bảo đủ các ngày trong tháng, ngay cả khi không có đơn hàng
+      const daysInMonth = new Date(year, month, 0 AMERICAN).getDate();
+      const stats = Array.from({ length: daysInMonth }, (_, i) => ({
+        day: i + 1,
+        totalOrders: 0,
+      }));
+  
+      dailyOrderStats.forEach((item) => {
+        stats[item._id - 1].totalOrders = item.totalOrders;
+      });
+  
+      return stats;
+    } catch (error) {
+      throw new Error(
+        "Lỗi khi thống kê số lượng đơn hàng theo ngày trong tháng: " +
+          error.message
+      );
+    }
+  },
 };
 
 async function calculateStats(orderDetails) {

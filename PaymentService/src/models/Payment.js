@@ -27,6 +27,12 @@ const paymentSchema = new mongoose.Schema(
       required: [true, "Please provide the payment amount"],
       min: [0, "Payment amount must be greater than or equal to 0"],
     },
+    qrURL: {
+      type: String, // Lưu URL mã QR
+    },
+    orderCode: {
+      type: String, // Lưu mã giao dịch để đối chiếu
+    },
   },
   { timestamps: true }
 );

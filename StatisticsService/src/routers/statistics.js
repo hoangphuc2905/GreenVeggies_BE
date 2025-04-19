@@ -121,4 +121,147 @@ router.get(
  */
 router.get("/order-status", statisticsController.getOrderStatisticsByStatus);
 
+/**
+ * @swagger
+ * /api/statistics/yearly-revenue:
+ *   get:
+ *     summary: Thống kê doanh thu theo năm
+ *     tags: [Statistics]
+ *     parameters:
+ *       - in: query
+ *         name: year
+ *         schema:
+ *           type: string
+ *           format: yyyy
+ *         required: true
+ *         description: Năm cần thống kê (YYYY)
+ *     responses:
+ *       200:
+ *         description: Thống kê doanh thu theo năm thành công
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Thống kê doanh thu theo năm thành công.
+ *                 stats:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       month:
+ *                         type: integer
+ *                         example: 1
+ *                       revenue:
+ *                         type: number
+ *                         example: 1000000
+ *                 totalRevenue:
+ *                   type: number
+ *                   example: 12000000
+ *       400:
+ *         description: Lỗi do thiếu tham số năm
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 errors:
+ *                   type: object
+ *                   properties:
+ *                     year:
+ *                       type: string
+ *                       example: Vui lòng cung cấp năm để thống kê.
+ *       500:
+ *         description: Lỗi máy chủ
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 errors:
+ *                   type: object
+ *                   properties:
+ *                     server:
+ *                       type: string
+ *                       example: Lỗi khi thống kê doanh thu theo năm.
+ */
+router.get("/yearly-revenue", statisticsController.getYearlyRevenueStatistics);
+
+/**
+ * @swagger
+ * /api/statistics/daily-orders:
+ *   get:
+ *     summary: Thống kê số lượng đơn hàng theo ngày trong tháng
+ *     tags: [Statistics]
+ *     parameters:
+ *       - in: query
+ *         name: month
+ *         schema:
+ *           type: integer
+ *           example: 4
+ *         required: true
+ *         description: Tháng cần thống kê (1-12)
+ *       - in: query
+ *         name: year
+ *         schema:
+ *           type: integer
+ *           example: 2025
+ *         required: true
+ *         description: Năm cần thống kê
+ *     responses:
+ *       200:
+ *         description: Thống kê số lượng đơn hàng theo ngày trong tháng thành công
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Thống kê số lượng đơn hàng theo ngày trong tháng thành công.
+ *                 stats:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       day:
+ *                         type: integer
+ *                         example: 1
+ *                       totalOrders:
+ *                         type: integer
+ *                         example: 5
+ *       400:
+ *         description: Lỗi do thiếu tham số tháng hoặc năm
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 errors:
+ *                   type: object
+ *                   properties:
+ *                     message:
+ *                       type: string
+ *                       example: Vui lòng cung cấp tháng và năm để thống kê.
+ *       500:
+ *         description: Lỗi máy chủ
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 errors:
+ *                   type: object
+ *                   properties:
+ *                     server:
+ *                       type: string
+ *                       example: Lỗi khi thống kê số lượng đơn hàng theo ngày trong tháng.
+ */
+router.get(
+  "/daily-orders",
+  statisticsController.getDailyOrderStatisticsByMonth
+);
+
 module.exports = router;
