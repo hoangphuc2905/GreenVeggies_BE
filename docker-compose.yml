@@ -116,6 +116,19 @@ services:
     volumes:
       - ./StatisticsService:/app
 
+  payment-service:
+    container_name: payment-service
+    build:
+      context: ./PaymentService
+    ports:
+      - "8010:8010"
+    environment:
+      - PORT=8010
+      - MONGODB_URL=mongodb+srv://mongobasic:hellohm11@cluster0.dbvpcq4.mongodb.net/greenveggies?retryWrites=true&w=majority&appName=Cluster0
+      - PAYMENT_SERVICE_URL=http://localhost:8010
+    volumes:
+      - ./PaymentService:/app
+
   api-gateway:
     container_name: api-gateway
     build:
@@ -132,6 +145,8 @@ services:
       - REVIEW_SERVICE_URL=http://review-service:8008
       - STATISTICS_SERVICE_URL=http://statistics-service:8009
       - SHOPPING_CART_SERVICE_URL=http://shopping-cart-service:8006
+      - NOTIFICATION_SERVICE_URL=http://notification-service:8007
+      - PAYMENT_SERVICE_URL=http://payment-service:8010
     volumes:
       - ./APIGateway:/app
 

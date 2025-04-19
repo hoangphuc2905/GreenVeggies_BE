@@ -40,7 +40,7 @@ app.use("/api/categories", require("./src/routers/category"));
 app.use("/api/reviews", require("./src/routers/review"));
 app.use("/api/orders", require("./src/routers/order"));
 app.use("/api/shopping-carts", require("./src/routers/shopping"));
-app.use("/api/payment", require("./src/routers/payment"));
+app.use("/api/payments", require("./src/routers/payment"));
 app.use("/api/notifications", require("./src/routers/notification"));
 app.use("/api/statistics", require("./src/routers/statistics"));
 
