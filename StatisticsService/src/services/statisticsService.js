@@ -232,45 +232,48 @@ const statisticsService = {
 
   getDailyOrderStatisticsByMonth: async (month, year) => {
     try {
-      // Kiểm tra tháng hợp lệ
-      if (month < 1 || month > 12) {
-        throw new Error("Tháng không hợp lệ, phải từ 1 đến 12");
+      // Kiểm tra tháng và năm hợp lệ
+      if (!month || !year || month < 1 || month > 12 || year < 1900) {
+        throw new Error("Tháng hoặc năm không hợp lệ.");
       }
-  
-      const startOfMonth = new Date(`${year}-${month}-01T00:00:00.000Z`);
-      const endOfMonth = new Date(startOfMonth);
-      endOfMonth.setMonth(endOfMonth.getMonth() + 1);
-      endOfMonth.setDate(0); // Lấy ngày cuối cùng của tháng
-  
+
+      // Tạo khoảng thời gian đầu tháng và cuối tháng
+      const startOfMonth = new Date(Date.UTC(year, month - 1, 1));
+      const endOfMonth = new Date(Date.UTC(year, month, 0, 23, 59, 59, 999));
+
       const dailyOrderStats = await Order.aggregate([
         {
           $match: {
             createdAt: { $gte: startOfMonth, $lte: endOfMonth },
-            status: "Delivered", // Chỉ lấy đơn hàng thành công
+            status: "Delivered",
           },
         },
         {
           $group: {
-            _id: { $dayOfMonth: "$createdAt" }, // Nhóm theo ngày
-            totalOrders: { $sum: 1 }, // Đếm số lượng đơn hàng
+            _id: { $dayOfMonth: "$createdAt" }, 
+            totalOrders: { $sum: 1 }, 
           },
         },
         {
-          $sort: { _id: 1 }, // Sắp xếp theo ngày
+          $sort: { _id: 1 }, 
         },
       ]);
-  
-      // Đảm bảo đủ các ngày trong tháng, ngay cả khi không có đơn hàng
-      const daysInMonth = new Date(year, month, 0 AMERICAN).getDate();
+
+      console.log("Daily Order Stats:", dailyOrderStats);
+
+      const daysInMonth = new Date(year, month, 0).getDate();
       const stats = Array.from({ length: daysInMonth }, (_, i) => ({
         day: i + 1,
         totalOrders: 0,
       }));
-  
+
+      // Gán số lượng đơn hàng vào mảng stats
       dailyOrderStats.forEach((item) => {
         stats[item._id - 1].totalOrders = item.totalOrders;
       });
-  
+
+      console.log("Final Stats:", stats);
+
       return stats;
     } catch (error) {
       throw new Error(
