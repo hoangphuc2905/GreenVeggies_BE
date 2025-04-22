@@ -4,7 +4,6 @@ const paymentSchema = new mongoose.Schema(
   {
     paymentID: {
       type: String,
-      required: [true, "Please provide a payment ID"],
       unique: true,
     },
     orderID: {
@@ -15,7 +14,7 @@ const paymentSchema = new mongoose.Schema(
     paymentMethod: {
       type: String,
       required: [true, "Please provide a payment method"],
-      enum: ["Momo", "Bank Transfer", "Cash"],
+      enum: ["Bank Transfer", "Cash"],
     },
     paymentStatus: {
       type: String,
@@ -27,24 +26,20 @@ const paymentSchema = new mongoose.Schema(
       required: [true, "Please provide the payment amount"],
       min: [0, "Payment amount must be greater than or equal to 0"],
     },
-    qrURL: {
-      type: String, // Lưu URL mã QR
-    },
-    orderCode: {
-      type: String, // Lưu mã giao dịch để đối chiếu
+    content: {
+      type: String,
+      required: [true, "Please provide the payment content"],
     },
   },
   { timestamps: true }
 );
 
-// Middleware để tự động tạo paymentID
 paymentSchema.pre("save", async function (next) {
   if (!this.paymentID) {
     const currentDate = new Date();
     const datePart = `${String(currentDate.getDate()).padStart(2, "0")}${String(
       currentDate.getMonth() + 1
     ).padStart(2, "0")}${String(currentDate.getFullYear()).slice(2)}`;
-
     const paymentCount = await this.constructor.countDocuments({
       createdAt: {
         $gte: new Date(
@@ -59,7 +54,6 @@ paymentSchema.pre("save", async function (next) {
         ),
       },
     });
-
     const paymentNumber = String(paymentCount + 1).padStart(4, "0");
     this.paymentID = `PM${paymentNumber}${datePart}`;
   }

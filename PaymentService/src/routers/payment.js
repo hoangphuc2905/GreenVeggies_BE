@@ -11,9 +11,9 @@ const paymentController = require("../controllers/paymentController");
 
 /**
  * @swagger
- * /api/payments/create-qr:
+ * /api/payments/create:
  *   post:
- *     summary: Tạo mã QR thanh toán
+ *     summary: Tạo thanh toán
  *     tags: [Payment]
  *     requestBody:
  *       required: true
@@ -26,26 +26,55 @@ const paymentController = require("../controllers/paymentController");
  *                 type: number
  *                 description: "Số tiền cần thanh toán"
  *                 example: 20000
+ *               orderID:
+ *                 type: string
+ *                 description: "ID của đơn hàng"
+ *                 example: "ORDER123"
+ *               paymentMethod:
+ *                 type: string
+ *                 description: "Phương thức thanh toán (Bank Transfer hoặc Cash)"
+ *                 example: "Bank Transfer"
  *     responses:
  *       200:
- *         description: Tạo mã QR thanh toán thành công
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: Tạo mã QR thanh toán thành công.
- *                 qrURL:
- *                   type: string
- *                   description: URL của mã QR thanh toán
- *                   example: https://img.vietqr.io/image/MB-868629052003-compact2.png?amount=20000&addInfo=Thanh%20toan%20don%20hang&accountName=HUYNH%20HOANG%20PHUC&acqId=970422
+ *         description: Tạo thanh toán thành công
+ *       400:
+ *         description: Yêu cầu không hợp lệ
+ *       404:
+ *         description: Không tìm thấy đơn hàng
+ *       500:
+ *         description: Lỗi máy chủ
+ */
+router.post("/create", paymentController.createPayment);
+
+/**
+ * @swagger
+ * /api/payments/update-status:
+ *   post:
+ *     summary: Cập nhật trạng thái thanh toán
+ *     tags: [Payment]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               paymentID:
+ *                 type: string
+ *                 description: "ID của thanh toán"
+ *                 example: "PM0008210425"
+ *               newStatus:
+ *                 type: string
+ *                 description: "Trạng thái mới của thanh toán"
+ *                 example: "Completed"
+ *     responses:
+ *       200:
+ *         description: Cập nhật trạng thái thanh toán thành công
  *       400:
  *         description: Yêu cầu không hợp lệ
  *       500:
  *         description: Lỗi máy chủ
  */
-router.post("/create-qr", paymentController.createWithQR);
+router.post("/update-status", paymentController.updateStatus);
 
 module.exports = router;

@@ -1,12 +1,15 @@
-const { generatePaymentQR } = require("../services/paymentService");
-const Payment = require("../models/Payment"); // Import model Payment
+const {
+  generatePaymentQR,
+  updatePaymentStatus,
+} = require("../services/paymentService");
+const Payment = require("../models/Payment");
+const Order = require("../models/Order");
 
 const paymentController = {
-  createWithQR: async (req, res) => {
+  createPayment: async (req, res) => {
     try {
-      const { amount, orderID } = req.body;
+      const { amount, orderID, paymentMethod } = req.body;
 
-      // Kiểm tra số tiền và orderID
       if (!amount || amount <= 0) {
         return res.status(400).json({
           errors: { amount: "Vui lòng cung cấp số tiền hợp lệ." },
@@ -17,31 +20,71 @@ const paymentController = {
           errors: { orderID: "Vui lòng cung cấp orderID." },
         });
       }
+      if (
+        !paymentMethod ||
+        !["Bank Transfer", "Cash"].includes(paymentMethod)
+      ) {
+        return res.status(400).json({
+          errors: {
+            paymentMethod: "Vui lòng cung cấp phương thức thanh toán hợp lệ.",
+          },
+        });
+      }
 
-      // Tạo orderCode duy nhất (dùng để gắn vào addInfo của mã QR)
-      const orderCode = `ORDER_${Date.now()}_${Math.random()
-        .toString(36)
-        .substr(2, 9)}`;
+      const order = await Order.findOne({ orderID });
+      if (!order) {
+        return res.status(404).json({
+          errors: { orderID: "Không tìm thấy đơn hàng với ID đã cung cấp." },
+        });
+      }
 
-      // Tạo mã QR với orderCode
-      const qrURL = await generatePaymentQR(amount, orderCode);
+      const randomCode = Math.floor(100000 + Math.random() * 900000);
+      const content = `TT${randomCode}`;
 
-      // Lưu giao dịch vào collection Payment
+      let qrURL = null;
+      if (paymentMethod === "Bank Transfer") {
+        qrURL = await generatePaymentQR(amount, content);
+      }
+
       const payment = new Payment({
         orderID,
-        paymentMethod: "Bank Transfer",
+        paymentMethod,
         paymentStatus: "Pending",
         amount,
-        qrURL, // Lưu qrURL (tùy chọn, nếu bạn muốn lưu)
-        orderCode, // Lưu orderCode để đối chiếu sau
+        content,
       });
       await payment.save();
 
       res.status(200).json({
-        message: "Tạo mã QR thanh toán thành công.",
-        qrURL,
+        message: "Tạo thanh toán thành công.",
         paymentID: payment.paymentID,
-        orderCode,
+        qrURL,
+        orderID,
+        paymentMethod,
+        paymentStatus: payment.paymentStatus,
+        amount,
+        content,
+      });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  },
+
+  updateStatus: async (req, res) => {
+    try {
+      const { paymentID, newStatus } = req.body;
+
+      if (!paymentID || !newStatus) {
+        return res.status(400).json({
+          errors: { message: "Vui lòng cung cấp paymentID và trạng thái mới." },
+        });
+      }
+
+      const updatedPayment = await updatePaymentStatus(paymentID, newStatus);
+
+      res.status(200).json({
+        message: "Cập nhật trạng thái thanh toán thành công.",
+        payment: updatedPayment,
       });
     } catch (error) {
       res.status(500).json({ error: error.message });
