@@ -250,12 +250,12 @@ const statisticsService = {
         },
         {
           $group: {
-            _id: { $dayOfMonth: "$createdAt" }, 
-            totalOrders: { $sum: 1 }, 
+            _id: { $dayOfMonth: "$createdAt" },
+            totalOrders: { $sum: 1 },
           },
         },
         {
-          $sort: { _id: 1 }, 
+          $sort: { _id: 1 },
         },
       ]);
 
@@ -282,6 +282,8 @@ const statisticsService = {
       );
     }
   },
+
+ 
 };
 
 async function calculateStats(orderDetails) {

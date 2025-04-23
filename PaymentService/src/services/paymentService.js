@@ -34,4 +34,24 @@ const updatePaymentStatus = async (paymentID, newStatus) => {
   }
 };
 
+const getPaymentByOrderID = async (orderID) => {
+  try {
+    if (!orderID) {
+      throw new Error("orderID không được để trống.");
+    }
+
+    const payment = await Payment.findOne({ orderID });
+
+    if (!payment) {
+      throw new Error(
+        `Không tìm thấy thông tin thanh toán cho orderID: ${orderID}`
+      );
+    }
+
+    return payment;
+  } catch (error) {
+    throw new Error("Lỗi khi lấy thông tin thanh toán: " + error.message);
+  }
+};
+
 module.exports = { generatePaymentQR, updatePaymentStatus };

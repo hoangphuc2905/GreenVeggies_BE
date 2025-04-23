@@ -108,6 +108,8 @@ const statisticsController = {
       res.status(500).json({ errors: { server: error.message } });
     }
   },
+
+
 };
 
 module.exports = statisticsController;

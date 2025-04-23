@@ -90,6 +90,35 @@ const paymentController = {
       res.status(500).json({ error: error.message });
     }
   },
+
+  getPaymentByOrderID: async (req, res) => {
+    try {
+      const { orderID } = req.params; // orderID được truyền qua params
+      if (!orderID) {
+        return res.status(400).json({
+          errors: { orderID: "Vui lòng cung cấp order ID để thống kê." },
+        });
+      }
+
+      // Sử dụng model Payment để tìm kiếm thông tin thanh toán
+      const payment = await Payment.findOne({ orderID });
+
+      if (!payment) {
+        return res.status(404).json({
+          errors: {
+            message: `Không tìm thấy thanh toán với orderID: ${orderID}`,
+          },
+        });
+      }
+
+      res.status(200).json({
+        message: "Thống kê thanh toán theo order ID thành công.",
+        payment,
+      });
+    } catch (error) {
+      res.status(500).json({ errors: { server: error.message } });
+    }
+  },
 };
 
 module.exports = paymentController;
