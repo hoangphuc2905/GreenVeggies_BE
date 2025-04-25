@@ -25,7 +25,7 @@ async function connectDB() {
 
 connectDB();
 
-app.use(cors());
+app.use(cors({ origin: "http://localhost:8000" }));
 app.use(express.json());
 
 //Swagger

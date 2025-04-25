@@ -1,4 +1,27 @@
 services:
+  api-gateway:
+    container_name: api-gateway
+    build:
+      context: ./APIGateway
+    ports:
+      - "8000:8000"
+    environment:
+      - PORT=8000
+      - MONGODB_URL=mongodb+srv://mongobasic:hellohm11@cluster0.dbvpcq4.mongodb.net/greenveggies?retryWrites=true&w=majority&appName=Cluster0
+      - AUTH_SERVICE_URL=http://auth-service:8001
+      - USER_SERVICE_URL=http://user-service:8002
+      - PRODUCT_SERVICE_URL=http://product-service:8003
+      - ADDRESS_SERVICE_URL=http://address-service:8004
+      - ORDER_SERVICE_URL=http://order-service:8005
+      - SHOPPING_CART_SERVICE_URL=http://shopping-cart-service:8006
+      - NOTIFICATION_SERVICE_URL=http://notification-service:8007
+      - REVIEW_SERVICE_URL=http://review-service:8008
+      - STATISTICS_SERVICE_URL=http://statistics-service:8009
+      - PAYMENT_SERVICE_URL=http://payment-service:8010
+    volumes:
+      - ./APIGateway:/app
+    networks:
+      - greenveggies-network
   auth-service:
     container_name: auth-service
     build:
@@ -8,9 +31,11 @@ services:
     environment:
       - PORT=8001
       - MONGODB_URL=mongodb+srv://mongobasic:hellohm11@cluster0.dbvpcq4.mongodb.net/greenveggies?retryWrites=true&w=majority&appName=Cluster0
-      - AUTH_SERVICE_URL=http://localhost:8001
+      - AUTH_SERVICE_URL=http://auth-service:8001
     volumes:
       - ./AuthService:/app
+    networks:
+      - greenveggies-network
 
   user-service:
     container_name: user-service
@@ -21,9 +46,11 @@ services:
     environment:
       - PORT=8002
       - MONGODB_URL=mongodb+srv://mongobasic:hellohm11@cluster0.dbvpcq4.mongodb.net/greenveggies?retryWrites=true&w=majority&appName=Cluster0
-      - USER_SERVICE_URL=http://localhost:8002
+      - USER_SERVICE_URL=http://user-service:8002
     volumes:
       - ./UserService:/app
+    networks:
+      - greenveggies-network
 
   product-service:
     container_name: product-service
@@ -31,12 +58,14 @@ services:
       context: ./ProductService
     ports:
       - "8003:8003"
-    volumes:
-      - ./ProductService:/app
     environment:
       - PORT=8003
       - MONGODB_URL=mongodb+srv://mongobasic:hellohm11@cluster0.dbvpcq4.mongodb.net/greenveggies?retryWrites=true&w=majority&appName=Cluster0
-      - PRODUCT_SERVICE_URL=http://localhost:8003
+      - PRODUCT_SERVICE_URL=http://product-service:8003
+    volumes:
+      - ./ProductService:/app
+    networks:
+      - greenveggies-network
 
   address-service:
     container_name: address-service
@@ -47,9 +76,11 @@ services:
     environment:
       - PORT=8004
       - MONGODB_URL=mongodb+srv://mongobasic:hellohm11@cluster0.dbvpcq4.mongodb.net/greenveggies?retryWrites=true&w=majority&appName=Cluster0
-      - ADDRESS_SERVICE_URL=http://localhost:8004
+      - ADDRESS_SERVICE_URL=http://address-service:8004
     volumes:
       - ./AddressService:/app
+    networks:
+      - greenveggies-network
 
   order-service:
     container_name: order-service
@@ -60,9 +91,11 @@ services:
     environment:
       - PORT=8005
       - MONGODB_URL=mongodb+srv://mongobasic:hellohm11@cluster0.dbvpcq4.mongodb.net/greenveggies?retryWrites=true&w=majority&appName=Cluster0
-      - ORDER_SERVICE_URL=http://localhost:8005
+      - ORDER_SERVICE_URL=http://order-service:8005
     volumes:
       - ./OrderService:/app
+    networks:
+      - greenveggies-network
 
   shopping-cart-service:
     container_name: shopping-cart-service
@@ -73,9 +106,11 @@ services:
     environment:
       - PORT=8006
       - MONGODB_URL=mongodb+srv://mongobasic:hellohm11@cluster0.dbvpcq4.mongodb.net/greenveggies?retryWrites=true&w=majority&appName=Cluster0
-      - ORDER_SERVICE_URL=http://localhost:8006
+      - SHOPPING_CART_SERVICE_URL=http://shopping-cart-service:8006
     volumes:
       - ./ShoppingCartService:/app
+    networks:
+      - greenveggies-network
 
   notification-service:
     container_name: notification-service
@@ -86,9 +121,11 @@ services:
     environment:
       - PORT=8007
       - MONGODB_URL=mongodb+srv://mongobasic:hellohm11@cluster0.dbvpcq4.mongodb.net/greenveggies?retryWrites=true&w=majority&appName=Cluster0
-      - ORDER_SERVICE_URL=http://localhost:8007
+      - NOTIFICATION_SERVICE_URL=http://notification-service:8007
     volumes:
       - ./NotificationService:/app
+    networks:
+      - greenveggies-network
 
   review-service:
     container_name: review-service
@@ -99,9 +136,11 @@ services:
     environment:
       - PORT=8008
       - MONGODB_URL=mongodb+srv://mongobasic:hellohm11@cluster0.dbvpcq4.mongodb.net/greenveggies?retryWrites=true&w=majority&appName=Cluster0
-      - REVIEW_SERVICE_URL=http://localhost:8008
+      - REVIEW_SERVICE_URL=http://review-service:8008
     volumes:
       - ./ReviewService:/app
+    networks:
+      - greenveggies-network
 
   statistics-service:
     container_name: statistics-service
@@ -112,9 +151,11 @@ services:
     environment:
       - PORT=8009
       - MONGODB_URL=mongodb+srv://mongobasic:hellohm11@cluster0.dbvpcq4.mongodb.net/greenveggies?retryWrites=true&w=majority&appName=Cluster0
-      - STATISTICS_SERVICE_URL=http://localhost:8009
+      - STATISTICS_SERVICE_URL=http://statistics-service:8009
     volumes:
       - ./StatisticsService:/app
+    networks:
+      - greenveggies-network
 
   payment-service:
     container_name: payment-service
@@ -125,33 +166,12 @@ services:
     environment:
       - PORT=8010
       - MONGODB_URL=mongodb+srv://mongobasic:hellohm11@cluster0.dbvpcq4.mongodb.net/greenveggies?retryWrites=true&w=majority&appName=Cluster0
-      - PAYMENT_SERVICE_URL=http://localhost:8010
-    volumes:
-      - ./PaymentService:/app
-
-  api-gateway:
-    container_name: api-gateway
-    build:
-      context: ./APIGateway
-    ports:
-      - "8000:8000"
-    environment:
-      - PORT=8000
-      - AUTH_SERVICE_URL=http://auth-service:8001
-      - USER_SERVICE_URL=http://user-service:8002
-      - PRODUCT_SERVICE_URL=http://product-service:8003
-      - ADDRESS_SERVICE_URL=http://address-service:8004
-      - ORDER_SERVICE_URL=http://order-service:8005
-      - REVIEW_SERVICE_URL=http://review-service:8008
-      - STATISTICS_SERVICE_URL=http://statistics-service:8009
-      - SHOPPING_CART_SERVICE_URL=http://shopping-cart-service:8006
-      - NOTIFICATION_SERVICE_URL=http://notification-service:8007
       - PAYMENT_SERVICE_URL=http://payment-service:8010
     volumes:
-      - ./APIGateway:/app
+      - ./PaymentService:/app
+    networks:
+      - greenveggies-network
 
-  mongo:
-    container_name: mongo
-    image: mongo
-    ports:
-      - "27017:27017"
+networks:
+  greenveggies-network:
+    driver: bridge
