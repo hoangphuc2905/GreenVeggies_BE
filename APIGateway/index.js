@@ -400,9 +400,7 @@ const PORT = process.env.PORT || 8000;
 console.log(`Configured PORT: ${process.env.PORT}`);
 app.listen(PORT, () => {
   console.log(`API Gateway running on port ${PORT}`);
-  console.log(
-    `Swagger UI for services available at http://localhost:${PORT}/api-docs/*`
-  );
+  console.log(`Swagger UI for services available at http://localhost:${PORT}`);
   console.log(
     `Direct Swagger UI at http://localhost:${PORT}/greenveggies-api-docs`
   );
