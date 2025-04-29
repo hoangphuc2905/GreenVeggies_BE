@@ -11,7 +11,7 @@ const options = {
     },
     servers: [
       {
-        url: "http://localhost:8001",
+        url: "http://localhost:8000/api/auth",
         description: "Local server",
       },
     ],
@@ -38,6 +38,11 @@ const swaggerSpec = swaggerJsDoc(options);
 module.exports = (app) => {
   app.use(
     "/greenveggies-api-docs",
+    swaggerUi.serve,
+    swaggerUi.setup(swaggerSpec)
+  );
+  app.use(
+    "/greenveggies-api-docs/",
     swaggerUi.serve,
     swaggerUi.setup(swaggerSpec)
   );

@@ -191,45 +191,5 @@ router.put(
   categoryController.updateCategory
 );
 
-/**
- * @swagger
- * /api/categories/{id}:
- *   delete:
- *     summary: Xóa danh mục theo ID (chỉ dành cho admin)
- *     tags: [Category]
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *         description: ID hoặc categoryID của danh mục
- *     responses:
- *       200:
- *         description: Xóa danh mục thành công
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *       401:
- *         description: Không có quyền truy cập hoặc token không hợp lệ
- *       403:
- *         description: Chỉ admin mới có quyền xóa
- *       404:
- *         description: Không tìm thấy danh mục
- *       500:
- *         description: Lỗi máy chủ
- *     security:
- *       - bearerAuth: []
- */
-router.delete(
-  "/:id",
-  authMiddleware,
-  adminMiddleware,
-  categoryController.deleteCategory
-);
 
 module.exports = router;

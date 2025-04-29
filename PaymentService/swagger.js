@@ -11,7 +11,7 @@ const options = {
     },
     servers: [
       {
-        url: "http://localhost:8010",
+        url: "http://localhost:8000/api/payments",
       },
     ],
     components: {
@@ -37,6 +37,11 @@ const swaggerSpec = swaggerJSDoc(options);
 module.exports = (app) => {
   app.use(
     "/greenveggies-api-docs",
+    swaggerUi.serve,
+    swaggerUi.setup(swaggerSpec)
+  );
+  app.use(
+    "/greenveggies-api-docs/",
     swaggerUi.serve,
     swaggerUi.setup(swaggerSpec)
   );

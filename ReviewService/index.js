@@ -29,7 +29,7 @@ app.use(express.json());
 swaggerSetup(app);
 
 // Routes
-app.use("/api/reviews", require("./routers/review"));
+app.use("/api/reviews", require("./src/routers/review"));
 
 app.listen(process.env.PORT, () => {
   console.log(`ReviewService is running on port ${process.env.PORT}`);
