@@ -1,19 +1,64 @@
 const express = require("express");
 const router = express.Router();
 const paymentController = require("../controllers/paymentController");
+const authMiddleware = require("../middleware/authMiddleware");
+const adminMiddleware = require("../middleware/adminMiddleware");
 
 /**
  * @swagger
  * tags:
  *   - name: Payment
- *     description: Các API liên quan đến đơn hàng
+ *     description: Các API liên quan đến thanh toán
+ */
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Payment:
+ *       type: object
+ *       properties:
+ *         paymentID:
+ *           type: string
+ *           description: Mã thanh toán (tự động sinh)
+ *         orderID:
+ *           type: string
+ *           description: ID của đơn hàng liên quan
+ *         amount:
+ *           type: number
+ *           description: Số tiền thanh toán
+ *         paymentMethod:
+ *           type: string
+ *           enum: ["Bank Transfer", "Cash"]
+ *           description: Phương thức thanh toán
+ *         paymentStatus:
+ *           type: string
+ *           enum: ["Pending", "Completed", "Failed"]
+ *           description: Trạng thái thanh toán
+ *         content:
+ *           type: string
+ *           description: Nội dung thanh toán (nếu có)
+ *         createdAt:
+ *           type: string
+ *           format: date-time
+ *           description: Thời gian tạo thanh toán
+ *         updatedAt:
+ *           type: string
+ *           format: date-time
+ *           description: Thời gian cập nhật thanh toán
+ *       required:
+ *         - paymentID
+ *         - orderID
+ *         - amount
+ *         - paymentMethod
+ *         - paymentStatus
  */
 
 /**
  * @swagger
  * /api/payments/create:
  *   post:
- *     summary: Tạo thanh toán
+ *     summary: Tạo thanh toán mới
  *     tags: [Payment]
  *     requestBody:
  *       required: true
@@ -24,33 +69,57 @@ const paymentController = require("../controllers/paymentController");
  *             properties:
  *               amount:
  *                 type: number
- *                 description: "Số tiền cần thanh toán"
+ *                 description: Số tiền cần thanh toán
  *                 example: 20000
  *               orderID:
  *                 type: string
- *                 description: "ID của đơn hàng"
- *                 example: "ORDER123"
+ *                 description: ID của đơn hàng
+ *                 example: "HD0001000120250225190325"
  *               paymentMethod:
  *                 type: string
- *                 description: "Phương thức thanh toán (Bank Transfer hoặc Cash)"
+ *                 enum: ["Bank Transfer", "Cash"]
+ *                 description: Phương thức thanh toán
  *                 example: "Bank Transfer"
+ *               content:
+ *                 type: string
+ *                 description: Nội dung thanh toán (tùy chọn)
+ *                 example: "TT829605"
+ *             required:
+ *               - amount
+ *               - orderID
+ *               - paymentMethod
  *     responses:
- *       200:
+ *       201:
  *         description: Tạo thanh toán thành công
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 payment:
+ *                   $ref: '#/components/schemas/Payment'
  *       400:
  *         description: Yêu cầu không hợp lệ
+ *       401:
+ *         description: Không có quyền truy cập hoặc token không hợp lệ
+ *       403:
+ *         description: Không có quyền tạo thanh toán cho đơn hàng này
  *       404:
  *         description: Không tìm thấy đơn hàng
  *       500:
  *         description: Lỗi máy chủ
+ *     security:
+ *       - bearerAuth: []
  */
-router.post("/create", paymentController.createPayment);
+router.post("/create", authMiddleware, paymentController.createPayment);
 
 /**
  * @swagger
  * /api/payments/update-status:
  *   post:
- *     summary: Cập nhật trạng thái thanh toán
+ *     summary: Cập nhật trạng thái thanh toán (chỉ dành cho admin)
  *     tags: [Payment]
  *     requestBody:
  *       required: true
@@ -61,27 +130,53 @@ router.post("/create", paymentController.createPayment);
  *             properties:
  *               paymentID:
  *                 type: string
- *                 description: "ID của thanh toán"
- *                 example: "PM0008210425"
+ *                 description: ID của thanh toán
+ *                 example: "PM0001220425"
  *               newStatus:
  *                 type: string
- *                 description: "Trạng thái mới của thanh toán"
+ *                 enum: ["Pending", "Completed", "Failed"]
+ *                 description: Trạng thái mới của thanh toán
  *                 example: "Completed"
+ *             required:
+ *               - paymentID
+ *               - newStatus
  *     responses:
  *       200:
  *         description: Cập nhật trạng thái thanh toán thành công
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 payment:
+ *                   $ref: '#/components/schemas/Payment'
  *       400:
  *         description: Yêu cầu không hợp lệ
+ *       401:
+ *         description: Không có quyền truy cập hoặc token không hợp lệ
+ *       403:
+ *         description: Chỉ admin mới có quyền cập nhật
+ *       404:
+ *         description: Không tìm thấy thanh toán
  *       500:
  *         description: Lỗi máy chủ
+ *     security:
+ *       - bearerAuth: []
  */
-router.post("/update-status", paymentController.updateStatus);
+router.post(
+  "/update-status",
+  authMiddleware,
+  adminMiddleware,
+  paymentController.updateStatus
+);
 
 /**
  * @swagger
  * /api/payments/{orderID}:
  *   get:
- *     summary: Lấy thông tin thanh toán theo order ID
+ *     summary: Lấy thông tin thanh toán theo orderID
  *     tags: [Payment]
  *     parameters:
  *       - in: path
@@ -89,7 +184,7 @@ router.post("/update-status", paymentController.updateStatus);
  *         schema:
  *           type: string
  *         required: true
- *         description: ID của đơn hàng cần lấy thông tin thanh toán
+ *         description: ID của đơn hàng
  *     responses:
  *       200:
  *         description: Lấy thông tin thanh toán thành công
@@ -100,69 +195,93 @@ router.post("/update-status", paymentController.updateStatus);
  *               properties:
  *                 message:
  *                   type: string
- *                   example: Thống kê thanh toán theo order ID thành công.
- *                 stats:
- *                   type: object
- *                   properties:
- *                     _id:
- *                       type: string
- *                       example: 680708b9eb2366582d4c82dd
- *                     orderID:
- *                       type: string
- *                       example: HD0001000120250225190325
- *                     paymentMethod:
- *                       type: string
- *                       example: Bank Transfer
- *                     paymentStatus:
- *                       type: string
- *                       example: Pending
- *                     amount:
- *                       type: number
- *                       example: 20000
- *                     content:
- *                       type: string
- *                       example: TT829605
- *                     createdAt:
- *                       type: string
- *                       format: date-time
- *                       example: 2025-04-22T03:10:49.518+00:00
- *                     updatedAt:
- *                       type: string
- *                       format: date-time
- *                       example: 2025-04-22T03:10:49.518+00:00
- *                     paymentID:
- *                       type: string
- *                       example: PM0001220425
- *                     __v:
- *                       type: integer
- *                       example: 0
+ *                 payment:
+ *                   $ref: '#/components/schemas/Payment'
  *       400:
- *         description: Lỗi do thiếu order ID
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 errors:
- *                   type: object
- *                   properties:
- *                     orderID:
- *                       type: string
- *                       example: Vui lòng cung cấp order ID để thống kê.
+ *         description: Yêu cầu không hợp lệ
+ *       401:
+ *         description: Không có quyền truy cập hoặc token không hợp lệ
+ *       403:
+ *         description: Không có quyền xem thanh toán này
+ *       404:
+ *         description: Không tìm thấy thanh toán hoặc đơn hàng
  *       500:
  *         description: Lỗi máy chủ
+ *     security:
+ *       - bearerAuth: []
+ */
+router.get("/:orderID", authMiddleware, paymentController.getPaymentByOrderID);
+
+/**
+ * @swagger
+ * /api/payments:
+ *   get:
+ *     summary: Lấy danh sách tất cả thanh toán (chỉ dành cho admin)
+ *     tags: [Payment]
+ *     responses:
+ *       200:
+ *         description: Danh sách tất cả thanh toán
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Payment'
+ *       401:
+ *         description: Không có quyền truy cập hoặc token không hợp lệ
+ *       403:
+ *         description: Chỉ admin mới có quyền truy cập
+ *       500:
+ *         description: Lỗi máy chủ
+ *     security:
+ *       - bearerAuth: []
+ */
+router.get(
+  "/",
+  authMiddleware,
+  adminMiddleware,
+  paymentController.getAllPayments
+);
+
+/**
+ * @swagger
+ * /api/payments/{paymentID}:
+ *   delete:
+ *     summary: Xóa thanh toán (chỉ dành cho admin)
+ *     tags: [Payment]
+ *     parameters:
+ *       - in: path
+ *         name: paymentID
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: ID của thanh toán
+ *     responses:
+ *       200:
+ *         description: Xóa thanh toán thành công
  *         content:
  *           application/json:
  *             schema:
  *               type: object
  *               properties:
- *                 errors:
- *                   type: object
- *                   properties:
- *                     server:
- *                       type: string
- *                       example: Lỗi khi lấy thông tin thanh toán.
+ *                 message:
+ *                   type: string
+ *       401:
+ *         description: Không có quyền truy cập hoặc token không hợp lệ
+ *       403:
+ *         description: Chỉ admin mới có quyền xóa
+ *       404:
+ *         description: Không tìm thấy thanh toán
+ *       500:
+ *         description: Lỗi máy chủ
+ *     security:
+ *       - bearerAuth: []
  */
-router.get("/:orderID", paymentController.getPaymentByOrderID);
+router.delete(
+  "/:paymentID",
+  authMiddleware,
+  adminMiddleware,
+  paymentController.deletePayment
+);
 
 module.exports = router;

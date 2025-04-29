@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const authControllers = require("../controllers/authControllers");
+const authMiddleware = require("../middleware/authMiddleware");
 
 /**
  * @swagger
@@ -148,12 +149,13 @@ router.post("/register", authControllers.registerUser);
  *             schema:
  *               type: object
  *               properties:
- *                 user:
- *                   type: object
- *                   description: Thông tin người dùng
  *                 token:
  *                   type: string
  *                   description: JWT token dùng để xác thực
+ *                 user:
+ *                   type: object
+ *                   description: Thông tin người dùng
+
  *       400:
  *         description: Yêu cầu không hợp lệ
  */
@@ -271,6 +273,6 @@ router.post("/update-password", authControllers.updatePassword);
  *       400:
  *         description: Yêu cầu không hợp lệ
  */
-router.post("/change-password", authControllers.changePassword);
+router.post("/change-password", authMiddleware, authControllers.changePassword);
 
 module.exports = router;

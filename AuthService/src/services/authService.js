@@ -134,11 +134,14 @@ const authService = {
       throw new Error("Invalid password");
     }
 
-    const token = jwt.sign({ id: user._id }, process.env.MYSECRET, {
-      expiresIn: "1h",
-    });
+    const token = jwt.sign(
+      { id: user._id, role: user.role },
+      process.env.MYSECRET,
+      { expiresIn: "1h" }
+    );
 
     return {
+      token,
       user: {
         id: user._id,
         email: user.email,
@@ -146,7 +149,6 @@ const authService = {
         userID: user.userID,
         role: user.role,
       },
-      token,
     };
   },
 

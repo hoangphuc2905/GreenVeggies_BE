@@ -5,11 +5,11 @@ module.exports = function (req, res, next) {
   if (!token) {
     return res
       .status(401)
-      .json({ message: "Access Denied. No token provided." });
+      .json({ message: "Vui lòng cung cấp token trong header." });
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.MYSECRET); 
+    const decoded = jwt.verify(token, process.env.MYSECRET);
     req.user = decoded;
     next();
   } catch (err) {

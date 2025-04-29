@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const addressController = require("../controllers/addressController");
+const authMiddleware = require("../middleware/authMiddleware");
 
 /**
  * @swagger
@@ -66,10 +67,28 @@ const addressController = require("../controllers/addressController");
  *     responses:
  *       201:
  *         description: Địa chỉ đã được thêm thành công
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Thông báo thành công
+ *                 address:
+ *                   $ref: '#/components/schemas/Address'
  *       400:
  *         description: Yêu cầu không hợp lệ
+ *       401:
+ *         description: Không có quyền truy cập hoặc token không hợp lệ
+ *       403:
+ *         description: Không có quyền thêm địa chỉ cho người dùng này
+ *       500:
+ *         description: Lỗi server
+ *     security:
+ *       - bearerAuth: []
  */
-router.post("/", addressController.createAddress);
+router.post("/", authMiddleware, addressController.createAddress);
 
 /**
  * @swagger
@@ -83,9 +102,23 @@ router.post("/", addressController.createAddress);
  *     responses:
  *       200:
  *         description: Danh sách địa chỉ của người dùng
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Address'
  *       400:
  *         description: Yêu cầu không hợp lệ
+ *       401:
+ *         description: Không có quyền truy cập hoặc token không hợp lệ
+ *       403:
+ *         description: Không có quyền xem địa chỉ của người dùng này
+ *       500:
+ *         description: Lỗi server
+ *     security:
+ *       - bearerAuth: []
  */
-router.get("/", addressController.getAddresses);
+router.get("/", authMiddleware, addressController.getAddresses);
 
 module.exports = router;

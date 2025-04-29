@@ -1,23 +1,26 @@
+const express = require("express");
+const router = express.Router();
 const userControllers = require("../controllers/userControllers");
-const router = require("express").Router();
+const authMiddleware = require("../middleware/authMiddleware");
+const adminMiddleware = require("../middleware/adminMiddleware");
 
 /**
  * @swagger
  * tags:
  *   - name: User
- *     description: Lấy thông tin người dùng
+ *     description: Quản lý thông tin người dùng
  */
 
 /**
  * @swagger
  * /api/user:
  *   get:
- *     summary: Lấy danh sách tất cả người dùng
+ *     summary: Lấy danh sách tất cả người dùng (chỉ dành cho admin)
  *     tags:
  *       - User
  *     responses:
  *       200:
- *         description: Thành công
+ *         description: Danh sách người dùng
  *         content:
  *           application/json:
  *             schema:
@@ -27,12 +30,39 @@ const router = require("express").Router();
  *                 properties:
  *                   _id:
  *                     type: string
- *                   name:
+ *                     description: ID của người dùng
+ *                   username:
  *                     type: string
+ *                     description: Tên người dùng
  *                   email:
  *                     type: string
+ *                     description: Email người dùng
+ *                   phone:
+ *                     type: string
+ *                     description: Số điện thoại người dùng
+ *                   dateOfBirth:
+ *                     type: string
+ *                     format: date
+ *                     description: Ngày sinh người dùng
+ *                   avatar:
+ *                     type: string
+ *                     description: URL ảnh đại diện
+ *                   role:
+ *                     type: string
+ *                     description: Vai trò của người dùng
+ *                   accountStatus:
+ *                     type: string
+ *                     description: Trạng thái tài khoản
+ *       401:
+ *         description: Không có quyền truy cập hoặc token không hợp lệ
+ *       403:
+ *         description: Chỉ admin mới có quyền truy cập
+ *       500:
+ *         description: Lỗi server
+ *     security:
+ *       - bearerAuth: []
  */
-router.get("/", userControllers.getAllUsers);
+router.get("/", authMiddleware, adminMiddleware, userControllers.getAllUsers);
 
 /**
  * @swagger
@@ -50,11 +80,49 @@ router.get("/", userControllers.getAllUsers);
  *         description: ID của người dùng cần lấy thông tin
  *     responses:
  *       200:
- *         description: Thành công
+ *         description: Thông tin người dùng
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 _id:
+ *                   type: string
+ *                   description: ID của người dùng
+ *                 username:
+ *                   type: string
+ *                   description: Tên người dùng
+ *                 email:
+ *                   type: string
+ *                   description: Email người dùng
+ *                 phone:
+ *                   type: string
+ *                   description: Số điện thoại người dùng
+ *                 dateOfBirth:
+ *                   type: string
+ *                   format: date
+ *                   description: Ngày sinh người dùng
+ *                 avatar:
+ *                   type: string
+ *                   description: URL ảnh đại diện
+ *                 role:
+ *                   type: string
+ *                   description: Vai trò của người dùng
+ *                 accountStatus:
+ *                   type: string
+ *                   description: Trạng thái tài khoản
  *       401:
- *         description: Không được phép
+ *         description: Không có quyền truy cập hoặc token không hợp lệ
+ *       403:
+ *         description: Không có quyền truy cập thông tin người dùng này
+ *       404:
+ *         description: Không tìm thấy người dùng
+ *       500:
+ *         description: Lỗi server
+ *     security:
+ *       - bearerAuth: []
  */
-router.get("/:userID", userControllers.getUserInfo);
+router.get("/:userID", authMiddleware, userControllers.getUserInfo);
 
 /**
  * @swagger
@@ -77,7 +145,7 @@ router.get("/:userID", userControllers.getUserInfo);
  *           schema:
  *             type: object
  *             properties:
- *               name:
+ *               username:
  *                 type: string
  *                 description: Tên người dùng
  *               email:
@@ -94,18 +162,42 @@ router.get("/:userID", userControllers.getUserInfo);
  *                 type: string
  *                 description: URL ảnh đại diện người dùng
  *               address:
- *                 type: string
+ *                 type: object
  *                 description: Địa chỉ của người dùng
+ *                 properties:
+ *                   street:
+ *                     type: string
+ *                   city:
+ *                     type: string
+ *                   country:
+ *                     type: string
  *     responses:
  *       200:
  *         description: Cập nhật thành công
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Thông báo thành công
+ *                 user:
+ *                   type: object
+ *                   description: Thông tin người dùng đã cập nhật
  *       400:
  *         description: Yêu cầu không hợp lệ
  *       401:
- *         description: Không được phép
+ *         description: Không có quyền truy cập hoặc token không hợp lệ
+ *       403:
+ *         description: Không có quyền cập nhật thông tin người dùng này
  *       404:
  *         description: Không tìm thấy người dùng
+ *       500:
+ *         description: Lỗi server
+ *     security:
+ *       - bearerAuth: []
  */
-router.put("/:userID", userControllers.updateProfile);
+router.put("/:userID", authMiddleware, userControllers.updateProfile);
 
 module.exports = router;

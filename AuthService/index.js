@@ -4,7 +4,7 @@ const dotenv = require("dotenv");
 const mongoose = require("mongoose");
 const admin = require("firebase-admin");
 const credentials = require("./firebaseConfig.json");
-
+const authMiddleware = require("./src/middleware/authMiddleware");
 admin.initializeApp({
   credential: admin.credential.cert(credentials),
 });
@@ -33,6 +33,12 @@ swaggerSetup(app);
 
 //Routes
 app.use("/api/auth", require("./src/routes/auth"));
+
+// Protected routes (require token)
+app.use("/api/protected", authMiddleware, (req, res) => {
+  res.json({ message: "You have access to this protected route!", user: req.user });
+});
+
 
 app.listen(8001, () => {
   console.log("Server is running on port 8001");

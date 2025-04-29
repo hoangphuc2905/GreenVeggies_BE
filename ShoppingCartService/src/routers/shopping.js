@@ -1,20 +1,84 @@
 const express = require("express");
-const shoppingCartController = require("../controllers/shoppingCartController");
-
 const router = express.Router();
+const shoppingCartController = require("../controllers/shoppingCartController");
+const authMiddleware = require("../middleware/authMiddleware");
+const adminMiddleware = require("../middleware/adminMiddleware");
 
 /**
  * @swagger
  * tags:
  *   - name: ShoppingCarts
- *     description: Các API liên quan đến giỏ hàng
+ *     description: API for managing shopping carts
+ */
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     ShoppingCart:
+ *       type: object
+ *       required:
+ *         - shoppingCartID
+ *         - userID
+ *         - items
+ *         - totalPrice
+ *       properties:
+ *         shoppingCartID:
+ *           type: string
+ *           description: Auto-generated ID of the shopping cart
+ *         userID:
+ *           type: string
+ *           description: ID of the user who owns the cart
+ *         items:
+ *           type: array
+ *           items:
+ *             type: object
+ *             properties:
+ *               productID:
+ *                 type: string
+ *                 description: ID of the product
+ *               quantity:
+ *                 type: number
+ *                 description: Quantity of the product
+ *               price:
+ *                 type: number
+ *                 description: Price per unit of the product
+ *               name:
+ *                 type: string
+ *                 description: Name of the product
+ *               imageUrl:
+ *                 type: string
+ *                 description: Image URL of the product
+ *         totalPrice:
+ *           type: number
+ *           description: Total price of all items in the cart
+ *         createdAt:
+ *           type: string
+ *           format: date-time
+ *           description: Creation time
+ *         updatedAt:
+ *           type: string
+ *           format: date-time
+ *           description: Last update time
+ *       example:
+ *         shoppingCartID: "SCUSER000120250225-001"
+ *         userID: "USER000120250225"
+ *         items:
+ *           - productID: "SP0001220425"
+ *             quantity: 2
+ *             price: 500
+ *             name: "Táo 500ml"
+ *             imageUrl: "https://example.com/image1.jpg"
+ *         totalPrice: 1000
+ *         createdAt: "2025-04-22T03:10:49.518Z"
+ *         updatedAt: "2025-04-22T03:10:49.518Z"
  */
 
 /**
  * @swagger
  * /api/shopping-carts:
  *   post:
- *     summary: Tạo hoặc cập nhật giỏ hàng mới
+ *     summary: Tạo hoặc cập nhật giỏ hàng
  *     tags: [ShoppingCarts]
  *     requestBody:
  *       required: true
@@ -23,8 +87,6 @@ const router = express.Router();
  *           schema:
  *             type: object
  *             properties:
- *               userID:
- *                 type: string
  *               items:
  *                 type: array
  *                 items:
@@ -32,69 +94,78 @@ const router = express.Router();
  *                   properties:
  *                     productID:
  *                       type: string
+ *                       example: "SP0001220425"
  *                     quantity:
  *                       type: number
- *                     price:
- *                       type: number
- *                     description:
- *                       type: string
- *                     imageUrl:
- *                       type: string
- *               totalPrice:
- *                 type: number
+ *                       example: 2
+ *                   required:
+ *                     - productID
+ *                     - quantity
  *     responses:
  *       201:
  *         description: Giỏ hàng được tạo hoặc cập nhật thành công
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 shoppingCart:
+ *                   $ref: '#/components/schemas/ShoppingCart'
  *       400:
  *         description: Yêu cầu không hợp lệ
+ *       401:
+ *         description: Không có quyền truy cập hoặc token không hợp lệ
+ *       404:
+ *         description: Không tìm thấy sản phẩm
+ *       500:
+ *         description: Lỗi máy chủ
+ *     security:
+ *       - bearerAuth: []
  */
-router.post("/", shoppingCartController.createOrUpdateShoppingCart);
+router.post(
+  "/",
+  authMiddleware,
+  shoppingCartController.createOrUpdateShoppingCart
+);
 
 /**
  * @swagger
  * /api/shopping-carts:
  *   get:
- *     summary: Lấy danh sách tất cả giỏ hàng
+ *     summary: Lấy danh sách tất cả giỏ hàng (chỉ dành cho admin)
  *     tags: [ShoppingCarts]
  *     responses:
  *       200:
- *         description: Thành công
+ *         description: Danh sách giỏ hàng
  *         content:
  *           application/json:
  *             schema:
  *               type: array
  *               items:
- *                 type: object
- *                 properties:
- *                   _id:
- *                     type: string
- *                   userID:
- *                     type: string
- *                   items:
- *                     type: array
- *                     items:
- *                       type: object
- *                       properties:
- *                         productID:
- *                           type: string
- *                         quantity:
- *                           type: number
- *                         price:
- *                           type: number
- *                         imageUrl:
- *                           type: string
- *                   totalPrice:
- *                     type: number
- *       400:
- *         description: Yêu cầu không hợp lệ
+ *                 $ref: '#/components/schemas/ShoppingCart'
+ *       401:
+ *         description: Không có quyền truy cập hoặc token không hợp lệ
+ *       403:
+ *         description: Chỉ admin mới có quyền xem
+ *       500:
+ *         description: Lỗi máy chủ
+ *     security:
+ *       - bearerAuth: []
  */
-router.get("/", shoppingCartController.getAllShoppingCarts);
+router.get(
+  "/",
+  authMiddleware,
+  adminMiddleware,
+  shoppingCartController.getAllShoppingCarts
+);
 
 /**
  * @swagger
  * /api/shopping-carts/{shoppingCartID}:
  *   get:
- *     summary: Tìm kiếm giỏ hàng theo shoppingCartID
+ *     summary: Lấy thông tin giỏ hàng theo ID
  *     tags: [ShoppingCarts]
  *     parameters:
  *       - in: path
@@ -102,44 +173,36 @@ router.get("/", shoppingCartController.getAllShoppingCarts);
  *         required: true
  *         schema:
  *           type: string
- *         description: shoppingCartID của giỏ hàng cần tìm kiếm
+ *         description: ID của giỏ hàng
  *     responses:
  *       200:
- *         description: Tìm kiếm thành công
+ *         description: Thông tin giỏ hàng
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 _id:
- *                   type: string
- *                 userID:
- *                   type: string
- *                 items:
- *                   type: array
- *                   items:
- *                     type: object
- *                     properties:
- *                       productID:
- *                         type: string
- *                       quantity:
- *                         type: number
- *                       price:
- *                         type: number
- *                       imageUrl:
- *                         type: string
- *                 totalPrice:
- *                   type: number
+ *               $ref: '#/components/schemas/ShoppingCart'
+ *       401:
+ *         description: Không có quyền truy cập hoặc token không hợp lệ
+ *       403:
+ *         description: Không có quyền xem giỏ hàng này
  *       404:
  *         description: Không tìm thấy giỏ hàng
+ *       500:
+ *         description: Lỗi máy chủ
+ *     security:
+ *       - bearerAuth: []
  */
-router.get("/:shoppingCartID", shoppingCartController.getShoppingCartByID);
+router.get(
+  "/:shoppingCartID",
+  authMiddleware,
+  shoppingCartController.getShoppingCartByID
+);
 
 /**
  * @swagger
  * /api/shopping-carts/user/{userID}:
  *   get:
- *     summary: Tìm kiếm giỏ hàng theo userID
+ *     summary: Lấy giỏ hàng của người dùng
  *     tags: [ShoppingCarts]
  *     parameters:
  *       - in: path
@@ -147,44 +210,36 @@ router.get("/:shoppingCartID", shoppingCartController.getShoppingCartByID);
  *         required: true
  *         schema:
  *           type: string
- *         description: userID của giỏ hàng cần tìm kiếm
+ *         description: ID của người dùng
  *     responses:
  *       200:
- *         description: Tìm kiếm thành công
+ *         description: Thông tin giỏ hàng
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 _id:
- *                   type: string
- *                 userID:
- *                   type: string
- *                 items:
- *                   type: array
- *                   items:
- *                     type: object
- *                     properties:
- *                       productID:
- *                         type: string
- *                       quantity:
- *                         type: number
- *                       price:
- *                         type: number
- *                       imageUrl:
- *                         type: string
- *                 totalPrice:
- *                   type: number
+ *               $ref: '#/components/schemas/ShoppingCart'
+ *       401:
+ *         description: Không có quyền truy cập hoặc token không hợp lệ
+ *       403:
+ *         description: Không có quyền xem giỏ hàng này
  *       404:
  *         description: Không tìm thấy giỏ hàng
+ *       500:
+ *         description: Lỗi máy chủ
+ *     security:
+ *       - bearerAuth: []
  */
-router.get("/user/:userID", shoppingCartController.getShoppingCartByUserID);
+router.get(
+  "/user/:userID",
+  authMiddleware,
+  shoppingCartController.getShoppingCartByUserID
+);
 
 /**
  * @swagger
  * /api/shopping-carts/{shoppingCartID}:
  *   delete:
- *     summary: Xóa giỏ hàng theo shoppingCartID
+ *     summary: Xóa giỏ hàng theo ID
  *     tags: [ShoppingCarts]
  *     parameters:
  *       - in: path
@@ -192,46 +247,40 @@ router.get("/user/:userID", shoppingCartController.getShoppingCartByUserID);
  *         required: true
  *         schema:
  *           type: string
- *         description: shoppingCartID của giỏ hàng cần xóa
+ *         description: ID của giỏ hàng
  *     responses:
  *       200:
- *         description: Giỏ hàng được xóa thành công
+ *         description: Xóa giỏ hàng thành công
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *       401:
+ *         description: Không có quyền truy cập hoặc token không hợp lệ
+ *       403:
+ *         description: Không có quyền xóa giỏ hàng này
  *       404:
  *         description: Không tìm thấy giỏ hàng
- */
-router.delete("/:shoppingCartID", shoppingCartController.deleteShoppingCart);
-
-/**
- * @swagger
- * /api/shopping-carts/shopping-cart-details/{shoppingCartDetailID}:
- *   delete:
- *     summary: Xóa chi tiết giỏ hàng theo shoppingCartDetailID
- *     tags: [ShoppingCarts]
- *     parameters:
- *       - in: path
- *         name: shoppingCartDetailID
- *         required: true
- *         schema:
- *           type: string
- *         description: shoppingCartDetailID của chi tiết giỏ hàng cần xóa
- *     responses:
- *       200:
- *         description: Chi tiết giỏ hàng được xóa thành công
- *       404:
- *         description: Không tìm thấy chi tiết giỏ hàng
+ *       500:
+ *         description: Lỗi máy chủ
+ *     security:
+ *       - bearerAuth: []
  */
 router.delete(
-  "/shopping-cart-details/:shoppingCartDetailID",
-  shoppingCartController.deleteShoppingCartDetail
+  "/:shoppingCartID",
+  authMiddleware,
+  shoppingCartController.deleteShoppingCart
 );
 
 /**
  * @swagger
- * /api/shopping-carts/update-quantity:
+ * /api/shopping-carts/remove-item:
  *   patch:
- *     summary: Cập nhật số lượng sản phẩm trong giỏ hàng
- *     tags:
- *       - ShoppingCarts
+ *     summary: Xóa sản phẩm khỏi giỏ hàng
+ *     tags: [ShoppingCarts]
  *     requestBody:
  *       required: true
  *       content:
@@ -241,21 +290,93 @@ router.delete(
  *             properties:
  *               shoppingCartID:
  *                 type: string
- *                 example: "SC123456"
+ *                 example: "SCUSER000120250225-001"
  *               productID:
  *                 type: string
- *                 example: "P123456"
+ *                 example: "SP0001220425"
+ *             required:
+ *               - shoppingCartID
+ *               - productID
+ *     responses:
+ *       200:
+ *         description: Xóa sản phẩm khỏi giỏ hàng thành công
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 shoppingCart:
+ *                   $ref: '#/components/schemas/ShoppingCart'
+ *       401:
+ *         description: Không có quyền truy cập hoặc token không hợp lệ
+ *       403:
+ *         description: Không có quyền xóa sản phẩm này
+ *       404:
+ *         description: Không tìm thấy giỏ hàng hoặc sản phẩm
+ *       500:
+ *         description: Lỗi máy chủ
+ *     security:
+ *       - bearerAuth: []
+ */
+router.patch("/remove-item", authMiddleware, shoppingCartController.deleteShoppingCartDetail);
+
+/**
+ * @swagger
+ * /api/shopping-carts/update-quantity:
+ *   patch:
+ *     summary: Cập nhật số lượng sản phẩm trong giỏ hàng
+ *     tags: [ShoppingCarts]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               shoppingCartID:
+ *                 type: string
+ *                 example: "SCUSER000120250225-001"
+ *               productID:
+ *                 type: string
+ *                 example: "SP0001220425"
  *               quantity:
  *                 type: number
  *                 example: 3
+ *             required:
+ *               - shoppingCartID
+ *               - productID
+ *               - quantity
  *     responses:
  *       200:
- *         description: Số lượng sản phẩm được cập nhật thành công
- *       404:
- *         description: Không tìm thấy giỏ hàng hoặc sản phẩm
+ *         description: Cập nhật số lượng sản phẩm thành công
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 shoppingCart:
+ *                   $ref: '#/components/schemas/ShoppingCart'
  *       400:
  *         description: Yêu cầu không hợp lệ
+ *       401:
+ *         description: Không có quyền truy cập hoặc token không hợp lệ
+ *       403:
+ *         description: Không có quyền cập nhật giỏ hàng này
+ *       404:
+ *         description: Không tìm thấy giỏ hàng hoặc sản phẩm
+ *       500:
+ *         description: Lỗi máy chủ
+ *     security:
+ *       - bearerAuth: []
  */
-router.patch("/update-quantity", shoppingCartController.updateQuantity);
+router.patch(
+  "/update-quantity",
+  authMiddleware,
+  shoppingCartController.updateQuantity
+);
 
 module.exports = router;
