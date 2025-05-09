@@ -11,6 +11,15 @@ admin.initializeApp({
 
 dotenv.config();
 const app = express();
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
+  })
+);
+app.options("*", cors());
 const swaggerSetup = require("./swagger");
 
 async function connectDB() {
@@ -36,9 +45,11 @@ app.use("/api/auth", require("./src/routes/auth"));
 
 // Protected routes (require token)
 app.use("/api/protected", authMiddleware, (req, res) => {
-  res.json({ message: "You have access to this protected route!", user: req.user });
+  res.json({
+    message: "You have access to this protected route!",
+    user: req.user,
+  });
 });
-
 
 app.listen(8001, () => {
   console.log("Server is running on port 8001");

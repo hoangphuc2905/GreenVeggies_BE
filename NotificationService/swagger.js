@@ -11,7 +11,7 @@ const options = {
     },
     servers: [
       {
-        url: "http://localhost:8000/api/notifications",
+        url: "http://localhost:8000",
       },
     ],
     components: {

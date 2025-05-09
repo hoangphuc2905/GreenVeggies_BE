@@ -4,6 +4,7 @@ const dotenv = require("dotenv");
 const mongoose = require("mongoose");
 const admin = require("firebase-admin");
 const credentials = require("./firebaseConfig.json");
+const jwt = require("jsonwebtoken");
 
 admin.initializeApp({
   credential: admin.credential.cert(credentials),
@@ -11,6 +12,15 @@ admin.initializeApp({
 
 dotenv.config();
 const app = express();
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
+  })
+);
+app.options("*", cors());
 const swaggerSetup = require("./swagger");
 
 async function connectDB() {
@@ -25,7 +35,11 @@ async function connectDB() {
 
 connectDB();
 
-app.use(cors({ origin: "http://localhost:8000" }));
+app.use((req, res, next) => {
+  res.setHeader("Access-Control-Allow-Origin", "http://localhost:5173");
+  res.setHeader("Access-Control-Allow-Credentials", "true");
+  next();
+});
 app.use(express.json());
 
 //Swagger
