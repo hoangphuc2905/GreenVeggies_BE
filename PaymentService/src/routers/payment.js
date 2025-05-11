@@ -212,5 +212,4 @@ router.post(
  */
 router.get("/:orderID", authMiddleware, paymentController.getPaymentByOrderID);
 
-
 module.exports = router;
