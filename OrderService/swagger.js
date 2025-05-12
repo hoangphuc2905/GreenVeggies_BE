@@ -11,7 +11,7 @@ const options = {
     },
     servers: [
       {
-        url: "http://localhost:8000/api/orders",
+        url: "http://localhost:8000",
       },
     ],
     components: {

@@ -20,6 +20,28 @@ const notificationService = {
     }
   },
 
+  // Lấy thông báo theo OrderID
+  getNotificationsByOrderID: async (orderID) => {
+  try {
+    const notifications = await Notification.find({
+      orderID,
+      title: "Thông báo hủy đơn hàng", // Filter by title
+    });
+
+    // Extract only the "Lý do" part from the message
+    return notifications.map((notification) => {
+      const reasonIndex = notification.message.indexOf("Lý do:");
+      const reason = reasonIndex !== -1 ? notification.message.substring(reasonIndex) : "";
+      return {
+        ...notification.toObject(),
+        message: reason, // Replace the message with the extracted reason
+      };
+    });
+  } catch (error) {
+    throw new Error(`Lỗi khi lấy thông báo theo orderID: ${error.message}`);
+  }
+},
+
   // Đánh dấu thông báo là đã đọc
   markAsRead: async (notificationID) => {
     try {

@@ -66,6 +66,33 @@ const notificationController = {
     }
   },
 
+  getNotificationsByOrderID: async (req, res) => {
+    try {
+      const { orderID } = req.params;
+
+      if (!orderID) {
+        return res.status(400).json({
+          errors: "Vui lòng cung cấp orderID.",
+        });
+      }
+
+      const notifications = await notificationService.getNotificationsByOrderID(
+        orderID
+      );
+      if (!notifications || notifications.length === 0) {
+        return res.status(404).json({
+          errors: "Không tìm thấy thông báo liên quan đến orderID này.",
+        });
+      }
+
+      res.status(200).json(notifications);
+    } catch (error) {
+      res.status(500).json({
+        errors: `Lỗi khi lấy danh sách thông báo theo orderID: ${error.message}`,
+      });
+    }
+  },
+
   // API: Đánh dấu thông báo là đã đọc
   markAsRead: async (req, res) => {
     try {

@@ -3,7 +3,7 @@ const statisticsService = require("../services/statisticsService");
 const statisticsController = {
   getDailyStatistics: async (req, res) => {
     try {
-      const { date } = req.query; // Ngày được truyền qua query param
+      const { date } = req.query;
       if (!date) {
         return res.status(400).json({
           errors: { date: "Vui lòng cung cấp ngày để thống kê." },
@@ -22,7 +22,7 @@ const statisticsController = {
 
   getRevenueByPaymentMethod: async (req, res) => {
     try {
-      const { date } = req.query; // Ngày được truyền qua query param
+      const { date } = req.query; 
       if (!date) {
         return res.status(400).json({
           errors: { date: "Vui lòng cung cấp ngày để thống kê." },
@@ -40,7 +40,7 @@ const statisticsController = {
   },
   getOrderStatisticsByStatus: async (req, res) => {
     try {
-      const { date } = req.query; // Ngày được truyền qua query param
+      const { date } = req.query; 
       if (!date) {
         return res.status(400).json({
           errors: { date: "Vui lòng cung cấp ngày để thống kê." },
@@ -59,7 +59,7 @@ const statisticsController = {
 
   getYearlyRevenueStatistics: async (req, res) => {
     try {
-      const { year } = req.query; // Năm được truyền qua query param
+      const { year } = req.query; 
       if (!year) {
         return res.status(400).json({
           errors: { year: "Vui lòng cung cấp năm để thống kê." },
@@ -109,7 +109,28 @@ const statisticsController = {
     }
   },
 
+  getOrderStatisticsByDateAndStatus: async (req, res) => {
+    try {
+      const { day, month, year, status } = req.query;
 
+      const orders = await statisticsService.getOrderStatisticsByDateAndStatus({
+        day: day ? parseInt(day) : undefined,
+        month: month ? parseInt(month) : undefined,
+        year: year ? parseInt(year) : undefined,
+        status,
+      });
+
+      res.status(200).json({
+        message: "Thống kê danh sách đơn hàng thành công.",
+        data: orders,
+      });
+    } catch (error) {
+      res.status(500).json({
+        message: "Lỗi khi thống kê danh sách đơn hàng.",
+        error: error.message,
+      });
+    }
+  },
 };
 
 module.exports = statisticsController;

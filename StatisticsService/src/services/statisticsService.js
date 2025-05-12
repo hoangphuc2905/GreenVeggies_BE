@@ -245,17 +245,19 @@ const statisticsService = {
         {
           $match: {
             createdAt: { $gte: startOfMonth, $lte: endOfMonth },
-            status: "Delivered",
           },
         },
         {
           $group: {
-            _id: { $dayOfMonth: "$createdAt" },
+            _id: {
+              day: { $dayOfMonth: "$createdAt" },
+              status: "$status",
+            },
             totalOrders: { $sum: 1 },
           },
         },
         {
-          $sort: { _id: 1 },
+          $sort: { "_id.day": 1 },
         },
       ]);
 
@@ -264,12 +266,21 @@ const statisticsService = {
       const daysInMonth = new Date(year, month, 0).getDate();
       const stats = Array.from({ length: daysInMonth }, (_, i) => ({
         day: i + 1,
-        totalOrders: 0,
+        statuses: {
+          Pending: 0,
+          Shipped: 0,
+          Delivered: 0,
+          Cancelled: 0,
+        },
       }));
 
-      // Gán số lượng đơn hàng vào mảng stats
+      // Gán số lượng đơn hàng theo trạng thái vào mảng stats
       dailyOrderStats.forEach((item) => {
-        stats[item._id - 1].totalOrders = item.totalOrders;
+        const dayIndex = item._id.day - 1;
+        const status = item._id.status;
+        if (stats[dayIndex].statuses[status] !== undefined) {
+          stats[dayIndex].statuses[status] = item.totalOrders;
+        }
       });
 
       console.log("Final Stats:", stats);
@@ -283,7 +294,47 @@ const statisticsService = {
     }
   },
 
- 
+  getOrderStatisticsByDateAndStatus: async ({ day, month, year, status }) => {
+    try {
+      if (!status) {
+        throw new Error("Trạng thái đơn hàng là bắt buộc.");
+      }
+      if (!year) {
+        throw new Error("Năm là bắt buộc.");
+      }
+      if (day && (!month || !year)) {
+        throw new Error("Nếu nhập ngày, phải nhập đủ tháng và năm.");
+      }
+      if (month && !year) {
+        throw new Error("Nếu nhập tháng, phải nhập năm.");
+      }
+
+      let startDate, endDate;
+
+      if (day && month && year) {
+        startDate = new Date(Date.UTC(year, month - 1, day, 0, 0, 0, 0));
+        endDate = new Date(Date.UTC(year, month - 1, day, 23, 59, 59, 999));
+      } else if (month && year) {
+        startDate = new Date(Date.UTC(year, month - 1, 1, 0, 0, 0, 0));
+        endDate = new Date(Date.UTC(year, month, 0, 23, 59, 59, 999));
+      } else if (year) {
+        startDate = new Date(Date.UTC(year, 0, 1, 0, 0, 0, 0));
+        endDate = new Date(Date.UTC(year, 11, 31, 23, 59, 59, 999));
+      }
+
+      const orders = await Order.find({
+        createdAt: { $gte: startDate, $lte: endDate },
+        status: status,
+      }).populate("orderDetails");
+
+      return orders;
+    } catch (error) {
+      throw new Error(
+        "Lỗi khi thống kê danh sách đơn hàng theo trạng thái và ngày tháng năm: " +
+          error.message
+      );
+    }
+  },
 };
 
 async function calculateStats(orderDetails) {

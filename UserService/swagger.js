@@ -11,7 +11,7 @@ const options = {
     },
     servers: [
       {
-        url: "http://localhost:8000/api/user",
+        url: "http://localhost:8000",
       },
     ],
     components: {

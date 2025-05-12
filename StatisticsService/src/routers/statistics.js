@@ -397,4 +397,54 @@ router.get(
   statisticsController.getDailyOrderStatisticsByMonth
 );
 
+/**
+ * @swagger
+ * /api/statistics/orderbydateandstatus:
+ *   get:
+ *     summary: Thống kê danh sách đơn hàng theo trạng thái và ngày tháng năm
+ *     tags: [Statistics]
+ *     parameters:
+ *       - in: query
+ *         name: day
+ *         schema:
+ *           type: integer
+ *         required: false
+ *         description: Ngày (nếu nhập ngày, phải nhập đủ tháng và năm)
+ *       - in: query
+ *         name: month
+ *         schema:
+ *           type: integer
+ *         required: false
+ *         description: Tháng (nếu nhập tháng, phải nhập năm)
+ *       - in: query
+ *         name: year
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: Năm (bắt buộc)
+ *       - in: query
+ *         name: status
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Trạng thái đơn hàng (bắt buộc)
+ *     responses:
+ *       200:
+ *         description: Danh sách đơn hàng
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Order'
+ *       500:
+ *         description: Lỗi máy chủ
+ */
+router.get(
+  "/orderbydateandstatus",
+  authMiddleware,
+  adminMiddleware,
+  statisticsController.getOrderStatisticsByDateAndStatus
+);
+
 module.exports = router;

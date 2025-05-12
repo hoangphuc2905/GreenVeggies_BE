@@ -135,6 +135,43 @@ router.get(
 
 /**
  * @swagger
+ * /api/notifications/order/{orderID}:
+ *   get:
+ *     summary: Lấy danh sách thông báo theo orderID với tile là "Thông báo hủy đơn hàng"
+ *     tags: [Notifications]
+ *     parameters:
+ *       - in: path
+ *         name: orderID
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: ID của đơn hàng
+ *     responses:
+ *       200:
+ *         description: Danh sách thông báo liên quan đến orderID
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Notification'
+ *       400:
+ *         description: Yêu cầu không hợp lệ (thiếu orderID)
+ *       404:
+ *         description: Không tìm thấy thông báo liên quan đến orderID
+ *       500:
+ *         description: Lỗi máy chủ
+ *     security:
+ *       - bearerAuth: []
+ */
+router.get(
+  "/order/:orderID",
+  authMiddleware,
+  notificationController.getNotificationsByOrderID
+);
+
+/**
+ * @swagger
  * /api/notifications/{notificationID}/read:
  *   patch:
  *     summary: Đánh dấu thông báo là đã đọc
