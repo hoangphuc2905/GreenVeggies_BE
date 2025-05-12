@@ -11,7 +11,7 @@ const options = {
     },
     servers: [
       {
-        url: "http://localhost:8000/api/auth",
+        url: "http://localhost:8000",
         description: "Local server",
       },
     ],
