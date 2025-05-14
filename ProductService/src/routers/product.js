@@ -288,7 +288,6 @@ router.get("/:productID", productController.getProductById);
 router.put(
   "/:productID",
   authMiddleware,
-  adminMiddleware,
   productController.updateProduct
 );
 
@@ -346,7 +345,6 @@ router.put(
 router.put(
   "/status/:productID",
   authMiddleware,
-  adminMiddleware,
   productController.updateProductStatus
 );
 
