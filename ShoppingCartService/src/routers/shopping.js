@@ -277,26 +277,17 @@ router.delete(
 
 /**
  * @swagger
- * /api/shopping-carts/remove-item:
+ * /api/shopping-carts/remove-item/{shoppingCartDetailID}:
  *   patch:
- *     summary: Xóa sản phẩm khỏi giỏ hàng
+ *     summary: Xóa 1 sản phẩm khỏi giỏ hàng
  *     tags: [ShoppingCarts]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               shoppingCartID:
- *                 type: string
- *                 example: "SCUSER000120250225-001"
- *               productID:
- *                 type: string
- *                 example: "SP0001220425"
- *             required:
- *               - shoppingCartID
- *               - productID
+ *     parameters:
+ *       - in: path
+ *         name: shoppingCartDetailID
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID chi tiết giỏ hàng cần xóa
  *     responses:
  *       200:
  *         description: Xóa sản phẩm khỏi giỏ hàng thành công
@@ -307,8 +298,6 @@ router.delete(
  *               properties:
  *                 message:
  *                   type: string
- *                 shoppingCart:
- *                   $ref: '#/components/schemas/ShoppingCart'
  *       401:
  *         description: Không có quyền truy cập hoặc token không hợp lệ
  *       403:
@@ -320,7 +309,11 @@ router.delete(
  *     security:
  *       - bearerAuth: []
  */
-router.patch("/remove-item", authMiddleware, shoppingCartController.deleteShoppingCartDetail);
+router.patch(
+  "/remove-item/:shoppingCartDetailID",
+  authMiddleware,
+  shoppingCartController.deleteShoppingCartDetail
+);
 
 /**
  * @swagger

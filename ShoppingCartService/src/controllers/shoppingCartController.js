@@ -165,7 +165,9 @@ const shoppingCartController = {
     }
   },
 
-  // Delete shopping cart
+  // ...existing code...
+
+  // Xóa giỏ hàng
   deleteShoppingCart: async (req, res) => {
     try {
       const { shoppingCartID } = req.params;
@@ -176,29 +178,27 @@ const shoppingCartController = {
         });
       }
 
-      const shoppingCart = await shoppingCartService.deleteShoppingCart(
+      const deletedCart = await shoppingCartService.deleteShoppingCart(
         shoppingCartID
       );
-      if (!shoppingCart) {
+
+      if (!deletedCart) {
         return res.status(404).json({
           errors: { shoppingCartID: "Không tìm thấy giỏ hàng." },
         });
       }
 
-      // Delete all related shopping cart details
-      await ShoppingCartDetail.deleteMany({
-        shoppingCartID: shoppingCart.shoppingCartID,
-      });
-
-      res.status(200).json({ message: "Giỏ hàng đã được xóa thành công." });
+      return res
+        .status(200)
+        .json({ message: "Giỏ hàng đã được xóa thành công." });
     } catch (error) {
-      res.status(400).json({
+      return res.status(400).json({
         errors: { server: "Không thể xóa giỏ hàng.", message: error.message },
       });
     }
   },
 
-  // Delete shopping cart detail
+  // Xóa chi tiết giỏ hàng
   deleteShoppingCartDetail: async (req, res) => {
     try {
       const { shoppingCartDetailID } = req.params;
@@ -211,29 +211,32 @@ const shoppingCartController = {
         });
       }
 
-      const shoppingCartDetail =
+      const deletedCartDetail =
         await shoppingCartService.deleteShoppingCartDetail(
           shoppingCartDetailID
         );
 
-      if (!shoppingCartDetail) {
+      if (!deletedCartDetail) {
         return res.status(404).json({
           errors: { shoppingCartDetailID: "Không tìm thấy chi tiết giỏ hàng." },
         });
       }
 
-      // Update total price of the main shopping cart
+      // Cập nhật lại tổng giá của giỏ hàng chính
       const shoppingCart = await ShoppingCart.findOne({
-        shoppingCartID: shoppingCartDetail.shoppingCartID,
+        shoppingCartID: deletedCartDetail.shoppingCartID,
       });
-      shoppingCart.totalPrice -= shoppingCartDetail.totalAmount;
-      await shoppingCart.save();
+      if (shoppingCart) {
+        shoppingCart.totalPrice -= deletedCartDetail.totalAmount;
+        if (shoppingCart.totalPrice < 0) shoppingCart.totalPrice = 0;
+        await shoppingCart.save();
+      }
 
-      res.status(200).json({
-        message: "Chi tiết giỏ hàng đã được xóa thành công.",
-      });
+      return res
+        .status(200)
+        .json({ message: "Chi tiết giỏ hàng đã được xóa thành công." });
     } catch (error) {
-      res.status(400).json({
+      return res.status(400).json({
         errors: {
           server: "Không thể xóa chi tiết giỏ hàng.",
           message: error.message,
@@ -241,6 +244,7 @@ const shoppingCartController = {
       });
     }
   },
+  // ...existing code...
 
   // Update quantity of a product in the shopping cart
   updateQuantity: async (req, res) => {

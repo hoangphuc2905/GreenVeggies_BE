@@ -285,11 +285,7 @@ router.get("/:productID", productController.getProductById);
  *     security:
  *       - bearerAuth: []
  */
-router.put(
-  "/:productID",
-  authMiddleware,
-  productController.updateProduct
-);
+router.put("/:productID", authMiddleware, productController.updateProduct);
 
 /**
  * @swagger
@@ -455,13 +451,6 @@ router.get("/search", productController.searchProductbyName);
  *     security:
  *       - bearerAuth: []
  */
-router.post(
-  "/delete-image",
-  authMiddleware,
-  adminMiddleware,
-  productController.deleteImage
-);
-
-
+router.post("/delete-image", authMiddleware, productController.deleteImage);
 
 module.exports = router;

@@ -74,14 +74,16 @@ exports.getShoppingCartByUserID = async (userID) => {
 
 exports.deleteShoppingCart = async (shoppingCartID) => {
   try {
+    // Xóa tất cả chi tiết giỏ hàng trước
+    await ShoppingCartDetail.deleteMany({ shoppingCartID });
+
+    // Xóa giỏ hàng chính
     const deletedCart = await ShoppingCart.findOneAndDelete({ shoppingCartID });
 
     if (!deletedCart) {
+      console.log("Không tìm thấy giỏ hàng để xóa.");
       return null;
     }
-
-    // Xóa luôn chi tiết giỏ hàng liên quan
-    await ShoppingCartDetail.deleteMany({ shoppingCartID });
 
     return deletedCart;
   } catch (error) {
@@ -90,9 +92,10 @@ exports.deleteShoppingCart = async (shoppingCartID) => {
   }
 };
 
-// hàm xóa chi tiết giỏ hàng
+// Xóa một chi tiết giỏ hàng
 exports.deleteShoppingCartDetail = async (shoppingCartDetailID) => {
   try {
+    // Tìm và xóa chi tiết giỏ hàng
     const deletedCartDetail = await ShoppingCartDetail.findOneAndDelete({
       shoppingCartDetailID,
     });
@@ -102,16 +105,15 @@ exports.deleteShoppingCartDetail = async (shoppingCartDetailID) => {
       return null;
     }
 
-    // Cập nhật giỏ hàng chính để loại bỏ shoppingCartDetailID tương ứng
+    // Xóa ID chi tiết khỏi mảng shoppingCartDetailID trong ShoppingCart
     await ShoppingCart.updateOne(
       { shoppingCartID: deletedCartDetail.shoppingCartID },
       { $pull: { shoppingCartDetailID: shoppingCartDetailID } }
     );
 
-    console.log("Đã xóa chi tiết giỏ hàng:", deletedCartDetail);
     return deletedCartDetail;
   } catch (error) {
     console.error("Lỗi khi xóa chi tiết giỏ hàng:", error);
-    throw error; // Ném lỗi để controller bắt và xử lý
+    return null;
   }
 };
