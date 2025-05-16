@@ -160,7 +160,7 @@ const statisticsService = {
       }
 
       const currentOrders = await Order.aggregate([
-        { $match: { updateAt: { $gte: startDate, $lte: endDate } } },
+        { $match: { updatedAt: { $gte: startDate, $lte: endDate } } },
         {
           $group: {
             _id: "$status",
@@ -170,7 +170,7 @@ const statisticsService = {
       ]);
 
       const prevOrders = await Order.aggregate([
-        { $match: { updateAt: { $gte: startOfPrev, $lte: endOfPrev } } },
+        { $match: { updatedAt: { $gte: startOfPrev, $lte: endOfPrev } } },
         {
           $group: {
             _id: "$status",
