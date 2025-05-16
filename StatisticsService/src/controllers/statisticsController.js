@@ -22,7 +22,7 @@ const statisticsController = {
 
   getRevenueByPaymentMethod: async (req, res) => {
     try {
-      const { date } = req.query; 
+      const { date } = req.query;
       if (!date) {
         return res.status(400).json({
           errors: { date: "Vui lòng cung cấp ngày để thống kê." },
@@ -38,16 +38,33 @@ const statisticsController = {
       res.status(500).json({ errors: { server: error.message } });
     }
   },
+
   getOrderStatisticsByStatus: async (req, res) => {
     try {
-      const { date } = req.query; 
-      if (!date) {
+      const { day, month, year } = req.query;
+
+      if (!year) {
         return res.status(400).json({
-          errors: { date: "Vui lòng cung cấp ngày để thống kê." },
+          errors: { year: "Vui lòng cung cấp năm để thống kê." },
+        });
+      }
+      if (day && (!month || !year)) {
+        return res.status(400).json({
+          errors: { message: "Nếu nhập ngày, phải nhập đủ tháng và năm." },
+        });
+      }
+      if (month && !year) {
+        return res.status(400).json({
+          errors: { message: "Nếu nhập tháng, phải nhập năm." },
         });
       }
 
-      const stats = await statisticsService.getOrderStatisticsByStatus(date);
+      const stats = await statisticsService.getOrderStatisticsByStatus({
+        day: day ? parseInt(day) : undefined,
+        month: month ? parseInt(month) : undefined,
+        year: year ? parseInt(year) : undefined,
+      });
+
       res.status(200).json({
         message: "Thống kê đơn hàng theo trạng thái thành công.",
         stats,
@@ -59,7 +76,7 @@ const statisticsController = {
 
   getYearlyRevenueStatistics: async (req, res) => {
     try {
-      const { year } = req.query; 
+      const { year } = req.query;
       if (!year) {
         return res.status(400).json({
           errors: { year: "Vui lòng cung cấp năm để thống kê." },

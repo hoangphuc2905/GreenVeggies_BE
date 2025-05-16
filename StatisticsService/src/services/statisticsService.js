@@ -259,13 +259,13 @@ const statisticsService = {
       const dailyOrderStats = await Order.aggregate([
         {
           $match: {
-            updateAt: { $gte: startOfMonth, $lte: endOfMonth },
+            updatedAt: { $gte: startOfMonth, $lte: endOfMonth },
           },
         },
         {
           $group: {
             _id: {
-              day: { $dayOfMonth: "$updateAt" },
+              day: { $dayOfMonth: "$updatedAt" },
               status: "$status",
             },
             totalOrders: { $sum: 1 },
@@ -338,7 +338,7 @@ const statisticsService = {
       }
 
       const orders = await Order.find({
-        updateAt: { $gte: startDate, $lte: endDate },
+        updatedAt: { $gte: startDate, $lte: endDate },
         status: status,
       }).populate("orderDetails");
 
