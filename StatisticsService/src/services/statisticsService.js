@@ -120,28 +120,47 @@ const statisticsService = {
     }
   },
 
-  getOrderStatisticsByStatus: async (date) => {
+  getOrderStatisticsByStatus: async ({ day, month, year }) => {
     try {
-      const [day, month, year] = date.split("-");
-      const formattedDate = `${year}-${month}-${day}`;
+      if (!year) {
+        throw new Error("Năm là bắt buộc.");
+      }
+      if (day && (!month || !year)) {
+        throw new Error("Nếu nhập ngày, phải nhập đủ tháng và năm.");
+      }
+      if (month && !year) {
+        throw new Error("Nếu nhập tháng, phải nhập năm.");
+      }
 
-      const startOfDay = new Date(formattedDate);
-      startOfDay.setHours(0, 0, 0, 0);
+      let startDate, endDate, startOfPrev, endOfPrev;
 
-      const endOfDay = new Date(formattedDate);
-      endOfDay.setHours(23, 59, 59, 999);
+      if (day && month && year) {
+        startDate = new Date(Date.UTC(year, month - 1, day, 0, 0, 0, 0));
+        endDate = new Date(Date.UTC(year, month - 1, day, 23, 59, 59, 999));
+        const prev = new Date(startDate);
+        prev.setDate(prev.getDate() - 1);
+        startOfPrev = new Date(prev);
+        startOfPrev.setHours(0, 0, 0, 0);
+        endOfPrev = new Date(prev);
+        endOfPrev.setHours(23, 59, 59, 999);
+      } else if (month && year) {
+        startDate = new Date(Date.UTC(year, month - 1, 1, 0, 0, 0, 0));
+        endDate = new Date(Date.UTC(year, month, 0, 23, 59, 59, 999));
+        const prevMonth = month - 2 < 0 ? 11 : month - 2;
+        const prevYear = month - 2 < 0 ? year - 1 : year;
+        startOfPrev = new Date(Date.UTC(prevYear, prevMonth, 1, 0, 0, 0, 0));
+        endOfPrev = new Date(
+          Date.UTC(prevYear, prevMonth + 1, 0, 23, 59, 59, 999)
+        );
+      } else if (year) {
+        startDate = new Date(Date.UTC(year, 0, 1, 0, 0, 0, 0));
+        endDate = new Date(Date.UTC(year, 11, 31, 23, 59, 59, 999));
+        startOfPrev = new Date(Date.UTC(year - 1, 0, 1, 0, 0, 0, 0));
+        endOfPrev = new Date(Date.UTC(year - 1, 11, 31, 23, 59, 59, 999));
+      }
 
-      const previousDay = new Date(startOfDay);
-      previousDay.setDate(previousDay.getDate() - 1);
-
-      const startOfPreviousDay = new Date(previousDay);
-      startOfPreviousDay.setHours(0, 0, 0, 0);
-
-      const endOfPreviousDay = new Date(previousDay);
-      endOfPreviousDay.setHours(23, 59, 59, 999);
-
-      const currentDayOrders = await Order.aggregate([
-        { $match: { createdAt: { $gte: startOfDay, $lte: endOfDay } } },
+      const currentOrders = await Order.aggregate([
+        { $match: { updateAt: { $gte: startDate, $lte: endDate } } },
         {
           $group: {
             _id: "$status",
@@ -150,12 +169,8 @@ const statisticsService = {
         },
       ]);
 
-      const previousDayOrders = await Order.aggregate([
-        {
-          $match: {
-            createdAt: { $gte: startOfPreviousDay, $lte: endOfPreviousDay },
-          },
-        },
+      const prevOrders = await Order.aggregate([
+        { $match: { updateAt: { $gte: startOfPrev, $lte: endOfPrev } } },
         {
           $group: {
             _id: "$status",
@@ -164,12 +179,12 @@ const statisticsService = {
         },
       ]);
 
-      const currentStats = currentDayOrders.reduce((acc, item) => {
+      const currentStats = currentOrders.reduce((acc, item) => {
         acc[item._id] = item.count;
         return acc;
       }, {});
 
-      const previousStats = previousDayOrders.reduce((acc, item) => {
+      const previousStats = prevOrders.reduce((acc, item) => {
         acc[item._id] = item.count;
         return acc;
       }, {});
@@ -244,13 +259,13 @@ const statisticsService = {
       const dailyOrderStats = await Order.aggregate([
         {
           $match: {
-            createdAt: { $gte: startOfMonth, $lte: endOfMonth },
+            updateAt: { $gte: startOfMonth, $lte: endOfMonth },
           },
         },
         {
           $group: {
             _id: {
-              day: { $dayOfMonth: "$createdAt" },
+              day: { $dayOfMonth: "$updateAt" },
               status: "$status",
             },
             totalOrders: { $sum: 1 },
@@ -323,7 +338,7 @@ const statisticsService = {
       }
 
       const orders = await Order.find({
-        createdAt: { $gte: startDate, $lte: endDate },
+        updateAt: { $gte: startDate, $lte: endDate },
         status: status,
       }).populate("orderDetails");
 

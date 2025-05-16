@@ -233,12 +233,23 @@ router.get(
  *     tags: [Statistics]
  *     parameters:
  *       - in: query
- *         name: date
+ *         name: day
  *         schema:
- *           type: string
- *           format: date
+ *           type: integer
+ *         required: false
+ *         description: Ngày (nếu nhập ngày, phải nhập đủ tháng và năm)
+ *       - in: query
+ *         name: month
+ *         schema:
+ *           type: integer
+ *         required: false
+ *         description: Tháng (nếu nhập tháng, phải nhập năm)
+ *       - in: query
+ *         name: year
+ *         schema:
+ *           type: integer
  *         required: true
- *         description: Ngày cần thống kê (YYYY-MM-DD)
+ *         description: Năm (bắt buộc)
  *     responses:
  *       200:
  *         description: Thống kê đơn hàng theo trạng thái thành công
@@ -253,7 +264,7 @@ router.get(
  *                 stats:
  *                   $ref: '#/components/schemas/OrderStatusStatistics'
  *       400:
- *         description: Thiếu hoặc sai định dạng tham số ngày
+ *         description: Thiếu hoặc sai định dạng tham số ngày/tháng/năm
  *         content:
  *           application/json:
  *             schema:
@@ -262,9 +273,9 @@ router.get(
  *                 errors:
  *                   type: object
  *                   properties:
- *                     date:
+ *                     message:
  *                       type: string
- *                       example: Vui lòng cung cấp ngày hợp lệ (YYYY-MM-DD).
+ *                       example: Vui lòng cung cấp năm hợp lệ (YYYY).
  *       401:
  *         description: Không có quyền truy cập hoặc token không hợp lệ
  *       403:
