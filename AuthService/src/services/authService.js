@@ -1,4 +1,5 @@
 const User = require("../models/User");
+const UserToken = require("../models/UserToken");
 const Address = require("../models/Address");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
@@ -134,14 +135,27 @@ const authService = {
       throw new Error("Invalid password");
     }
 
-    const token = jwt.sign(
+    // Tạo accessToken (15 phút)
+    const accessToken = jwt.sign(
       { id: user._id, role: user.role },
       process.env.MYSECRET,
-      { expiresIn: "1h" }
+      { expiresIn: "15m" }
     );
 
+    // Tạo refreshToken (7 ngày)
+    const refreshToken = jwt.sign(
+      { id: user._id, role: user.role },
+      process.env.MYREFRESHSECRET,
+      { expiresIn: "7d" }
+    );
+
+    // Lưu refreshToken vào DB (xóa cũ, lưu mới)
+    // await UserToken .deleteMany({ userID: user._id });
+    await UserToken.create({ userID: user._id, token: refreshToken });
+
     return {
-      token,
+      accessToken,
+      refreshToken,
       user: {
         id: user._id,
         email: user.email,
@@ -150,6 +164,36 @@ const authService = {
         role: user.role,
       },
     };
+  },
+
+  refreshToken: async (refreshToken) => {
+    if (!refreshToken) {
+      throw new Error("Refresh token required");
+    }
+
+    // Kiểm tra refreshToken trong DB
+    const tokenDoc = await UserToken.findOne({ token: refreshToken });
+    if (!tokenDoc) throw new Error("Invalid refresh token");
+
+    try {
+      // Xác minh refresh token
+      const decoded = jwt.verify(refreshToken, process.env.MYREFRESHSECRET);
+      const user = await User.findById(decoded.id);
+      if (!user) {
+        throw new Error("User not found");
+      }
+
+      // Tạo accessToken mới
+      const accessToken = jwt.sign(
+        { id: user._id, role: user.role },
+        process.env.MYSECRET,
+        { expiresIn: "15m" }
+      );
+
+      return { accessToken };
+    } catch (error) {
+      throw new Error("Refresh token expired or invalid");
+    }
   },
 
   getLatestOtp: (email) => {

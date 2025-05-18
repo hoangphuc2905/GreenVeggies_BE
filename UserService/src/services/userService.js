@@ -26,6 +26,19 @@ const userService = {
 
     throw new Error("User not found");
   },
+
+  // update accountStatus
+  updateAccountStatus: async (userID, accountStatus) => {
+    const user = await User.findOneAndUpdate(
+      { userID },
+      { accountStatus },
+      { new: true }
+    ).populate("address");
+    if (user) {
+      return user;
+    }
+    throw new Error("User not found");
+  },
 };
 
 module.exports = userService;

@@ -1,3 +1,4 @@
+const User = require("../models/User");
 const authService = require("../services/authService");
 
 const verifiedEmails = new Set();
@@ -99,7 +100,7 @@ const authControllers = {
         accountStatus,
       });
 
-      verifiedEmails.delete(email); 
+      verifiedEmails.delete(email);
       res.status(201).json(response);
     } catch (err) {
       res.status(500).json({
@@ -121,6 +122,27 @@ const authControllers = {
         return res.status(400).json({ errors });
       }
 
+      const user = await User.findOne({ email });
+
+      if (!user) {
+        return res.status(400).json({
+          errors: { server: "Tài khoản không tồn tại." },
+        });
+      }
+      if (user.accountStatus === "Suspended") {
+        return res.status(403).json({
+          errors: {
+            server:
+              "Tài khoản của bạn đã bị khóa. Vui lòng liên số điện thoại: 0333319121 hoặc email: smileshopptit@gmail.com để được hỗ trợ.",
+          },
+        });
+      }
+      if (user.accountStatus !== "Active") {
+        return res.status(403).json({
+          errors: { server: "Tài khoản chưa được kích hoạt." },
+        });
+      }
+
       const response = await authService.login(email, password);
       res
         .status(200)
@@ -130,6 +152,26 @@ const authControllers = {
       res.status(500).json({
         errors: {
           server: "Không thể đăng nhập. Email hoặc mật khẩu không chính xác.",
+        },
+      });
+    }
+  },
+
+  refreshToken: async (req, res) => {
+    try {
+      const { refreshToken } = req.body;
+      if (!refreshToken) {
+        return res
+          .status(400)
+          .json({ errors: { refreshToken: "Refresh token required" } });
+      }
+
+      const result = await authService.refreshToken(refreshToken);
+      res.status(200).json(result);
+    } catch (err) {
+      res.status(400).json({
+        errors: {
+          server: err.message || "Không thể làm mới access token.",
         },
       });
     }

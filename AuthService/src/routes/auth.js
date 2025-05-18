@@ -123,9 +123,8 @@ router.post("/register", authControllers.registerUser);
  * @swagger
  * /api/auth/login:
  *   post:
- *     summary: Đăng nhập người dùng
- *     tags:
- *       - Auth
+ *     summary: Đăng nhập
+ *     tags: [Auth]
  *     requestBody:
  *       required: true
  *       content:
@@ -136,11 +135,12 @@ router.post("/register", authControllers.registerUser);
  *               email:
  *                 type: string
  *                 example: "user@example.com"
- *                 description: Email của người dùng
  *               password:
  *                 type: string
- *                 example: "password123"
- *                 description: Mật khẩu của người dùng
+ *                 example: "yourpassword"
+ *             required:
+ *               - email
+ *               - password
  *     responses:
  *       200:
  *         description: Đăng nhập thành công
@@ -149,17 +149,55 @@ router.post("/register", authControllers.registerUser);
  *             schema:
  *               type: object
  *               properties:
- *                 token:
+ *                 accessToken:
  *                   type: string
- *                   description: JWT token dùng để xác thực
+ *                 refreshToken:
+ *                   type: string
  *                 user:
  *                   type: object
- *                   description: Thông tin người dùng
-
  *       400:
  *         description: Yêu cầu không hợp lệ
+ *       403:
+ *         description: Tài khoản bị khóa hoặc chưa kích hoạt
+ *       500:
+ *         description: Lỗi máy chủ
  */
 router.post("/login", authControllers.login);
+
+/**
+ * @swagger
+ * /api/auth/refresh-token:
+ *   post:
+ *     summary: Làm mới access token bằng refresh token
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               refreshToken:
+ *                 type: string
+ *                 example: "your_refresh_token"
+ *             required:
+ *               - refreshToken
+ *     responses:
+ *       200:
+ *         description: Access token mới
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 accessToken:
+ *                   type: string
+ *       400:
+ *         description: Thiếu refresh token hoặc refresh token không hợp lệ
+ *       500:
+ *         description: Lỗi máy chủ
+ */
+router.post("/refresh-token", authControllers.refreshToken);
 
 // quên mật khẩu: gửi OTP
 /**

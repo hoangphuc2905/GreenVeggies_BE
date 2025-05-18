@@ -78,6 +78,38 @@ const userControllers = {
       });
     }
   },
+
+  updateAccountStatus: async (req, res) => {
+    const errors = {};
+    const { userID } = req.params;
+    const { status } = req.body;
+
+    if (!userID) {
+      errors.userID = "Vui lòng cung cấp userID.";
+      return res.status(400).json({ errors });
+    }
+
+    if (!status) {
+      errors.status = "Vui lòng cung cấp trạng thái tài khoản.";
+      return res.status(400).json({ errors });
+    }
+
+    try {
+      const user = await userService.updateAccountStatus(userID, status);
+      if (!user) {
+        errors.userID = "Không tìm thấy người dùng.";
+        return res.status(404).json({ errors });
+      }
+      res.status(200).json({
+        message: "Cập nhật trạng thái tài khoản thành công.",
+        user,
+      });
+    } catch (err) {
+      res.status(500).json({
+        errors: { server: "Lỗi máy chủ, vui lòng thử lại sau." },
+      });
+    }
+  },
 };
 
 module.exports = userControllers;

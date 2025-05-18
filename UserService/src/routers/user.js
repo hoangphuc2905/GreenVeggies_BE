@@ -122,7 +122,7 @@ router.get("/", authMiddleware, adminMiddleware, userControllers.getAllUsers);
  *     security:
  *       - bearerAuth: []
  */
-router.get("/:userID", authMiddleware, userControllers.getUserInfo);
+router.get("/:userID", userControllers.getUserInfo);
 
 /**
  * @swagger
@@ -199,5 +199,63 @@ router.get("/:userID", authMiddleware, userControllers.getUserInfo);
  *       - bearerAuth: []
  */
 router.put("/:userID", authMiddleware, userControllers.updateProfile);
+
+/**
+ * @swagger
+ * /api/user/{userID}/account-status:
+ *   patch:
+ *     summary: Cập nhật trạng thái tài khoản người dùng
+ *     tags:
+ *       - User
+ *     parameters:
+ *       - in: path
+ *         name: userID
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID của người dùng cần cập nhật trạng thái
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               status:
+ *                 type: string
+ *                 enum: [Active, Inactive, Suspended]
+ *                 description: Trạng thái tài khoản mới
+ *                 example: Active
+ *     responses:
+ *       200:
+ *         description: Cập nhật trạng thái tài khoản thành công
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 user:
+ *                   type: object
+ *       400:
+ *         description: Yêu cầu không hợp lệ
+ *       401:
+ *         description: Không có quyền truy cập hoặc token không hợp lệ
+ *       403:
+ *         description: Không có quyền cập nhật trạng thái tài khoản này
+ *       404:
+ *         description: Không tìm thấy người dùng
+ *       500:
+ *         description: Lỗi server
+ *     security:
+ *       - bearerAuth: []
+ */
+router.patch(
+  "/:userID/account-status",
+  authMiddleware,
+  adminMiddleware,
+  userControllers.updateAccountStatus
+);
 
 module.exports = router;
