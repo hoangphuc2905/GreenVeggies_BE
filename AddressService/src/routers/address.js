@@ -92,6 +92,63 @@ router.post("/", authMiddleware, addressController.createAddress);
 
 /**
  * @swagger
+ * /api/address/{addressID}/{userID}:
+ *   put:
+ *     summary: Cập nhật địa chỉ của người dùng
+ *     tags:
+ *       - Address
+ *     parameters:
+ *       - in: path
+ *         name: addressID
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID của địa chỉ cần cập nhật
+ *       - in: path
+ *         name: userID
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID của người dùng
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               city:
+ *                 type: string
+ *               district:
+ *                 type: string
+ *               ward:
+ *                 type: string
+ *               street:
+ *                 type: string
+ *               isDefault:
+ *                 type: boolean
+ *     responses:
+ *       200:
+ *         description: Địa chỉ đã được cập nhật thành công
+ *       400:
+ *         description: Thiếu thông tin hoặc yêu cầu không hợp lệ
+ *       401:
+ *         description: Không có quyền truy cập hoặc token không hợp lệ
+ *       403:
+ *         description: Không có quyền cập nhật địa chỉ này
+ *       500:
+ *         description: Lỗi server
+ *     security:
+ *       - bearerAuth: []
+ */
+router.put(
+  "/:addressID/:userID",
+  authMiddleware,
+  addressController.updateAddress
+);
+
+/**
+ * @swagger
  * /api/address:
  *   get:
  *     summary: Lấy danh sách địa chỉ của người dùng
@@ -121,4 +178,43 @@ router.post("/", authMiddleware, addressController.createAddress);
  */
 router.get("/", authMiddleware, addressController.getAddresses);
 
+/**
+ * @swagger
+ * /api/address/{addressID}/{userID}:
+ *   delete:
+ *     summary: Xóa địa chỉ của người dùng
+ *     tags:
+ *       - Address
+ *     parameters:
+ *       - in: path
+ *         name: addressID
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID của địa chỉ cần xóa
+ *       - in: path
+ *         name: userID
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID của người dùng
+ *     responses:
+ *       200:
+ *         description: Địa chỉ đã được xóa thành công
+ *       400:
+ *         description: Thiếu thông tin hoặc yêu cầu không hợp lệ
+ *       401:
+ *         description: Không có quyền truy cập hoặc token không hợp lệ
+ *       403:
+ *         description: Không có quyền xóa địa chỉ này
+ *       500:
+ *         description: Lỗi server
+ *     security:
+ *       - bearerAuth: []
+ */
+router.delete(
+  "/:addressID/:userID",
+  authMiddleware,
+  addressController.deleteAddress
+);
 module.exports = router;

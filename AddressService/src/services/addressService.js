@@ -39,6 +39,22 @@ const createAddress = async (
   return newAddress;
 };
 
+const updateAddress = async (addressID, userID, updateData) => {
+  const address = await Address.findOne({ _id: addressID, userID });
+  if (!address) {
+    throw new Error("Địa chỉ không tồn tại hoặc không thuộc về người dùng!");
+  }
+
+  if (updateData.default === true) {
+    await Address.updateMany({ userID }, { default: false });
+  }
+
+  Object.assign(address, updateData);
+  await address.save();
+  return address;
+};
+
+// ...existing code...
 const getAddresses = async (userID) => {
   const address = await Address.find({ userID });
 
@@ -56,4 +72,22 @@ const getUserByID = async (userID) => {
   return user;
 };
 
-module.exports = { createAddress, getAddresses, getUserByID };
+const deleteAddress = async (addressID, userID) => {
+  const address = await Address.findOne({ _id: addressID, userID });
+  if (!address) {
+    throw new Error("Địa chỉ không tồn tại hoặc không thuộc về người dùng!");
+  }
+
+  await Address.deleteOne({ _id: addressID });
+  await User.updateOne({ userID }, { $pull: { address: addressID } });
+
+  return { message: "Xóa địa chỉ thành công!" };
+};
+
+module.exports = {
+  createAddress,
+  getAddresses,
+  getUserByID,
+  updateAddress,
+  deleteAddress,
+};
