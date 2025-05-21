@@ -253,8 +253,9 @@ const orderController = {
       const orders = await Order.find({ userID }).populate("orderDetails");
 
       if (!orders || orders.length === 0) {
-        return res.status(404).json({
-          errors: { userID: "Không tìm thấy đơn hàng nào cho người dùng này." },
+        return res.status(200).json({
+          user,
+          orders: [],
         });
       }
 

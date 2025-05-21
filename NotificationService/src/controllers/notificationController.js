@@ -58,7 +58,7 @@ const notificationController = {
 
       const notifications =
         await notificationService.getNotificationsByReceiver(receiverID);
-      res.status(200).json(notifications);
+      res.status(200).json(notifications); // luôn trả về 200, kể cả mảng rỗng
     } catch (error) {
       res.status(500).json({
         errors: `Lỗi khi lấy danh sách thông báo: ${error.message}`,
@@ -79,11 +79,6 @@ const notificationController = {
       const notifications = await notificationService.getNotificationsByOrderID(
         orderID
       );
-      if (!notifications || notifications.length === 0) {
-        return res.status(404).json({
-          errors: "Không tìm thấy thông báo liên quan đến orderID này.",
-        });
-      }
 
       res.status(200).json(notifications);
     } catch (error) {
