@@ -10,12 +10,24 @@ const stockEntryController = {
       if (!productID) {
         errors.productID = "Vui lòng cung cấp mã sản phẩm (productID).";
       }
-      if (!entryPrice) {
+      if (
+        entryPrice === undefined ||
+        entryPrice === null ||
+        entryPrice === ""
+      ) {
         errors.entryPrice = "Vui lòng cung cấp giá nhập (entryPrice).";
+      } else if (isNaN(entryPrice) || Number(entryPrice) <= 0) {
+        errors.entryPrice = "Giá nhập phải là số dương.";
       }
-      if (!entryQuantity) {
+      if (
+        entryQuantity === undefined ||
+        entryQuantity === null ||
+        entryQuantity === ""
+      ) {
         errors.entryQuantity =
           "Vui lòng cung cấp số lượng nhập (entryQuantity).";
+      } else if (isNaN(entryQuantity) || Number(entryQuantity) <= 0) {
+        errors.entryQuantity = "Số lượng nhập phải là số dương.";
       }
 
       if (Object.keys(errors).length > 0) {
@@ -33,14 +45,14 @@ const stockEntryController = {
 
       const stockEntry = new StockEntry({
         product: product._id,
-        entryPrice,
-        entryQuantity,
+        entryPrice: Number(entryPrice),
+        entryQuantity: Number(entryQuantity),
       });
       await stockEntry.save();
 
       product.stockEntries.push(stockEntry._id);
-      product.quantity += entryQuantity;
-      product.import += entryQuantity;
+      product.quantity += Number(entryQuantity);
+      product.import += Number(entryQuantity);
       await product.save();
 
       res.status(201).json(stockEntry);
