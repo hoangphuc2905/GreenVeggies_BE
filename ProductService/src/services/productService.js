@@ -11,6 +11,10 @@ const productService = {
     return await Product.create(productData);
   },
 
+  getProductByName: async (name) => {
+    return await Product.findOne({ name });
+  },
+
   getAllProducts: async () => {
     return await Product.find().populate("category").populate("reviews");
   },

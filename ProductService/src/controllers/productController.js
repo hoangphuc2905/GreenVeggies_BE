@@ -60,6 +60,16 @@ const productController = {
         return res.status(400).json({ errors });
       }
 
+      // Kiểm tra tên sản phẩm đã tồn tại chưa
+      const existedProduct = await productService.getProductByName(
+        req.body.name
+      );
+      if (existedProduct) {
+        return res.status(400).json({
+          errors: { name: "Tên sản phẩm đã tồn tại. Vui lòng nhập tên khác!" },
+        });
+      }
+
       // Tạo mã sản phẩm tự động
       const lastProduct = await productService.getLastProduct();
       let newID = "SP0001";

@@ -1,0 +1,31 @@
+stages:
+  - install
+  - test
+  - build
+  - deploy
+
+install_dependencies:
+  stage: install
+  image: node:18
+  script:
+    - npm install
+
+test:
+  stage: test
+  image: node:18
+  script:
+    - npm run test
+
+build:
+  stage: build
+  image: node:18
+  script:
+    - echo "No build step for AddressService"
+
+deploy:
+  stage: deploy
+  image: node:18
+  script:
+    - echo "Triển khai lên server hoặc cloud ở đây"
+  only:
+    - main

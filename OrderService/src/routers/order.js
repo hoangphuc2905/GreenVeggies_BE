@@ -196,7 +196,7 @@ router.get("/:orderID", authMiddleware, orderController.getOrderById);
  * @swagger
  * /api/orders/{orderID}:
  *   put:
- *     summary: Cập nhật trạng thái đơn hàng (chỉ dành cho admin)
+ *     summary: Cập nhật trạng thái đơn hàng
  *     tags: [Orders]
  *     parameters:
  *       - in: path
@@ -246,7 +246,6 @@ router.get("/:orderID", authMiddleware, orderController.getOrderById);
 router.put(
   "/:orderID",
   authMiddleware,
-  adminMiddleware,
   orderController.updateOrder
 );
 
