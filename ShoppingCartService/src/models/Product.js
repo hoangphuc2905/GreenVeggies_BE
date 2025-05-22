@@ -50,7 +50,7 @@ const productSchema = new mongoose.Schema(
     },
     unit: {
       type: String,
-      enum: ["piece", "kg", "gram", "liter", "ml"],
+      enum: ["piece", "kg", "gram", "liter", "ml", "pack", "bundle", "bottle", "packet"],
       required: [true, "Please specify the product unit"],
     },
     status: {

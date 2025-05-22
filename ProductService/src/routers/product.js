@@ -50,7 +50,7 @@ const adminMiddleware = require("../middleware/adminMiddleware");
  *           description: Origin of the product
  *         unit:
  *           type: string
- *           enum: ["piece", "kg", "gram", "liter", "ml"]
+ *           enum: ["piece", "kg", "gram", "liter", "ml", "pack", "bundle", "bottle", "packet"]
  *           description: Unit of measurement
  *         imageUrl:
  *           type: array
@@ -141,7 +141,7 @@ router.get("/", productController.getAllProducts);
  *                 example: "Việt Nam"
  *               unit:
  *                 type: string
- *                 enum: ["piece", "kg", "gram", "liter", "ml"]
+ *                 enum: ["piece", "kg", "gram", "liter", "ml", "pack", "bundle", "bottle", "packet"]
  *                 example: "kg"
  *               imageUrl:
  *                 type: array
@@ -253,7 +253,7 @@ router.get("/:productID", productController.getProductById);
  *                 example: "Việt Nam"
  *               unit:
  *                 type: string
- *                 enum: ["piece", "kg", "gram", "liter", "ml"]
+ *                 enum: ["piece", "kg", "gram", "liter", "ml", "pack", "bundle", "bottle", "packet"]
  *                 example: "kg"
  *               imageUrl:
  *                 type: array
